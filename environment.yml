@@ -1,0 +1,24 @@
+# Team Memory 的统一 Conda 开发/运行环境。
+# 在仓库根目录执行：conda env create -f environment.yml
+name: team-memory
+
+channels:
+  - conda-forge
+
+dependencies:
+  # 项目支持 Python 3.10+；开发环境固定 3.12 以保证团队和服务器行为一致。
+  - python=3.12
+  - pip>=24
+  - pip:
+      # Conda 负责 Python/环境隔离；pip 负责按 pyproject.toml 安装本项目及 extras。
+      - "-e .[dev,eval]"
+      # Required by the official GMemory ALFWorld adapter used in E1.
+      - "finch_clust==0.2.0"
+      - "finchpy==0.0.1"
+      - "langchain==0.3.25"
+      - "langchain-chroma==0.2.3"
+      # Required by the official WebArena runtime. Install Chromium with:
+      # python -m playwright install chromium
+      - "playwright>=1.32.1"
+      - "aiolimiter>=1.2.1"
+      - "nltk>=3.10.3"

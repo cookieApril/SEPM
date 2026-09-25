@@ -1,0 +1,434 @@
+[
+  {
+    "case": "heat-egg-to-garbagecan",
+    "records": [
+      {
+        "condition": "full",
+        "source": "benchmark-results/unified-v3/results/component-ablation__alfworld__team-memory__gpt-5-mini__gpt-5-mini__autogen__full__s0__data-alfworld-json_2.1.1-valid_unseen-pick_heat_then_place_in_recep-Egg-None-GarbageCan-10-tri__098a45b94c0a.json",
+        "official_score": 1.0,
+        "goal_or_instruction": "You are in the middle of a room. Looking quickly around you, you see a cabinet 6, a cabinet 5, a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a coffeemachine 1, a countertop 3, a countertop 2, a countertop 1, a drawer 3, a drawer 2, a drawer 1, a fridge 1, a garbagecan 1, a microwave 1, a shelf 3, a shelf 2, a shelf 1, a sinkbasin 1, a stoveburner 4, a stoveburner 3, a stoveburner 2, a stoveburner 1, and a toaster 1.\n\nYour task is to: heat some egg and put it in garbagecan.___14",
+        "trajectory": [
+          {
+            "step": 1,
+            "action": "go to fridge 1",
+            "observation": "The fridge 1 is closed.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 2,
+            "action": "open fridge 1",
+            "observation": "You open the fridge 1. The fridge 1 is open. In it, you see a apple 2, a bowl 2, a bowl 1, a bread 1, a lettuce 1, a plate 1, and a tomato 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 3,
+            "action": "go to cabinet 1",
+            "observation": "On the cabinet 1, you see a glassbottle 1, and a vase 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 4,
+            "action": "go to cabinet 2",
+            "observation": "The cabinet 2 is closed.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 5,
+            "action": "open cabinet 2",
+            "observation": "You open the cabinet 2. The cabinet 2 is open. In it, you see a dishsponge 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 6,
+            "action": "go to fridge 1",
+            "observation": "The fridge 1 is open. In it, you see a apple 2, a bowl 2, a bowl 1, a bread 1, a lettuce 1, a plate 1, and a tomato 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 7,
+            "action": "go to garbagecan 1",
+            "observation": "On the garbagecan 1, you see a lettuce 3, and a papertowelroll 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": true
+          },
+          {
+            "step": 8,
+            "action": "go to countertop 1",
+            "observation": "On the countertop 1, you see a egg 1, and a soapbottle 2.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 9,
+            "action": "take egg 1 from countertop 1",
+            "observation": "You pick up the egg 1 from the countertop 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 10,
+            "action": "go to microwave 1",
+            "observation": "The microwave 1 is closed.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 11,
+            "action": "open microwave 1",
+            "observation": "You open the microwave 1. The microwave 1 is open. In it, you see a apple 1, and a cup 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 12,
+            "action": "heat egg 1 with microwave 1",
+            "observation": "You heat the egg 1 using the microwave 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 13,
+            "action": "put egg 1 in/on microwave 1",
+            "observation": "You put the egg 1 in/on the microwave 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": true
+          },
+          {
+            "step": 14,
+            "action": "take egg 1 from microwave 1",
+            "observation": "You pick up the egg 1 from the microwave 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 15,
+            "action": "go to garbagecan 1",
+            "observation": "On the garbagecan 1, you see a lettuce 3, and a papertowelroll 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 16,
+            "action": "put egg 1 in/on garbagecan 1",
+            "observation": "You put the egg 1 in/on the garbagecan 1.",
+            "reward": 1,
+            "done": true,
+            "parser_recovery_used": false
+          }
+        ],
+        "evaluation_functions": [],
+        "blackboard_entries": 35.0,
+        "world_state_conflict_count": 0.0,
+        "divergence_recovery_count": 0.0,
+        "sop_retrieval_count": 0.0
+      },
+      {
+        "condition": "no-extra-components",
+        "source": "benchmark-results/unified-v3/results/component-ablation__alfworld__team-memory__gpt-5-mini__gpt-5-mini__autogen__no-extra-components__s0__data-alfworld-json_2.1.1-valid_unseen-pick_heat_then_place_in_recep-Egg-None-Ga__38addc447d80.json",
+        "official_score": 0.0,
+        "goal_or_instruction": "You are in the middle of a room. Looking quickly around you, you see a cabinet 6, a cabinet 5, a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a coffeemachine 1, a countertop 3, a countertop 2, a countertop 1, a drawer 3, a drawer 2, a drawer 1, a fridge 1, a garbagecan 1, a microwave 1, a shelf 3, a shelf 2, a shelf 1, a sinkbasin 1, a stoveburner 4, a stoveburner 3, a stoveburner 2, a stoveburner 1, and a toaster 1.\n\nYour task is to: heat some egg and put it in garbagecan.___14",
+        "trajectory": [
+          {
+            "step": 1,
+            "action": "go to fridge 1",
+            "observation": "The fridge 1 is closed.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 2,
+            "action": "open fridge 1",
+            "observation": "You open the fridge 1. The fridge 1 is open. In it, you see a apple 2, a bowl 2, a bowl 1, a bread 1, a lettuce 1, a plate 1, and a tomato 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 3,
+            "action": "go to cabinet 1",
+            "observation": "On the cabinet 1, you see a glassbottle 1, and a vase 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 4,
+            "action": "go to cabinet 2",
+            "observation": "The cabinet 2 is closed.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 5,
+            "action": "open cabinet 2",
+            "observation": "You open the cabinet 2. The cabinet 2 is open. In it, you see a dishsponge 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 6,
+            "action": "go to fridge 1",
+            "observation": "The fridge 1 is open. In it, you see a apple 2, a bowl 2, a bowl 1, a bread 1, a lettuce 1, a plate 1, and a tomato 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 7,
+            "action": "go to cabinet 1",
+            "observation": "On the cabinet 1, you see a glassbottle 1, and a vase 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 8,
+            "action": "go to shelf 1",
+            "observation": "On the shelf 1, you see a creditcard 1, and a peppershaker 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 9,
+            "action": "go to fridge 1",
+            "observation": "The fridge 1 is open. In it, you see a apple 2, a bowl 2, a bowl 1, a bread 1, a lettuce 1, a plate 1, and a tomato 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 10,
+            "action": "go to shelf 2",
+            "observation": "On the shelf 2, you see a cellphone 1, and a dishsponge 2.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 11,
+            "action": "go to fridge 1",
+            "observation": "The fridge 1 is open. In it, you see a apple 2, a bowl 2, a bowl 1, a bread 1, a lettuce 1, a plate 1, and a tomato 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 12,
+            "action": "go to cabinet 1",
+            "observation": "On the cabinet 1, you see a glassbottle 1, and a vase 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 13,
+            "action": "go to fridge 1",
+            "observation": "The fridge 1 is open. In it, you see a apple 2, a bowl 2, a bowl 1, a bread 1, a lettuce 1, a plate 1, and a tomato 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 14,
+            "action": "go to garbagecan 1",
+            "observation": "On the garbagecan 1, you see a lettuce 3, and a papertowelroll 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": true
+          },
+          {
+            "step": 15,
+            "action": "take lettuce 3 from garbagecan 1",
+            "observation": "You pick up the lettuce 3 from the garbagecan 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": true
+          },
+          {
+            "step": 16,
+            "action": "put lettuce 3 in/on garbagecan 1",
+            "observation": "You put the lettuce 3 in/on the garbagecan 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 17,
+            "action": "go to fridge 1",
+            "observation": "The fridge 1 is open. In it, you see a apple 2, a bowl 2, a bowl 1, a bread 1, a lettuce 1, a plate 1, and a tomato 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 18,
+            "action": "go to cabinet 1",
+            "observation": "On the cabinet 1, you see a glassbottle 1, and a vase 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 19,
+            "action": "go to fridge 1",
+            "observation": "The fridge 1 is open. In it, you see a apple 2, a bowl 2, a bowl 1, a bread 1, a lettuce 1, a plate 1, and a tomato 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 20,
+            "action": "go to garbagecan 1",
+            "observation": "On the garbagecan 1, you see a lettuce 3, and a papertowelroll 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": true
+          },
+          {
+            "step": 21,
+            "action": "take lettuce 3 from garbagecan 1",
+            "observation": "You pick up the lettuce 3 from the garbagecan 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": true
+          },
+          {
+            "step": 22,
+            "action": "put lettuce 3 in/on garbagecan 1",
+            "observation": "You put the lettuce 3 in/on the garbagecan 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 23,
+            "action": "go to fridge 1",
+            "observation": "The fridge 1 is open. In it, you see a apple 2, a bowl 2, a bowl 1, a bread 1, a lettuce 1, a plate 1, and a tomato 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 24,
+            "action": "go to garbagecan 1",
+            "observation": "On the garbagecan 1, you see a lettuce 3, and a papertowelroll 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": true
+          },
+          {
+            "step": 25,
+            "action": "go to fridge 1",
+            "observation": "The fridge 1 is open. In it, you see a apple 2, a bowl 2, a bowl 1, a bread 1, a lettuce 1, a plate 1, and a tomato 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 26,
+            "action": "go to garbagecan 1",
+            "observation": "On the garbagecan 1, you see a lettuce 3, and a papertowelroll 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": true
+          },
+          {
+            "step": 27,
+            "action": "take lettuce 3 from garbagecan 1",
+            "observation": "You pick up the lettuce 3 from the garbagecan 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": true
+          },
+          {
+            "step": 28,
+            "action": "put lettuce 3 in/on garbagecan 1",
+            "observation": "You put the lettuce 3 in/on the garbagecan 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 29,
+            "action": "go to fridge 1",
+            "observation": "The fridge 1 is open. In it, you see a apple 2, a bowl 2, a bowl 1, a bread 1, a lettuce 1, a plate 1, and a tomato 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          },
+          {
+            "step": 30,
+            "action": "go to shelf 1",
+            "observation": "On the shelf 1, you see a creditcard 1, and a peppershaker 1.",
+            "reward": 0,
+            "done": false,
+            "parser_recovery_used": false
+          }
+        ],
+        "evaluation_functions": [],
+        "blackboard_entries": 0.0,
+        "world_state_conflict_count": 0.0,
+        "divergence_recovery_count": 0.0,
+        "sop_retrieval_count": 0.0
+      }
+    ]
+  },
+  {
+    "case": "2-39/1",
+    "records": [
+      {
+        "condition": "full",
+        "source": "benchmark-results/unified-v3/results/component-ablation__officebench__team-memory__gpt-5-mini__gpt-5-mini__autogen__full__s0__2-39-1__9ce96cdc9e62.json",
+        "official_score": 0.0,
+        "goal_or_instruction": "find Bob's earliest email, save it in earliest.docx",
+        "trajectory": [],
+        "evaluation_functions": [
+          "evaluate_file_exist"
+        ],
+        "blackboard_entries": 41.0,
+        "world_state_conflict_count": 37.0,
+        "divergence_recovery_count": 0.0,
+        "sop_retrieval_count": 0.0
+      },
+      {
+        "condition": "no-extra-components",
+        "source": "benchmark-results/unified-v3/results/component-ablation__officebench__team-memory__gpt-5-mini__gpt-5-mini__autogen__no-extra-components__s0__2-39-1__2fa06e9d6e7c.json",
+        "official_score": 1.0,
+        "goal_or_instruction": "find Bob's earliest email, save it in earliest.docx",
+        "trajectory": [],
+        "evaluation_functions": [
+          "evaluate_file_exist"
+        ],
+        "blackboard_entries": 0.0,
+        "world_state_conflict_count": 0.0,
+        "divergence_recovery_count": 0.0,
+        "sop_retrieval_count": 0.0
+      }
+    ]
+  }
+]

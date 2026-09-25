@@ -1,0 +1,955 @@
+{
+  "experiment": "sop-model-sensitivity",
+  "policy": "docs/EXPERIMENTS.md E2 subset; hash salt team-memory-e2-v1",
+  "benchmarks": {
+    "alfworld": {
+      "cases": [
+        {
+          "case_id": "data/alfworld/json_2.1.1/valid_unseen/pick_and_place_simple-SoapBottle-None-Toilet-424/trial_T20190907_004321_405868/game.tw-pddl",
+          "official_task_index": 46,
+          "stratum": "pick-and-place",
+          "source_path": "external/GMemory/data/alfworld/alfworld_tasks_suffix.json",
+          "note": "Stratum from ALFWorld procedural family encoded in gamefile path.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "0f5a25460f572a5cf395db796ed157ef3053b0bead235c34f4fd14603cd259f8"
+        },
+        {
+          "case_id": "data/alfworld/json_2.1.1/valid_unseen/pick_and_place_simple-Watch-None-Safe-219/trial_T20190907_074524_006355/game.tw-pddl",
+          "official_task_index": 58,
+          "stratum": "pick-and-place",
+          "source_path": "external/GMemory/data/alfworld/alfworld_tasks_suffix.json",
+          "note": "Stratum from ALFWorld procedural family encoded in gamefile path.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "19165a6b1e01b31a5bd12407a6cd880ff5408b975d629a0a18506fe5741854ad"
+        },
+        {
+          "case_id": "data/alfworld/json_2.1.1/valid_unseen/pick_clean_then_place_in_recep-Cloth-None-Cabinet-424/trial_T20190908_022436_073995/game.tw-pddl",
+          "official_task_index": 91,
+          "stratum": "clean-then-place",
+          "source_path": "external/GMemory/data/alfworld/alfworld_tasks_suffix.json",
+          "note": "Stratum from ALFWorld procedural family encoded in gamefile path.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "23d2be2a0ec06349527021ec6d84952e898c5ea3c1216ffe0788cc22e9b45954"
+        },
+        {
+          "case_id": "data/alfworld/json_2.1.1/valid_unseen/pick_clean_then_place_in_recep-SoapBar-None-Cabinet-424/trial_T20190908_214926_337906/game.tw-pddl",
+          "official_task_index": 18,
+          "stratum": "clean-then-place",
+          "source_path": "external/GMemory/data/alfworld/alfworld_tasks_suffix.json",
+          "note": "Stratum from ALFWorld procedural family encoded in gamefile path.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "4d802fe1a365a81e4e40b0969533e9a075a6e9dd3c1bc3f87fd1402290443f78"
+        },
+        {
+          "case_id": "data/alfworld/json_2.1.1/valid_unseen/pick_heat_then_place_in_recep-Tomato-None-GarbageCan-10/trial_T20190908_225359_617900/game.tw-pddl",
+          "official_task_index": 59,
+          "stratum": "heat-then-place",
+          "source_path": "external/GMemory/data/alfworld/alfworld_tasks_suffix.json",
+          "note": "Stratum from ALFWorld procedural family encoded in gamefile path.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "002d523026453bb50d4ad7fe96d14bff293566c283cd868e1f68f86703d956b4"
+        },
+        {
+          "case_id": "data/alfworld/json_2.1.1/valid_unseen/pick_heat_then_place_in_recep-Egg-None-GarbageCan-10/trial_T20190908_113523_123938/game.tw-pddl",
+          "official_task_index": 49,
+          "stratum": "heat-then-place",
+          "source_path": "external/GMemory/data/alfworld/alfworld_tasks_suffix.json",
+          "note": "Stratum from ALFWorld procedural family encoded in gamefile path.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "03793872ed4cd7d2005a785710566ea980f078e959e730d949e2653da79a85ba"
+        },
+        {
+          "case_id": "data/alfworld/json_2.1.1/valid_unseen/pick_cool_then_place_in_recep-Mug-None-Cabinet-10/trial_T20190909_121635_622676/game.tw-pddl",
+          "official_task_index": 116,
+          "stratum": "cool-then-place",
+          "source_path": "external/GMemory/data/alfworld/alfworld_tasks_suffix.json",
+          "note": "Stratum from ALFWorld procedural family encoded in gamefile path.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "063bce06fcadd1a808a5dbc5e5aced19f3d4e86323a39aa699f7993eb2e3af48"
+        },
+        {
+          "case_id": "data/alfworld/json_2.1.1/valid_unseen/pick_cool_then_place_in_recep-Tomato-None-Microwave-10/trial_T20190909_102608_318800/game.tw-pddl",
+          "official_task_index": 72,
+          "stratum": "cool-then-place",
+          "source_path": "external/GMemory/data/alfworld/alfworld_tasks_suffix.json",
+          "note": "Stratum from ALFWorld procedural family encoded in gamefile path.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "22791fa4b9da5f83794e3b5b64768fd489ce725f77622e3f60964e311c90a622"
+        },
+        {
+          "case_id": "data/alfworld/json_2.1.1/valid_unseen/look_at_obj_in_light-Bowl-None-DeskLamp-308/trial_T20190907_133953_562557/game.tw-pddl",
+          "official_task_index": 22,
+          "stratum": "examine/look",
+          "source_path": "external/GMemory/data/alfworld/alfworld_tasks_suffix.json",
+          "note": "Stratum from ALFWorld procedural family encoded in gamefile path.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "04e9fc459a22ba2a25038f505e66eaa6d7ff8bba028626cc0f04a310fc3fd0ff"
+        },
+        {
+          "case_id": "data/alfworld/json_2.1.1/valid_unseen/look_at_obj_in_light-CD-None-DeskLamp-308/trial_T20190908_141942_810052/game.tw-pddl",
+          "official_task_index": 33,
+          "stratum": "examine/look",
+          "source_path": "external/GMemory/data/alfworld/alfworld_tasks_suffix.json",
+          "note": "Stratum from ALFWorld procedural family encoded in gamefile path.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "0647030b28dbceb0c08a7011c99871f248d9f5a8270e607e263eab92feec4449"
+        },
+        {
+          "case_id": "data/alfworld/json_2.1.1/valid_unseen/pick_two_obj_and_place-Pillow-None-Sofa-219/trial_T20190907_163327_486300/game.tw-pddl",
+          "official_task_index": 35,
+          "stratum": "pick-two-object",
+          "source_path": "external/GMemory/data/alfworld/alfworld_tasks_suffix.json",
+          "note": "Stratum from ALFWorld procedural family encoded in gamefile path.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "0e6349161e14b8905d844a317482f83122c3f34210b2a41857505d51ae022fd3"
+        },
+        {
+          "case_id": "data/alfworld/json_2.1.1/valid_unseen/pick_two_obj_and_place-KeyChain-None-Safe-219/trial_T20190909_012027_782483/game.tw-pddl",
+          "official_task_index": 42,
+          "stratum": "pick-two-object",
+          "source_path": "external/GMemory/data/alfworld/alfworld_tasks_suffix.json",
+          "note": "Stratum from ALFWorld procedural family encoded in gamefile path.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "20e874e05a5282af6420cb87f441b79b06fe74a935939cfc7d0725f454186d34"
+        }
+      ],
+      "notes": [],
+      "counts": {
+        "pick-and-place": 2,
+        "clean-then-place": 2,
+        "heat-then-place": 2,
+        "cool-then-place": 2,
+        "examine/look": 2,
+        "pick-two-object": 2
+      }
+    },
+    "webarena": {
+      "cases": [
+        {
+          "case_id": "219",
+          "official_task_id": 219,
+          "stratum": "information lookup",
+          "sites": [
+            "map"
+          ],
+          "intent_template_id": 41,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "00956a52d7b9b878bdaddbe9a47008e8953304f15cd9d89157ef21fbe1619942"
+        },
+        {
+          "case_id": "59",
+          "official_task_id": 59,
+          "stratum": "information lookup",
+          "sites": [
+            "map"
+          ],
+          "intent_template_id": 69,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "03f221403139842d1e978cf341a2e955f523e52aeb3d574b4dd4361ce89c848c"
+        },
+        {
+          "case_id": "224",
+          "official_task_id": 224,
+          "stratum": "information lookup",
+          "sites": [
+            "map"
+          ],
+          "intent_template_id": 35,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "07e9ff7aee6c68c3401f6dcced3591ff2b8c69de48582b6ed9cb2f3fe7967faf"
+        },
+        {
+          "case_id": "84",
+          "official_task_id": 84,
+          "stratum": "information lookup",
+          "sites": [
+            "map"
+          ],
+          "intent_template_id": 64,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "08804537c95eb2d6bcf7fad89f1cbfa1e5ddb23353b3e99dd14ba195208ae8c9"
+        },
+        {
+          "case_id": "368",
+          "official_task_id": 368,
+          "stratum": "navigation/filtering",
+          "sites": [
+            "shopping"
+          ],
+          "intent_template_id": 188,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "7ccdd7087f8f5f00c940baf9578abbd17bd12901064b1f1bad388173190272a9"
+        },
+        {
+          "case_id": "158",
+          "official_task_id": 158,
+          "stratum": "form or configuration update",
+          "sites": [
+            "shopping"
+          ],
+          "intent_template_id": 171,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "0486a769f4d7edfc2a6f1cd2d7e6dca7bd89349f5657d3dd7a40ebd1953c8c70"
+        },
+        {
+          "case_id": "767",
+          "official_task_id": 767,
+          "stratum": "form or configuration update",
+          "sites": [
+            "map"
+          ],
+          "intent_template_id": 75,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "2536b269baec4f13a0e5254a193dd6633876c7972296c298ae2a4afaf46e0683"
+        },
+        {
+          "case_id": "276",
+          "official_task_id": 276,
+          "stratum": "form or configuration update",
+          "sites": [
+            "shopping"
+          ],
+          "intent_template_id": 212,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "26617b09de309421601210d9ccf61ef2544425ebd5c32838f377997132c88744"
+        },
+        {
+          "case_id": "371",
+          "official_task_id": 371,
+          "stratum": "form or configuration update",
+          "sites": [
+            "map"
+          ],
+          "intent_template_id": 52,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "2e926d692ffcf2283041df4398fc122ea189b2909e22ca3f4a7b78badba6d805"
+        },
+        {
+          "case_id": "629",
+          "official_task_id": 629,
+          "stratum": "content creation/editing",
+          "sites": [
+            "reddit"
+          ],
+          "intent_template_id": 13,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "022210b237bb93ecffa924712362f58dd917076a53bdc736bc8c4ccfdec01d43"
+        },
+        {
+          "case_id": "606",
+          "official_task_id": 606,
+          "stratum": "content creation/editing",
+          "sites": [
+            "reddit"
+          ],
+          "intent_template_id": 5,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "03b8f6ef0dd2d52a0fb8279ec3c444bb764fedcbb5cbc69eddc87e499d4fe74d"
+        },
+        {
+          "case_id": "425",
+          "official_task_id": 425,
+          "stratum": "content creation/editing",
+          "sites": [
+            "wikipedia",
+            "map"
+          ],
+          "intent_template_id": 371,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "0655d62356a7ac5e3d80a37753037eb9182a50d8b6700e32cc6ad8e90a425d57"
+        },
+        {
+          "case_id": "628",
+          "official_task_id": 628,
+          "stratum": "content creation/editing",
+          "sites": [
+            "reddit"
+          ],
+          "intent_template_id": 13,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "088bd3b67908c1022654f1071c897809bad8bb9b9f3a85488a179d3ea8ab7d6d"
+        },
+        {
+          "case_id": "571",
+          "official_task_id": 571,
+          "stratum": "account/cart/order state",
+          "sites": [
+            "shopping"
+          ],
+          "intent_template_id": 165,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "0189c8980236d3f99038d8bf0f067558eb3cdca8448c39682e6cc2f673cd9ac9"
+        },
+        {
+          "case_id": "204",
+          "official_task_id": 204,
+          "stratum": "account/cart/order state",
+          "sites": [
+            "shopping_admin"
+          ],
+          "intent_template_id": 366,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "02243132b7765f5d1cdede27528c246aad2fa224a81df65f852c2e67e3b7630d"
+        },
+        {
+          "case_id": "474",
+          "official_task_id": 474,
+          "stratum": "account/cart/order state",
+          "sites": [
+            "shopping_admin"
+          ],
+          "intent_template_id": 257,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "037c993c419bf7e3423bbe2875a3cdc01f594ddaead0add06cc0ee2f1be0567e"
+        },
+        {
+          "case_id": "569",
+          "official_task_id": 569,
+          "stratum": "account/cart/order state",
+          "sites": [
+            "gitlab"
+          ],
+          "intent_template_id": 293,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "03ea316ef819268513c22383bc06fc880c8a24c118437e85225290e51ce8bdf6"
+        },
+        {
+          "case_id": "308",
+          "official_task_id": 308,
+          "stratum": "developer/CMS operation",
+          "sites": [
+            "gitlab"
+          ],
+          "intent_template_id": 323,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "019be7275b9dadb8d57035294c90589e1ed49d7771d3f90036c0d1a24672e338"
+        },
+        {
+          "case_id": "78",
+          "official_task_id": 78,
+          "stratum": "developer/CMS operation",
+          "sites": [
+            "shopping_admin"
+          ],
+          "intent_template_id": 277,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "0437b4280c4c32e7610ea614804b1d8f4f8a0d3a044a4f2daff51d2185b12ef4"
+        },
+        {
+          "case_id": "696",
+          "official_task_id": 696,
+          "stratum": "developer/CMS operation",
+          "sites": [
+            "shopping_admin"
+          ],
+          "intent_template_id": 256,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "046f550179ca77cb49201e0c5534ea8073534212ed77f0d31d6f0e25e096185e"
+        },
+        {
+          "case_id": "513",
+          "official_task_id": 513,
+          "stratum": "developer/CMS operation",
+          "sites": [
+            "shopping"
+          ],
+          "intent_template_id": 189,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "04ee6e40ad09caa3c6f8e4bb65680b90030d60c6362a0ce8ee3fb3fe764230ec"
+        },
+        {
+          "case_id": "396",
+          "official_task_id": 396,
+          "stratum": "navigation/filtering backfill",
+          "sites": [
+            "gitlab"
+          ],
+          "intent_template_id": 352,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy. Backfilled for short stratum navigation/filtering from closest available original stratum developer/CMS operation.",
+          "original_stratum": "developer/CMS operation",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "050bb753e50bf4703fd8e1a7535a5a076e4199cb7ab90f37de9857080cf21ec2"
+        },
+        {
+          "case_id": "50",
+          "official_task_id": 50,
+          "stratum": "navigation/filtering backfill",
+          "sites": [
+            "shopping"
+          ],
+          "intent_template_id": 197,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy. Backfilled for short stratum navigation/filtering from closest available original stratum account/cart/order state.",
+          "original_stratum": "account/cart/order state",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "05251923ce507eecf9be0e56af9e39cb8cabfb34de786b21548d7a27d69b57b1"
+        },
+        {
+          "case_id": "342",
+          "official_task_id": 342,
+          "stratum": "navigation/filtering backfill",
+          "sites": [
+            "gitlab"
+          ],
+          "intent_template_id": 299,
+          "source_path": "external/webarena/config_files/test.raw.json",
+          "note": "Official metadata has sites/eval/template; bucket inferred from sites plus intent/action verbs per EXPERIMENTS.md fallback policy. Backfilled for short stratum navigation/filtering from closest available original stratum developer/CMS operation.",
+          "original_stratum": "developer/CMS operation",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "052be4e29e85af26ecfcce0669b63938d3ea1656872914a52d2b943d9f499d1a"
+        }
+      ],
+      "notes": [
+        "navigation/filtering had only 1 case(s); backfilled 3 from closest strata using sha256 order."
+      ],
+      "counts": {
+        "information lookup": 4,
+        "navigation/filtering": 1,
+        "form or configuration update": 4,
+        "content creation/editing": 4,
+        "account/cart/order state": 4,
+        "developer/CMS operation": 4,
+        "navigation/filtering backfill": 3
+      }
+    },
+    "multiagentbench": {
+      "cases": [
+        {
+          "case_id": "research/47",
+          "official_task_id": 47,
+          "stratum": "Research",
+          "source_path": "external/MARBLE/multiagentbench/research/research_main.jsonl",
+          "note": "Research-focused E2 subset uses the MARBLE Research path with stable official task_evaluation scoring; selected from the existing verified E3 Research subset.",
+          "selection_hash_salt": "team-memory-e3-v1",
+          "selection_hash": "0100aa6a35a3fbecf725a4ee45dcd2bc8dcf80b3cd680efd1733e06bc5dc2e0f"
+        },
+        {
+          "case_id": "research/26",
+          "official_task_id": 26,
+          "stratum": "Research",
+          "source_path": "external/MARBLE/multiagentbench/research/research_main.jsonl",
+          "note": "Research-focused E2 subset uses the MARBLE Research path with stable official task_evaluation scoring; selected from the existing verified E3 Research subset.",
+          "selection_hash_salt": "team-memory-e3-v1",
+          "selection_hash": "02585795b4534a449deafda0b790f4a60c48a4c94dc9b3de19eb4d3d65349863"
+        },
+        {
+          "case_id": "research/39",
+          "official_task_id": 39,
+          "stratum": "Research",
+          "source_path": "external/MARBLE/multiagentbench/research/research_main.jsonl",
+          "note": "Research-focused E2 subset uses the MARBLE Research path with stable official task_evaluation scoring; selected from the existing verified E3 Research subset.",
+          "selection_hash_salt": "team-memory-e3-v1",
+          "selection_hash": "05c26d42e63fb82882fc2b69468fdf55273fdfea4325da7633fc8d6d387620b8"
+        },
+        {
+          "case_id": "research/9",
+          "official_task_id": 9,
+          "stratum": "Research",
+          "source_path": "external/MARBLE/multiagentbench/research/research_main.jsonl",
+          "note": "Research-focused E2 subset uses the MARBLE Research path with stable official task_evaluation scoring; selected from the existing verified E3 Research subset.",
+          "selection_hash_salt": "team-memory-e3-v1",
+          "selection_hash": "060a5d9c62d01ff7e2dccced884c0878618910e55cc9f4f4ed4f6a4358798cc7"
+        },
+        {
+          "case_id": "research/20",
+          "official_task_id": 20,
+          "stratum": "Research",
+          "source_path": "external/MARBLE/multiagentbench/research/research_main.jsonl",
+          "note": "Research-focused E2 subset uses the MARBLE Research path with stable official task_evaluation scoring; selected from the existing verified E3 Research subset.",
+          "selection_hash_salt": "team-memory-e3-v1",
+          "selection_hash": "0766cbd04fdf7983a2617b522cc52d1ec8d52b289a947b55dc1f80a548f36ef9"
+        },
+        {
+          "case_id": "research/32",
+          "official_task_id": 32,
+          "stratum": "Research",
+          "source_path": "external/MARBLE/multiagentbench/research/research_main.jsonl",
+          "note": "Research-focused E2 subset uses the MARBLE Research path with stable official task_evaluation scoring; selected from the existing verified E3 Research subset.",
+          "selection_hash_salt": "team-memory-e3-v1",
+          "selection_hash": "09529646c7e03b6cd1549fe56b9dba9b15f7f975df5d566c680c026877b0e29c"
+        },
+        {
+          "case_id": "research/18",
+          "official_task_id": 18,
+          "stratum": "Research",
+          "source_path": "external/MARBLE/multiagentbench/research/research_main.jsonl",
+          "note": "Research-focused E2 subset uses the MARBLE Research path with stable official task_evaluation scoring; selected from the existing verified E3 Research subset.",
+          "selection_hash_salt": "team-memory-e3-v1",
+          "selection_hash": "0c2db555da210dcac2dd48536627a4656b0979727b41719c6fb4ab6c816c6841"
+        },
+        {
+          "case_id": "research/27",
+          "official_task_id": 27,
+          "stratum": "Research",
+          "source_path": "external/MARBLE/multiagentbench/research/research_main.jsonl",
+          "note": "Research-focused E2 subset uses the MARBLE Research path with stable official task_evaluation scoring; selected from the existing verified E3 Research subset.",
+          "selection_hash_salt": "team-memory-e3-v1",
+          "selection_hash": "0c7746cd6878997de0c78a284f8df2ce05fce9a9836cc196149723bc7d791bb8"
+        },
+        {
+          "case_id": "research/74",
+          "official_task_id": 74,
+          "stratum": "Research",
+          "source_path": "external/MARBLE/multiagentbench/research/research_main.jsonl",
+          "note": "Research-focused E2 subset uses the MARBLE Research path with stable official task_evaluation scoring; selected from the existing verified E3 Research subset.",
+          "selection_hash_salt": "team-memory-e3-v1",
+          "selection_hash": "0cd2956feea90f18dec9bb9fe470a0743be519af47cc2debc7e62c9185dbf523"
+        },
+        {
+          "case_id": "research/77",
+          "official_task_id": 77,
+          "stratum": "Research",
+          "source_path": "external/MARBLE/multiagentbench/research/research_main.jsonl",
+          "note": "Research-focused E2 subset uses the MARBLE Research path with stable official task_evaluation scoring; selected from the existing verified E3 Research subset.",
+          "selection_hash_salt": "team-memory-e3-v1",
+          "selection_hash": "0ebb41a52c74c800cd2c9abc35646e5250766537014ceb748cdfc9fd899614d3"
+        },
+        {
+          "case_id": "research/46",
+          "official_task_id": 46,
+          "stratum": "Research",
+          "source_path": "external/MARBLE/multiagentbench/research/research_main.jsonl",
+          "note": "Research-focused E2 subset uses the MARBLE Research path with stable official task_evaluation scoring; selected from the existing verified E3 Research subset.",
+          "selection_hash_salt": "team-memory-e3-v1",
+          "selection_hash": "1200636bb1bad3adce26f44f88f922a61bbe8bb42ca78e804890b1ac1291d394"
+        },
+        {
+          "case_id": "research/89",
+          "official_task_id": 89,
+          "stratum": "Research",
+          "source_path": "external/MARBLE/multiagentbench/research/research_main.jsonl",
+          "note": "Research-focused E2 subset uses the MARBLE Research path with stable official task_evaluation scoring; selected from the existing verified E3 Research subset.",
+          "selection_hash_salt": "team-memory-e3-v1",
+          "selection_hash": "1263d9fb4fc1e6d8c58555ed5d8bccceaec62a818d1cddeb7a9ed594fc31fa00"
+        }
+      ],
+      "notes": [
+        "E2 MultiAgentBench is Research-focused for this runnable plan because Research tasks emit stable official task_evaluation scores through MARBLE.",
+        "Database and Coding remain environment/scoring blocked; Minecraft is excluded until the same official scoring path is verified. These strata are not counted as E2 paper results.",
+        "The Research subset is matched across all SOP models and uses the same official case IDs as the completed E3 MARBLE Research block."
+      ],
+      "counts": {
+        "Research": 12,
+        "Database": 0,
+        "Coding": 0,
+        "Minecraft": 0
+      }
+    },
+    "officebench": {
+      "cases": [
+        {
+          "case_id": "1-12/1",
+          "official_task_dir": "1-12",
+          "official_subtask_id": "1",
+          "stratum": "Single-App",
+          "evaluator_type": "contain/fuzzy",
+          "evaluation_functions": [
+            "evaluate_contain"
+          ],
+          "source_path": "external/OfficeBench/tasks/1-12/subtasks/1.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "08f5945b77a44435dda1d819861b6956b25e5f269cca7c98a33d95403c084ef5"
+        },
+        {
+          "case_id": "1-14/3",
+          "official_task_dir": "1-14",
+          "official_subtask_id": "3",
+          "stratum": "Single-App",
+          "evaluator_type": "exact",
+          "evaluation_functions": [
+            "evaluate_exact_match"
+          ],
+          "source_path": "external/OfficeBench/tasks/1-14/subtasks/3.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "450a34d7419ef4d9051cede0cd30070b2d4d4e388537248fc904b4b33d9e2bae"
+        },
+        {
+          "case_id": "1-3/4",
+          "official_task_dir": "1-3",
+          "official_subtask_id": "4",
+          "stratum": "Single-App",
+          "evaluator_type": "execution",
+          "evaluation_functions": [
+            "evaluate_file_exist",
+            "evaluate_file_exist",
+            "evaluate_file_exist",
+            "evaluate_file_exist"
+          ],
+          "source_path": "external/OfficeBench/tasks/1-3/subtasks/4.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "01352faa3ce02bcc82b43aba277b727bea3204bdb023cd9853e59e9d604c211e"
+        },
+        {
+          "case_id": "1-3/3",
+          "official_task_dir": "1-3",
+          "official_subtask_id": "3",
+          "stratum": "Single-App",
+          "evaluator_type": "other",
+          "evaluation_functions": [
+            "evaluate_file_not_exist"
+          ],
+          "source_path": "external/OfficeBench/tasks/1-3/subtasks/3.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "a7327accfe1be8953dbe12dc6361b4cc82661785a2648eaff0221f7ea684a11a"
+        },
+        {
+          "case_id": "1-19/3",
+          "official_task_dir": "1-19",
+          "official_subtask_id": "3",
+          "stratum": "Single-App",
+          "evaluator_type": "contain/fuzzy",
+          "evaluation_functions": [
+            "evaluate_contain"
+          ],
+          "source_path": "external/OfficeBench/tasks/1-19/subtasks/3.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "0b393f0a679d637472a2ec9a3c2555d952ca3142e92c491911e078a686f90d7d"
+        },
+        {
+          "case_id": "1-14/1",
+          "official_task_dir": "1-14",
+          "official_subtask_id": "1",
+          "stratum": "Single-App",
+          "evaluator_type": "exact",
+          "evaluation_functions": [
+            "evaluate_exact_match"
+          ],
+          "source_path": "external/OfficeBench/tasks/1-14/subtasks/1.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "5f055e60eff3f5be713839bbac3b3a508df73dd17d87879fd6b4eabc9bc5a195"
+        },
+        {
+          "case_id": "1-9/1",
+          "official_task_dir": "1-9",
+          "official_subtask_id": "1",
+          "stratum": "Single-App",
+          "evaluator_type": "execution",
+          "evaluation_functions": [
+            "evaluate_excel_cell_value"
+          ],
+          "source_path": "external/OfficeBench/tasks/1-9/subtasks/1.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "079e0dfc75ac0e7fb2fea1f7731c040f03cb6d2a3afd06f88cd92a9a15f91827"
+        },
+        {
+          "case_id": "1-1/3",
+          "official_task_dir": "1-1",
+          "official_subtask_id": "3",
+          "stratum": "Single-App",
+          "evaluator_type": "contain/fuzzy",
+          "evaluation_functions": [
+            "evaluate_contain"
+          ],
+          "source_path": "external/OfficeBench/tasks/1-1/subtasks/3.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "1acb0f2144e3efc6a7285f83caa5ba61b84e6bda9e1d7ef741a0493c344dcb7b"
+        },
+        {
+          "case_id": "2-10/0",
+          "official_task_dir": "2-10",
+          "official_subtask_id": "0",
+          "stratum": "Two-App",
+          "evaluator_type": "contain/fuzzy",
+          "evaluation_functions": [
+            "evaluate_contain",
+            "evaluate_not_contain"
+          ],
+          "source_path": "external/OfficeBench/tasks/2-10/subtasks/0.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "01ec35514a288882a93a7e0edf9ccef034048ccd7d395c82221b464ea17d315b"
+        },
+        {
+          "case_id": "2-18/1",
+          "official_task_dir": "2-18",
+          "official_subtask_id": "1",
+          "stratum": "Two-App",
+          "evaluator_type": "execution",
+          "evaluation_functions": [
+            "evaluate_file_exist",
+            "evaluate_contain"
+          ],
+          "source_path": "external/OfficeBench/tasks/2-18/subtasks/1.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "0268b2c9fb51338517256071d1a9d0006349869d8eb618d3278d6095f5b08c0f"
+        },
+        {
+          "case_id": "2-37/2",
+          "official_task_dir": "2-37",
+          "official_subtask_id": "2",
+          "stratum": "Two-App",
+          "evaluator_type": "contain/fuzzy",
+          "evaluation_functions": [
+            "evaluate_contain"
+          ],
+          "source_path": "external/OfficeBench/tasks/2-37/subtasks/2.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "07440431bd15e2acb122785a2341e8ad57ecc60fc495c2abe4c214a936af0d09"
+        },
+        {
+          "case_id": "2-36/0",
+          "official_task_dir": "2-36",
+          "official_subtask_id": "0",
+          "stratum": "Two-App",
+          "evaluator_type": "execution",
+          "evaluation_functions": [
+            "evaluate_file_exist"
+          ],
+          "source_path": "external/OfficeBench/tasks/2-36/subtasks/0.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "05a004f97e4efdaa84126905046c63ec93d3ac2212d389accaeb11900df50fc4"
+        },
+        {
+          "case_id": "2-20/2",
+          "official_task_dir": "2-20",
+          "official_subtask_id": "2",
+          "stratum": "Two-App",
+          "evaluator_type": "contain/fuzzy",
+          "evaluation_functions": [
+            "evaluate_contain"
+          ],
+          "source_path": "external/OfficeBench/tasks/2-20/subtasks/2.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "0f85eac528ed82b063125aa7dfa33f6adce8dccdb560ae26f6651f7a4e6c33a6"
+        },
+        {
+          "case_id": "2-39/2",
+          "official_task_dir": "2-39",
+          "official_subtask_id": "2",
+          "stratum": "Two-App",
+          "evaluator_type": "execution",
+          "evaluation_functions": [
+            "evaluate_file_exist",
+            "evaluate_contain"
+          ],
+          "source_path": "external/OfficeBench/tasks/2-39/subtasks/2.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "078da90f67b2c6ec829e081b2dd15dd98820a797856cf464eb7b72e81cc4dfca"
+        },
+        {
+          "case_id": "2-40/1",
+          "official_task_dir": "2-40",
+          "official_subtask_id": "1",
+          "stratum": "Two-App",
+          "evaluator_type": "contain/fuzzy",
+          "evaluation_functions": [
+            "evaluate_contain",
+            "evaluate_not_contain"
+          ],
+          "source_path": "external/OfficeBench/tasks/2-40/subtasks/1.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "11271fe7758e494cdf664303447b29cde893c3ced42f430a64e6ead28ebc0450"
+        },
+        {
+          "case_id": "2-13/1",
+          "official_task_dir": "2-13",
+          "official_subtask_id": "1",
+          "stratum": "Two-App",
+          "evaluator_type": "execution",
+          "evaluation_functions": [
+            "evaluate_file_exist",
+            "evaluate_file_exist",
+            "evaluate_file_exist",
+            "evaluate_file_exist",
+            "evaluate_file_not_exist"
+          ],
+          "source_path": "external/OfficeBench/tasks/2-13/subtasks/1.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "08deb3413c2a4f336e2b095fddfed3afa4daacd7c0d33f50dfc32351256d021c"
+        },
+        {
+          "case_id": "3-79/0",
+          "official_task_dir": "3-79",
+          "official_subtask_id": "0",
+          "stratum": "Three-App",
+          "evaluator_type": "contain/fuzzy",
+          "evaluation_functions": [
+            "evaluate_contain"
+          ],
+          "source_path": "external/OfficeBench/tasks/3-79/subtasks/0.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "0f2b908d45abdc4896b7bf9c9b8ed400f78718d45cca90ee3015ca6cc9ef1262"
+        },
+        {
+          "case_id": "3-62/0",
+          "official_task_dir": "3-62",
+          "official_subtask_id": "0",
+          "stratum": "Three-App",
+          "evaluator_type": "exact",
+          "evaluation_functions": [
+            "evaluate_file_exist",
+            "evaluate_file_exist",
+            "evaluate_exact_match"
+          ],
+          "source_path": "external/OfficeBench/tasks/3-62/subtasks/0.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "3274727a077ff3f66d3f17c491ee1b828dded31800cea2dcaf58161450fb1df9"
+        },
+        {
+          "case_id": "3-89/0",
+          "official_task_dir": "3-89",
+          "official_subtask_id": "0",
+          "stratum": "Three-App",
+          "evaluator_type": "execution",
+          "evaluation_functions": [
+            "evaluate_file_exist"
+          ],
+          "source_path": "external/OfficeBench/tasks/3-89/subtasks/0.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "0171bfbac077ae33c827754674c1154eaf0658dd2e88f80ea55075a679d42ad0"
+        },
+        {
+          "case_id": "3-78/0",
+          "official_task_dir": "3-78",
+          "official_subtask_id": "0",
+          "stratum": "Three-App",
+          "evaluator_type": "contain/fuzzy",
+          "evaluation_functions": [
+            "evaluate_contain"
+          ],
+          "source_path": "external/OfficeBench/tasks/3-78/subtasks/0.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "14aa4eeef4f28038b21b9fb0973a199d6dd7c32a1d1358a55aca8a61a1c19ed9"
+        },
+        {
+          "case_id": "3-37/0",
+          "official_task_dir": "3-37",
+          "official_subtask_id": "0",
+          "stratum": "Three-App",
+          "evaluator_type": "exact",
+          "evaluation_functions": [
+            "evaluate_exact_match"
+          ],
+          "source_path": "external/OfficeBench/tasks/3-37/subtasks/0.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "790eb12ed647405808a2f0469e3430a2155458c9e518e95e49358efb1e3594b3"
+        },
+        {
+          "case_id": "3-16/0",
+          "official_task_dir": "3-16",
+          "official_subtask_id": "0",
+          "stratum": "Three-App",
+          "evaluator_type": "execution",
+          "evaluation_functions": [
+            "evaluate_file_exist",
+            "evaluate_file_exist"
+          ],
+          "source_path": "external/OfficeBench/tasks/3-16/subtasks/0.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "050b93e098b7c97a20ad1db6a26f18611d206ea55d08e063e15fd7402026b932"
+        },
+        {
+          "case_id": "3-52/0",
+          "official_task_dir": "3-52",
+          "official_subtask_id": "0",
+          "stratum": "Three-App",
+          "evaluator_type": "contain/fuzzy",
+          "evaluation_functions": [
+            "evaluate_contain",
+            "evaluate_contain",
+            "evaluate_contain",
+            "evaluate_contain"
+          ],
+          "source_path": "external/OfficeBench/tasks/3-52/subtasks/0.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "457720fd681d17d6f29e3945409885e8cd18bdc8469056548ab6454d8e52311a"
+        },
+        {
+          "case_id": "3-36/0",
+          "official_task_dir": "3-36",
+          "official_subtask_id": "0",
+          "stratum": "Three-App",
+          "evaluator_type": "exact",
+          "evaluation_functions": [
+            "evaluate_file_exist",
+            "evaluate_exact_match",
+            "evaluate_contain"
+          ],
+          "source_path": "external/OfficeBench/tasks/3-36/subtasks/0.json",
+          "note": "App-count stratum from official task directory prefix; evaluator type from evaluation.function.",
+          "selection_hash_salt": "team-memory-e2-v1",
+          "selection_hash": "8020610882af01d44410d4827d606839f0b5602ef5e0d1f0f7b739c6b5f3caa8"
+        }
+      ],
+      "notes": [
+        "Balanced across evaluator_type by round-robin after per-type hash sorting."
+      ],
+      "counts": {
+        "Single-App": 8,
+        "Two-App": 8,
+        "Three-App": 8
+      },
+      "evaluator_counts": {
+        "contain/fuzzy": 10,
+        "exact": 5,
+        "execution": 8,
+        "other": 1
+      }
+    }
+  }
+}

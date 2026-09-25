@@ -1,0 +1,105 @@
+{
+  "counts": {
+    "E1": 168,
+    "E2": 864,
+    "E3": 240
+  },
+  "e2_statistics": {
+    "alfworld": {
+      "mean": 48.611111111111114,
+      "sd_across_models": 4.606423319938054,
+      "minimum": 41.66666666666667,
+      "maximum": 58.333333333333336,
+      "span": 16.666666666666664,
+      "cases": 12,
+      "unit": "percentage points"
+    },
+    "webarena": {
+      "mean": 19.09722222222222,
+      "sd_across_models": 3.5916945947182652,
+      "minimum": 12.5,
+      "maximum": 25.0,
+      "span": 12.5,
+      "cases": 24,
+      "unit": "percentage points"
+    },
+    "multiagentbench_research": {
+      "mean": 4.273148148148148,
+      "sd_across_models": 0.04512404789263393,
+      "minimum": 4.166666666666667,
+      "maximum": 4.361111111111111,
+      "span": 0.19444444444444375,
+      "cases": 12,
+      "unit": "rating points"
+    },
+    "officebench": {
+      "mean": 43.05555555555556,
+      "sd_across_models": 3.928371006591929,
+      "minimum": 37.5,
+      "maximum": 50.0,
+      "span": 12.5,
+      "cases": 24,
+      "unit": "percentage points"
+    }
+  },
+  "e3_contrasts": {
+    "joint": {
+      "ALFWorld": 16.666666666666668,
+      "WebArena": 0.0,
+      "MultiAgentBench Research": 0.25,
+      "OfficeBench": -5.555555555555558
+    },
+    "c1": {
+      "ALFWorld": 0.0,
+      "WebArena": 5.555555555555555,
+      "MultiAgentBench Research": 0.22222222222222232,
+      "OfficeBench": 0.0
+    },
+    "c3": {
+      "ALFWorld": 8.333333333333332,
+      "WebArena": 5.555555555555555,
+      "MultiAgentBench Research": 0.1111111111111116,
+      "OfficeBench": 0.0
+    }
+  },
+  "accepted_e2_metric_audit": {
+    "alfworld": {
+      "accepted_records": 144,
+      "sop_retrieval_count_present": 144,
+      "sop_retrieval_count_sum": 0,
+      "sop_reuse_success_present": 144,
+      "sop_reuse_success_sum": 0
+    },
+    "webarena": {
+      "accepted_records": 288,
+      "sop_retrieval_count_present": 288,
+      "sop_retrieval_count_sum": 0,
+      "sop_reuse_success_present": 288,
+      "sop_reuse_success_sum": 0
+    },
+    "multiagentbench": {
+      "accepted_records": 144,
+      "sop_retrieval_count_present": 144,
+      "sop_retrieval_count_sum": 0,
+      "sop_reuse_success_present": 144,
+      "sop_reuse_success_sum": 0
+    },
+    "officebench": {
+      "accepted_records": 288,
+      "sop_retrieval_count_present": 288,
+      "sop_retrieval_count_sum": 0,
+      "sop_reuse_success_present": 288,
+      "sop_reuse_success_sum": 0
+    }
+  },
+  "e3_metric_definitions": {
+    "delta_vs_no_extra": "Mean paired case-level delta against the same benchmark no-extra-components rows.",
+    "divergence_recovery": "Mean divergence_events from available result metrics.",
+    "latency": "Mean latency field when present; null means not captured.",
+    "official_task_score_mean": "Mean over matched case IDs within each benchmark and condition.",
+    "sop_reuse_success": "Mean sop_retrieval_count from available result metrics.",
+    "token_overhead": "Mean token count minus no-extra mean when token counts are present; null means not captured as tokens in the source quality."
+  },
+  "e1_means_recomputed_from_168_raw_records": true,
+  "e2_means_recomputed_from_864_raw_records": true
+}

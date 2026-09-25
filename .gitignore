@@ -1,0 +1,96 @@
+# Python bytecode, test caches, and build products
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.conda/
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Secrets and local environment overrides
+.env
+.env.*
+!.env.example
+
+# Editors, operating systems, and agent-local metadata
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+.agents/
+.codex/
+
+# Third-party benchmark and MAS repositories are installed separately.
+external/
+
+# Runtime state and raw experiment artifacts
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
+*.sqlite
+*.sqlite3
+*.log
+*.lock
+*.pid
+*.zip
+log_files/
+Evaluation/
+tmp/
+
+# Keep generated benchmark output local. Only the documentation and the small,
+# frozen MultiAgentBench development snapshot are publication artifacts.
+benchmark-results/**
+!benchmark-results/README.md
+!benchmark-results/smoke/
+!benchmark-results/smoke/gmemory-snapshots/
+!benchmark-results/smoke/gmemory-snapshots/multiagentbench/
+!benchmark-results/smoke/gmemory-snapshots/multiagentbench/manifest.json
+!benchmark-results/smoke/gmemory-snapshots/multiagentbench/nodes.json
+
+# Keep figure/table source code, but not manuscript drafts or rendered files.
+paper/**
+!paper/code/
+!paper/code/**
+paper/code/**/__pycache__/
+paper/code/**/*.py[cod]
+Multi-AgentMemory.pptx
+
+# LaTeX build products
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.out
+*.synctex.gz
+
+# Internal review notes and machine-specific orchestration helpers
+docs/CODE_MECHANISM_AUDIT.md
+docs/CONTRIBUTION_ALIGNMENT_REVIEW.md
+docs/EXPERIMENTS_PAPER_NOTES.md
+docs/IDEAL_TARGETS_AND_BADCASE_ANALYSIS.md
+docs/REMOTE_*.md
+scripts/check_relay_e6_model.py
+scripts/finalize_local_qwen_e6.sh
+scripts/rerun_relay_failed_tasks.sh
+scripts/resume_local_e6_existing_service.sh
+scripts/run_local_e6_model.sh
+scripts/run_local_e6_preflight_then_queue.sh
+scripts/run_local_e6_queue.sh
+scripts/run_local_e6_retry_watcher.sh
+scripts/run_qwen08_after_qwen27.sh
+scripts/run_relay_e6_supervisor.sh
+scripts/run_targeted_relay_after_stop.sh
+scripts/serve_local_model_only.sh
+scripts/stop_relay_after_current.sh

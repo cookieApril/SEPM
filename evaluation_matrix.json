@@ -1,0 +1,926 @@
+{
+  "schema_version": 3,
+  "output_dir": "benchmark-results/unified-v3",
+  "state_db": "benchmark-results/unified-v3/evaluation-state.db",
+  "provider": {
+    "id": "openai-compatible",
+    "api_kind": "llm_api",
+    "sdk": "openai",
+    "base_url_env": "OPENAI_BASE_URL",
+    "base_url_default": "https://api.openai.com/v1",
+    "key_env": "OPENAI_API_KEY",
+    "timeout_seconds": 120,
+    "max_retries": 2
+  },
+  "models": [
+    {
+      "id": "gpt-5.6-terra",
+      "api_model": "gpt-5.6-terra",
+      "enabled": true,
+      "family": "closed-source",
+      "temperature": 0.0,
+      "max_tokens": 2048
+    },
+    {
+      "id": "gpt-5-mini",
+      "api_model": "gpt-5-mini",
+      "enabled": true,
+      "family": "actor-control",
+      "temperature": 0.0,
+      "max_tokens": 2048
+    },
+    {
+      "id": "claude-opus-5",
+      "api_model": "claude-opus-5",
+      "enabled": true,
+      "family": "closed-source-relay-alias",
+      "temperature": 0.0,
+      "max_tokens": 2048
+    },
+    {
+      "id": "qwen3.8-max",
+      "api_model": "qwen3.8-max",
+      "enabled": true,
+      "family": "open-model-relay-alias",
+      "temperature": 0.0,
+      "max_tokens": 2048
+    },
+    {
+      "id": "deepseek-v4-flash-0731",
+      "api_model": "deepseek-v4-flash-0731",
+      "enabled": true,
+      "family": "open-model-relay-alias",
+      "temperature": 0.0,
+      "max_tokens": 2048
+    },
+    {
+      "id": "kimi-k3",
+      "api_model": "kimi-k3",
+      "enabled": true,
+      "family": "open-model-relay-alias",
+      "temperature": 0.0,
+      "max_tokens": 2048
+    },
+    {
+      "id": "glm-5.2",
+      "api_model": "glm-5.2",
+      "enabled": true,
+      "family": "open-model-relay-alias",
+      "temperature": 0.0,
+      "max_tokens": 2048
+    },
+    {
+      "id": "gemma-4-31b-it",
+      "api_model": "gemma-4-31b-it",
+      "enabled": true,
+      "family": "local-open-weight-small-model",
+      "base_url_env": "GEMMA4_31B_BASE_URL",
+      "base_url_default": "http://127.0.0.1:8101/v1",
+      "key_env": "LOCAL_LLM_API_KEY",
+      "api_key_required": false,
+      "temperature": 0.0,
+      "max_tokens": 2048
+    },
+    {
+      "id": "gemma-4-12b-it",
+      "api_model": "gemma-4-12b-it",
+      "enabled": true,
+      "family": "local-open-weight-small-model",
+      "base_url_env": "GEMMA4_12B_BASE_URL",
+      "base_url_default": "http://127.0.0.1:8102/v1",
+      "key_env": "LOCAL_LLM_API_KEY",
+      "api_key_required": false,
+      "temperature": 0.0,
+      "max_tokens": 2048
+    },
+    {
+      "id": "qwen3.5-27b",
+      "api_model": "Qwen/Qwen3.5-27B",
+      "enabled": true,
+      "family": "local-open-weight-small-model",
+      "base_url_env": "QWEN35_27B_BASE_URL",
+      "base_url_default": "http://127.0.0.1:8111/v1",
+      "key_env": "LOCAL_LLM_API_KEY",
+      "api_key_required": false,
+      "temperature": 0.0,
+      "max_tokens": 2048
+    },
+    {
+      "id": "qwen3.5-9b",
+      "api_model": "Qwen/Qwen3.5-9B",
+      "enabled": true,
+      "family": "local-open-weight-small-model",
+      "base_url_env": "QWEN35_9B_BASE_URL",
+      "base_url_default": "http://127.0.0.1:8112/v1",
+      "key_env": "LOCAL_LLM_API_KEY",
+      "api_key_required": false,
+      "temperature": 0.0,
+      "max_tokens": 2048
+    },
+    {
+      "id": "qwen3.5-2b",
+      "api_model": "Qwen/Qwen3.5-2B",
+      "enabled": true,
+      "family": "local-open-weight-small-model",
+      "base_url_env": "QWEN35_2B_BASE_URL",
+      "base_url_default": "http://127.0.0.1:8113/v1",
+      "key_env": "LOCAL_LLM_API_KEY",
+      "api_key_required": false,
+      "temperature": 0.0,
+      "max_tokens": 2048
+    },
+    {
+      "id": "qwen3.5-0.8b",
+      "api_model": "Qwen/Qwen3.5-0.8B",
+      "enabled": true,
+      "family": "local-open-weight-small-model",
+      "base_url_env": "QWEN35_08B_BASE_URL",
+      "base_url_default": "http://127.0.0.1:8114/v1",
+      "key_env": "LOCAL_LLM_API_KEY",
+      "api_key_required": false,
+      "temperature": 0.0,
+      "max_tokens": 2048
+    }
+  ],
+  "mas_frameworks": [
+    {
+      "id": "autogen",
+      "enabled": true,
+      "kind": "role-based-conversation",
+      "topology": "coordinator-workers"
+    },
+    {
+      "id": "dylan",
+      "enabled": true,
+      "kind": "dynamic-agent-network",
+      "topology": "dynamic-debate"
+    },
+    {
+      "id": "agentnet",
+      "enabled": true,
+      "kind": "agent-native-memory-network",
+      "topology": "decentralized-adaptive-agent-network"
+    },
+    {
+      "id": "benchmark-native",
+      "enabled": true,
+      "kind": "official-benchmark-native-agent-loop",
+      "topology": "official-runtime-no-host-mas-adapter"
+    }
+  ],
+  "memory_methods": [
+    {
+      "id": "no-memory",
+      "enabled": true,
+      "family": "control",
+      "uses_sop_agent": false,
+      "adapter": "benchmark-native empty memory"
+    },
+    {
+      "id": "agent-native-memory",
+      "enabled": true,
+      "family": "host-agent-memory",
+      "uses_sop_agent": false,
+      "adapter": "host MAS native short-term or built-in agent memory"
+    },
+    {
+      "id": "team-memory",
+      "enabled": true,
+      "family": "evidence-first-procedural-memory",
+      "uses_sop_agent": true,
+      "adapter": "team_memory.adapter.AgentMemoryAdapter"
+    },
+    {
+      "id": "gmemory",
+      "enabled": true,
+      "family": "hierarchical-graph-memory",
+      "uses_sop_agent": false,
+      "adapter": "external/GMemory"
+    },
+    {
+      "id": "generative-memory",
+      "enabled": true,
+      "family": "generative-agent-memory",
+      "uses_sop_agent": false,
+      "adapter": "GMemory GenerativeMASMemory"
+    },
+    {
+      "id": "metagpt",
+      "enabled": true,
+      "family": "mas-derived-memory",
+      "uses_sop_agent": false,
+      "adapter": "published MetaGPT baseline"
+    },
+    {
+      "id": "agentverse",
+      "enabled": true,
+      "family": "multi-agent-framework-memory",
+      "uses_sop_agent": false,
+      "adapter": "published AgentVerse baseline"
+    },
+    {
+      "id": "decentmem",
+      "enabled": true,
+      "family": "decentralized-agent-memory",
+      "uses_sop_agent": false,
+      "adapter": "published DecentMem baseline"
+    },
+    {
+      "id": "chatdev",
+      "enabled": true,
+      "family": "mas-derived-memory",
+      "uses_sop_agent": false,
+      "adapter": "published ChatDev baseline"
+    },
+    {
+      "id": "legomem",
+      "enabled": true,
+      "family": "modular-procedural-memory",
+      "uses_sop_agent": false,
+      "adapter": "published LEGOMem baseline"
+    },
+    {
+      "id": "memp",
+      "enabled": true,
+      "family": "procedural-memory",
+      "uses_sop_agent": false,
+      "adapter": "published Memp baseline"
+    },
+    {
+      "id": "mem0",
+      "enabled": true,
+      "family": "production-agent-memory",
+      "uses_sop_agent": false,
+      "adapter": "published mem0 baseline"
+    }
+  ],
+  "ablation_variants": [
+    {
+      "id": "no-extra-components",
+      "disabled_component": "procedural_memory_and_divergence_alignment"
+    },
+    {
+      "id": "blackboard-only",
+      "disabled_component": "procedural_memory_and_divergence_alignment"
+    },
+    {
+      "id": "sop-only",
+      "disabled_component": "divergence_alignment"
+    },
+    {
+      "id": "divergence-only",
+      "disabled_component": "procedural_memory"
+    },
+    {
+      "id": "full",
+      "disabled_component": null
+    }
+  ],
+  "benchmarks": [
+    {
+      "id": "cross-benchmark-generality",
+      "enabled": false,
+      "uses_llm": true,
+      "runner": "external",
+      "repository": ".",
+      "tasks": [
+        "alfworld",
+        "webarena",
+        "multiagentbench",
+        "officebench"
+      ],
+      "task_metrics": {
+        "alfworld": "success_rate",
+        "webarena": "success_rate",
+        "multiagentbench": "task_score",
+        "officebench": "pass_rate"
+      },
+      "normalized_primary_metric": "primary_score",
+      "methods": [
+        "no-memory",
+        "agent-native-memory",
+        "generative-memory",
+        "gmemory",
+        "mem0",
+        "team-memory"
+      ],
+      "paper_run_methods": [
+        "no-memory",
+        "gmemory",
+        "team-memory"
+      ],
+      "mas_frameworks": [
+        "autogen",
+        "dylan",
+        "agentnet",
+        "benchmark-native"
+      ],
+      "actor_models": [
+        "gpt-5-mini"
+      ],
+      "sop_models": [
+        "gpt-5-mini"
+      ],
+      "ablations": [
+        "full"
+      ],
+      "seeds": [
+        0
+      ],
+      "subset_policy": {
+        "scope": "paper-main",
+        "description": "Use the same official case subset for every memory method and MAS under a fixed deterministic run configuration. AutoGen and DyLAN use host short-term context only; AgentNet keeps its native agent memory enabled as part of the host MAS. The seed field is fixed at 0 only for runner and checkpoint compatibility."
+      },
+      "method_jobs": {
+        "no-memory": {
+          "workdir": ".",
+          "timeout_seconds": 7200,
+          "command": [
+            "python",
+            "adapters/team_memory_cross_benchmark_adapter.py",
+            "--task",
+            "{task}",
+            "--mas",
+            "{mas_framework}",
+            "--actor-model",
+            "{actor_api_model}",
+            "--sop-model",
+            "{sop_api_model}",
+            "--memory-method",
+            "{memory_method}",
+            "--seed",
+            "{seed}",
+            "--case-id",
+            "{case_id}",
+            "--ablation",
+            "{ablation}",
+            "--output",
+            "{output}"
+          ]
+        },
+        "gmemory": {
+          "workdir": ".",
+          "timeout_seconds": 7200,
+          "command": [
+            "python",
+            "adapters/team_memory_cross_benchmark_adapter.py",
+            "--task",
+            "{task}",
+            "--mas",
+            "{mas_framework}",
+            "--actor-model",
+            "{actor_api_model}",
+            "--sop-model",
+            "{sop_api_model}",
+            "--memory-method",
+            "{memory_method}",
+            "--seed",
+            "{seed}",
+            "--case-id",
+            "{case_id}",
+            "--ablation",
+            "{ablation}",
+            "--output",
+            "{output}"
+          ]
+        },
+        "team-memory": {
+          "workdir": ".",
+          "timeout_seconds": 7200,
+          "command": [
+            "python",
+            "adapters/team_memory_cross_benchmark_adapter.py",
+            "--task",
+            "{task}",
+            "--mas",
+            "{mas_framework}",
+            "--actor-model",
+            "{actor_api_model}",
+            "--sop-model",
+            "{sop_api_model}",
+            "--memory-method",
+            "{memory_method}",
+            "--seed",
+            "{seed}",
+            "--case-id",
+            "{case_id}",
+            "--ablation",
+            "{ablation}",
+            "--output",
+            "{output}"
+          ]
+        }
+      },
+      "case_ids": {
+        "alfworld": [
+          "data/alfworld/json_2.1.1/valid_unseen/pick_and_place_simple-SoapBottle-None-Toilet-424/trial_T20190907_004321_405868/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_and_place_simple-Watch-None-Safe-219/trial_T20190907_074524_006355/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_clean_then_place_in_recep-Cloth-None-Cabinet-424/trial_T20190908_022436_073995/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_clean_then_place_in_recep-SoapBar-None-Cabinet-424/trial_T20190908_214926_337906/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_heat_then_place_in_recep-Tomato-None-GarbageCan-10/trial_T20190908_225359_617900/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_heat_then_place_in_recep-Egg-None-GarbageCan-10/trial_T20190908_113523_123938/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_cool_then_place_in_recep-Mug-None-Cabinet-10/trial_T20190909_121635_622676/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_cool_then_place_in_recep-Tomato-None-Microwave-10/trial_T20190909_102608_318800/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/look_at_obj_in_light-Bowl-None-DeskLamp-308/trial_T20190907_133953_562557/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/look_at_obj_in_light-CD-None-DeskLamp-308/trial_T20190908_141942_810052/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_two_obj_and_place-Pillow-None-Sofa-219/trial_T20190907_163327_486300/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_two_obj_and_place-KeyChain-None-Safe-219/trial_T20190909_012027_782483/game.tw-pddl"
+        ],
+        "webarena": [
+          "219",
+          "59",
+          "224",
+          "84",
+          "368",
+          "158",
+          "767",
+          "276",
+          "371",
+          "629",
+          "606",
+          "425",
+          "628",
+          "571",
+          "204",
+          "474",
+          "569",
+          "308",
+          "78",
+          "696",
+          "513",
+          "396",
+          "50",
+          "342"
+        ],
+        "multiagentbench": [
+          "research/16",
+          "research/3",
+          "research/46",
+          "research/17",
+          "research/92",
+          "research/25",
+          "database/65",
+          "database/62",
+          "database/6",
+          "database/81",
+          "database/82",
+          "database/44",
+          "coding/63",
+          "coding/30",
+          "coding/25",
+          "coding/15",
+          "coding/57",
+          "coding/73",
+          "minecraft/9",
+          "minecraft/78",
+          "minecraft/59",
+          "minecraft/76",
+          "minecraft/73",
+          "minecraft/53"
+        ],
+        "officebench": [
+          "1-12/1",
+          "1-14/3",
+          "1-3/4",
+          "1-3/3",
+          "1-19/3",
+          "1-14/1",
+          "1-9/1",
+          "1-1/3",
+          "2-10/0",
+          "2-18/1",
+          "2-37/2",
+          "2-36/0",
+          "2-20/2",
+          "2-39/2",
+          "2-40/1",
+          "2-13/1",
+          "3-79/0",
+          "3-62/0",
+          "3-89/0",
+          "3-78/0",
+          "3-37/0",
+          "3-16/0",
+          "3-52/0",
+          "3-36/0"
+        ]
+      },
+      "case_manifest": "manifests/e2_case_manifest.json",
+      "supported_cells": [
+        {
+          "tasks": [
+            "alfworld"
+          ],
+          "methods": [
+            "no-memory",
+            "gmemory",
+            "team-memory"
+          ],
+          "mas_frameworks": [
+            "autogen",
+            "dylan"
+          ],
+          "implementation_status": "implemented-paired-runnable",
+          "paper_result": true,
+          "note": "Official ALFWorld paths exist for AutoGen/DyLAN no-memory, G-Memory, and Team Memory; AgentNet remains excluded because paired baselines are missing."
+        },
+        {
+          "tasks": [
+            "webarena"
+          ],
+          "methods": [
+            "no-memory",
+            "team-memory"
+          ],
+          "mas_frameworks": [
+            "autogen"
+          ],
+          "implementation_status": "implemented-paired-runnable",
+          "paper_result": true,
+          "note": "Official WebArena browser action loop is wired for AutoGen no-memory/team-memory only."
+        },
+        {
+          "tasks": [
+            "officebench"
+          ],
+          "methods": [
+            "no-memory",
+            "team-memory"
+          ],
+          "mas_frameworks": [
+            "autogen"
+          ],
+          "implementation_status": "implemented-paired-runnable-needs-smoke",
+          "paper_result": true,
+          "note": "Official OfficeBench AutoGen loop supports no-memory/team-memory; no-memory is admitted only after paired smoke passes."
+        }
+      ],
+      "implementation_status_note": "E1 paper-runnable plan is restricted to paired official-loop cells with matching case IDs inside each benchmark/MAS/memory comparison. MultiAgentBench, AgentNet, agent-native-memory, generative-memory, and mem0 are excluded until real paired official-loop adapters exist.",
+      "unsupported_cells_note": "Excluded from E1 paper-runnable plan: MultiAgentBench current mixed Research/Database/Coding/Minecraft subset; AgentNet without matched baselines; agent-native-memory/generative-memory/mem0 without official-loop injection; WebArena/OfficeBench DyLAN and AgentNet without adapters; G-Memory outside ALFWorld.",
+      "paper_runnable_plan": {
+        "scope": "paired-paper-runnable-subset",
+        "tasks": [
+          "alfworld",
+          "webarena",
+          "officebench"
+        ],
+        "excluded_tasks": {
+          "multiagentbench": "Current E1 matched subset includes Database/Coding/Minecraft paths that remain environment/scoring blocked; do not include MARBLE until a Research-only paired E1 plan is explicitly adopted."
+        },
+        "excluded_mas": {
+          "agentnet": "No matched no-memory/GMemory baseline is implemented for E1; do not report Team Memory alone."
+        },
+        "excluded_memory_methods": {
+          "agent-native-memory": "No true official-loop injection for the current E1 benchmark adapters.",
+          "generative-memory": "No true official-loop injection for the current E1 benchmark adapters.",
+          "mem0": "No true official-loop injection for the current E1 benchmark adapters."
+        }
+      }
+    },
+    {
+      "id": "sop-model-sensitivity",
+      "enabled": false,
+      "uses_llm": true,
+      "runner": "external",
+      "repository": ".",
+      "tasks": [
+        "alfworld",
+        "webarena",
+        "multiagentbench",
+        "officebench"
+      ],
+      "normalized_primary_metric": "primary_score",
+      "methods": [
+        "team-memory"
+      ],
+      "paper_run_methods": [
+        "team-memory"
+      ],
+      "mas_frameworks": [
+        "autogen"
+      ],
+      "actor_models": [
+        "gpt-5-mini"
+      ],
+      "sop_models": [
+        "gpt-5.6-terra",
+        "claude-opus-5",
+        "qwen3.8-max",
+        "deepseek-v4-flash-0731",
+        "kimi-k3",
+        "glm-5.2",
+        "gemma-4-31b-it",
+        "gemma-4-12b-it",
+        "qwen3.5-27b",
+        "qwen3.5-9b",
+        "qwen3.5-2b",
+        "qwen3.5-0.8b"
+      ],
+      "ablations": [
+        "full"
+      ],
+      "seeds": [
+        0
+      ],
+      "subset_policy": {
+        "scope": "sop-model-subset",
+        "description": "Fixed AutoGen, actor model, deterministic run configuration, prompt budget, and matched case subset. The seed field is fixed at 0 only for runner and checkpoint compatibility. Use ALFWorld as the procedural anchor, WebArena for web-state/action safety, MultiAgentBench Research for multi-agent coordination with stable official task_evaluation scoring, and OfficeBench for long office workflows.",
+        "target_case_counts": {
+          "alfworld": 12,
+          "webarena": 24,
+          "multiagentbench": 12,
+          "officebench": 24
+        },
+        "selection_rule": {
+          "manifest_algorithm": "Assign official task IDs to the listed strata using official metadata when available, otherwise deterministic task-path/instruction rules. Within each stratum sort by sha256('team-memory-e2-v1' + benchmark_id + official_case_id) and take the required count. Never select from dataset order, model performance, pilot failures, or manual convenience.",
+          "alfworld": "Two official cases from each procedural family.",
+          "webarena": "Four cases from each web-operation bucket: lookup, navigation/filtering, form/config update, content edit, account/cart/order state, developer/CMS operation.",
+          "multiagentbench": "Research-focused deterministic 12-case subset selected from official MARBLE Research tasks by the E3 hash order. Database and Coding remain environment/scoring blocked and are not paper results.",
+          "officebench": "Eight Single-App, eight Two-App, and eight Three-App cases, balanced across evaluator types when available."
+        }
+      },
+      "method_jobs": {
+        "team-memory": {
+          "workdir": ".",
+          "timeout_seconds": 7200,
+          "command": [
+            "python",
+            "adapters/team_memory_cross_benchmark_adapter.py",
+            "--task",
+            "{task}",
+            "--mas",
+            "{mas_framework}",
+            "--actor-model",
+            "{actor_api_model}",
+            "--sop-model",
+            "{sop_api_model}",
+            "--memory-method",
+            "{memory_method}",
+            "--seed",
+            "{seed}",
+            "--case-id",
+            "{case_id}",
+            "--ablation",
+            "{ablation}",
+            "--output",
+            "{output}"
+          ]
+        }
+      },
+      "case_ids": {
+        "alfworld": [
+          "data/alfworld/json_2.1.1/valid_unseen/pick_and_place_simple-SoapBottle-None-Toilet-424/trial_T20190907_004321_405868/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_and_place_simple-Watch-None-Safe-219/trial_T20190907_074524_006355/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_clean_then_place_in_recep-Cloth-None-Cabinet-424/trial_T20190908_022436_073995/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_clean_then_place_in_recep-SoapBar-None-Cabinet-424/trial_T20190908_214926_337906/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_heat_then_place_in_recep-Tomato-None-GarbageCan-10/trial_T20190908_225359_617900/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_heat_then_place_in_recep-Egg-None-GarbageCan-10/trial_T20190908_113523_123938/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_cool_then_place_in_recep-Mug-None-Cabinet-10/trial_T20190909_121635_622676/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_cool_then_place_in_recep-Tomato-None-Microwave-10/trial_T20190909_102608_318800/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/look_at_obj_in_light-Bowl-None-DeskLamp-308/trial_T20190907_133953_562557/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/look_at_obj_in_light-CD-None-DeskLamp-308/trial_T20190908_141942_810052/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_two_obj_and_place-Pillow-None-Sofa-219/trial_T20190907_163327_486300/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_two_obj_and_place-KeyChain-None-Safe-219/trial_T20190909_012027_782483/game.tw-pddl"
+        ],
+        "webarena": [
+          "219",
+          "59",
+          "224",
+          "84",
+          "368",
+          "158",
+          "767",
+          "276",
+          "371",
+          "629",
+          "606",
+          "425",
+          "628",
+          "571",
+          "204",
+          "474",
+          "569",
+          "308",
+          "78",
+          "696",
+          "513",
+          "396",
+          "50",
+          "342"
+        ],
+        "multiagentbench": [
+          "research/47",
+          "research/26",
+          "research/39",
+          "research/9",
+          "research/20",
+          "research/32",
+          "research/18",
+          "research/27",
+          "research/74",
+          "research/77",
+          "research/46",
+          "research/89"
+        ],
+        "officebench": [
+          "1-12/1",
+          "1-14/3",
+          "1-3/4",
+          "1-3/3",
+          "1-19/3",
+          "1-14/1",
+          "1-9/1",
+          "1-1/3",
+          "2-10/0",
+          "2-18/1",
+          "2-37/2",
+          "2-36/0",
+          "2-20/2",
+          "2-39/2",
+          "2-40/1",
+          "2-13/1",
+          "3-79/0",
+          "3-62/0",
+          "3-89/0",
+          "3-78/0",
+          "3-37/0",
+          "3-16/0",
+          "3-52/0",
+          "3-36/0"
+        ]
+      },
+      "case_manifest": "manifests/e2_case_manifest.json"
+    },
+    {
+      "id": "component-ablation",
+      "enabled": false,
+      "uses_llm": true,
+      "runner": "external",
+      "repository": ".",
+      "tasks": [
+        "multiagentbench",
+        "officebench",
+        "webarena",
+        "alfworld"
+      ],
+      "normalized_primary_metric": "primary_score",
+      "methods": [
+        "team-memory"
+      ],
+      "paper_run_methods": [
+        "team-memory"
+      ],
+      "mas_frameworks": [
+        "autogen"
+      ],
+      "actor_models": [
+        "gpt-5-mini"
+      ],
+      "sop_models": [
+        "gpt-5-mini"
+      ],
+      "ablations": [
+        "no-extra-components",
+        "blackboard-only",
+        "sop-only",
+        "divergence-only",
+        "full"
+      ],
+      "seeds": [
+        0
+      ],
+      "subset_policy": {
+        "scope": "mechanism-subset",
+        "description": "Prioritize MultiAgentBench, OfficeBench, and WebArena because they expose goal, plan, state, dependency, and authorization failures; include a small ALFWorld subset only as a procedural-memory anchor. All ablation conditions use the same matched cases under a fixed deterministic run configuration; the seed field is fixed at 0 only for runner and checkpoint compatibility.",
+        "target_case_counts": {
+          "multiagentbench": 24,
+          "officebench": 18,
+          "webarena": 18,
+          "alfworld": 12
+        },
+        "selection_rule": {
+          "manifest_algorithm": "Assign official task IDs to the listed strata using official metadata when available, otherwise deterministic task-path/instruction rules. Within each stratum sort by sha256('team-memory-e3-v1' + benchmark_id + official_case_id) and take the required count. Do not select from observed ablation performance.",
+          "multiagentbench": "Research-focused deterministic 12-case subset selected from official MARBLE Research tasks by the E3 hash order. Database and Coding remain environment/scoring blocked and are not paper results.",
+          "officebench": "Six Two-App and twelve Three-App cases, prioritizing cross-artifact state, dependent operations, and execution-based evaluation.",
+          "webarena": "Six account/cart/order cases, six GitLab/CMS or admin update cases, and six content/forum/wiki mutation cases.",
+          "alfworld": "Two official cases from each procedural family."
+        }
+      },
+      "method_jobs": {
+        "team-memory": {
+          "workdir": ".",
+          "timeout_seconds": 7200,
+          "command": [
+            "python",
+            "adapters/team_memory_cross_benchmark_adapter.py",
+            "--task",
+            "{task}",
+            "--mas",
+            "{mas_framework}",
+            "--actor-model",
+            "{actor_api_model}",
+            "--sop-model",
+            "{sop_api_model}",
+            "--memory-method",
+            "{memory_method}",
+            "--seed",
+            "{seed}",
+            "--case-id",
+            "{case_id}",
+            "--ablation",
+            "{ablation}",
+            "--output",
+            "{output}"
+          ]
+        }
+      },
+      "case_ids": {
+        "alfworld": [
+          "data/alfworld/json_2.1.1/valid_unseen/pick_and_place_simple-SoapBottle-None-Toilet-424/trial_T20190907_004321_405868/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_and_place_simple-Watch-None-Safe-219/trial_T20190907_074556_124850/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_clean_then_place_in_recep-Egg-None-Microwave-10/trial_T20190909_120554_888709/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_clean_then_place_in_recep-Mug-None-CoffeeMachine-10/trial_T20190907_221208_560499/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_heat_then_place_in_recep-Egg-None-GarbageCan-10/trial_T20190908_113610_425142/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_heat_then_place_in_recep-Cup-None-Cabinet-10/trial_T20190907_083507_594820/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_cool_then_place_in_recep-Pan-None-CounterTop-10/trial_T20190908_114656_768805/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_cool_then_place_in_recep-Mug-None-Cabinet-10/trial_T20190909_121559_082363/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/look_at_obj_in_light-Mug-None-DeskLamp-308/trial_T20190908_161733_213242/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/look_at_obj_in_light-AlarmClock-None-DeskLamp-308/trial_T20190908_222917_366542/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_two_obj_and_place-CD-None-Safe-308/trial_T20190907_051056_585414/game.tw-pddl",
+          "data/alfworld/json_2.1.1/valid_unseen/pick_two_obj_and_place-KeyChain-None-Safe-219/trial_T20190909_011803_423115/game.tw-pddl"
+        ],
+        "multiagentbench": [
+          "research/47",
+          "research/26",
+          "research/39",
+          "research/9",
+          "research/20",
+          "research/32",
+          "research/18",
+          "research/27",
+          "research/74",
+          "research/77",
+          "research/46",
+          "research/89"
+        ],
+        "officebench": [
+          "2-39/1",
+          "2-41/2",
+          "2-13/0",
+          "2-50/0",
+          "2-41/1",
+          "2-39/0",
+          "3-83/0",
+          "3-58/0",
+          "3-80/0",
+          "3-41/0",
+          "3-63/0",
+          "3-66/0",
+          "3-8/3",
+          "3-11/0",
+          "3-8/1",
+          "3-24/0",
+          "3-47/0",
+          "3-60/0"
+        ],
+        "webarena": [
+          "495",
+          "247",
+          "299",
+          "785",
+          "520",
+          "709",
+          "259",
+          "142",
+          "682",
+          "312",
+          "148",
+          "475",
+          "716",
+          "641",
+          "730",
+          "643",
+          "610",
+          "625"
+        ]
+      },
+      "case_manifest": "manifests/e3_case_manifest.json"
+    }
+  ],
+  "source_reproductions": [
+    {
+      "id": "cross-benchmark-generality",
+      "repository": ".",
+      "conda_env": null,
+      "commands": [
+        [
+          "python",
+          "scripts/validate_paper_setup.py",
+          "--benchmark",
+          "cross-benchmark-generality",
+          "--require-jobs"
+        ]
+      ]
+    }
+  ]
+}

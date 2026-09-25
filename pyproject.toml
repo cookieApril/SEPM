@@ -1,0 +1,41 @@
+# PEP 517 构建配置：hatchling 从 src/team_memory 打包 wheel。
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "team-memory-plugin"
+version = "0.1.0"
+description = "Evidence-first procedural memory for multi-agent systems"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Research Prototype" }]
+# Python 包依赖仍由 pip 根据此文件安装，但 pip 运行在 environment.yml 创建的 Conda 环境内。
+# 核心运行只依赖 Pydantic；测试和静态检查工具通过 dev extra 安装。
+dependencies = ["pydantic>=2.7,<3"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-asyncio>=0.24", "ruff>=0.6", "mypy>=1.11"]
+eval = ["openai>=1.58,<3"]
+
+[project.scripts]
+# 安装后生成只读检查 CLI 和机制级 benchmark runner。
+team-memory = "team_memory.cli:main"
+team-memory-benchmark = "team_memory.benchmark:main"
+team-memory-eval = "team_memory.evaluation_runner:main"
+team-memory-ablation = "team_memory.ablation.runner:main"
+team-memory-tables = "team_memory.paper_tables:main"
+
+[tool.hatch.build.targets.wheel]
+# 使用 src layout，避免从仓库根目录误导入未安装代码。
+packages = ["src/team_memory"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.pytest.ini_options]
+# 测试直接从 src 导入，开发时无需先构建 wheel。
+testpaths = ["tests"]
+pythonpath = ["src"]

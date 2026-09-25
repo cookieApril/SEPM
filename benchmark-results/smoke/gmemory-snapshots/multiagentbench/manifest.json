@@ -1,0 +1,20 @@
+{
+  "snapshot_id": "8baa69893ab1c1e8",
+  "benchmark_task": "multiagentbench",
+  "frozen": true,
+  "read_only_evaluation": true,
+  "source_case_ids": [
+    "bargaining/1",
+    "bargaining/2",
+    "bargaining/3",
+    "bargaining/4",
+    "bargaining/5",
+    "bargaining/6"
+  ],
+  "excluded_eval_case_id": "research/47",
+  "partition_rule": "deterministic smoke snapshot from official records whose case id differs from the requested evaluation case; selected before reading final outcome",
+  "upstream_repository": "https://github.com/bingreeky/GMemory.git",
+  "upstream_commit": "7b581c51d993bd600df14691d101d7e601040cc6",
+  "creation_command": "team_memory.integrations.gmemory_bridge.ensure_development_snapshot",
+  "content_hash": "4ab384f48d2110aa9a5851609132d06bec4f831c5eabe2625b9496cd53e1a0fa"
+}

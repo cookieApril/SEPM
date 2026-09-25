@@ -1,0 +1,13 @@
+<evaluation>
+  <!-- 面向自动评测器的短问答事实集；答案需与当前代码策略同步。 -->
+  <qa_pair><question>For a payment candidate that removes confirmation but raises completion rate, which gate rejects it first? Answer with the gate name only.</question><answer>safety</answer></qa_pair>
+  <qa_pair><question>Two authoritative sources report different values at the same timestamp. What action does the resolver require? Answer with one hyphenated verb.</question><answer>re-query</answer></qa_pair>
+  <qa_pair><question>After the first trial passes state, causal, safety, and positive-benefit gates, must the system wait for a second successful trial before writing the SOP? Answer yes or no.</question><answer>no</answer></qa_pair>
+  <qa_pair><question>Which evidence tier wins over a verified artifact but loses to authoritative state? Answer with the tier label.</question><answer>tool_observation</answer></qa_pair>
+  <qa_pair><question>An SOP head is version 3 and an updater submits base_version 2. What exception category should the commit produce?</question><answer>ConcurrencyError</answer></qa_pair>
+  <qa_pair><question>Which two retrieval methods are unioned to form Candidate(q)? Answer as method names separated by plus.</question><answer>BM25+VectorSearch</answer></qa_pair>
+  <qa_pair><question>Does wall-clock age automatically invalidate or delete a safety SOP? Answer yes or no.</question><answer>no</answer></qa_pair>
+  <qa_pair><question>Which divergence component uses graph edit operations? Answer with Dg, Dp, or Ds.</question><answer>Dp</answer></qa_pair>
+  <qa_pair><question>A successful trial has candidate reward 0.8, baseline 0.4, and cost 0.1. What is its net benefit?</question><answer>0.3</answer></qa_pair>
+  <qa_pair><question>Which ranking metric discounts relevant SOPs found lower in the result list? Answer with the metric acronym.</question><answer>NDCG</answer></qa_pair>
+</evaluation>
