@@ -1,0 +1,41 @@
+# PEP 517 build configuration; hatchling packages the wheel from src/sepm.
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sepm-plugin"
+version = "0.1.0"
+description = "Evidence-first procedural memory for multi-agent systems"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Research Prototype" }]
+# pip installs package dependencies inside the Conda environment from environment.yml.
+# The core runtime only requires Pydantic; the dev extra provides test and lint tools.
+dependencies = ["pydantic>=2.7,<3"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-asyncio>=0.24", "ruff>=0.6", "mypy>=1.11"]
+eval = ["openai>=1.58,<3"]
+
+[project.scripts]
+# Installed read-only CLI and mechanism-level benchmark entry points.
+sepm = "sepm.cli:main"
+sepm-benchmark = "sepm.benchmark:main"
+sepm-eval = "sepm.evaluation_runner:main"
+sepm-ablation = "sepm.ablation.runner:main"
+sepm-tables = "sepm.paper_tables:main"
+
+[tool.hatch.build.targets.wheel]
+# Use the src layout to prevent accidental imports from the repository root.
+packages = ["src/sepm"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.pytest.ini_options]
+# Tests import directly from src, so development does not require a wheel build.
+testpaths = ["tests"]
+pythonpath = ["src"]

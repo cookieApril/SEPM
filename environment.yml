@@ -1,0 +1,24 @@
+# Unified Conda environment for SEPM development and evaluation.
+# Run from the repository root: conda env create -f environment.yml
+name: sepm
+
+channels:
+  - conda-forge
+
+dependencies:
+  # The project supports Python 3.10+; development uses 3.12 for consistent behavior.
+  - python=3.12
+  - pip>=24
+  - pip:
+      # Conda provides isolation; pip installs this project and its extras.
+      - "-e .[dev,eval]"
+      # Required by the official GMemory ALFWorld adapter used in E1.
+      - "finch_clust==0.2.0"
+      - "finchpy==0.0.1"
+      - "langchain==0.3.25"
+      - "langchain-chroma==0.2.3"
+      # Required by the official WebArena runtime. Install Chromium with:
+      # python -m playwright install chromium
+      - "playwright>=1.32.1"
+      - "aiolimiter>=1.2.1"
+      - "nltk>=3.10.3"
