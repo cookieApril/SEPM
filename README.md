@@ -20,9 +20,9 @@
 ## 📑 Contents
 
 - [👀 Overview](#-overview)
-- [✨ Key Contributions](#-key-contributions)
-- [📊 Main Results](#-main-results)
+- [✨ Main Results](#-main-results)
 - [🔎 Case Study](#-case-study)
+- [🔎 Case Study: Complete Workflow](#-case-study-complete-workflow)
 - [📁 Project Structure](#-project-structure)
 - [🚀 Quick Start](#-quick-start)
 - [🧪 Evaluation](#-evaluation)
@@ -58,23 +58,9 @@ The paper evaluates whether this joint design improves the team's **task output 
   <em>Paper Figure 1. Under AutoGen, SEPM has the highest Task Score (TS) and Communication Score (CS) in coding, research, and database tasks.</em>
 </p>
 
-The MultiAgentBench comparison spans **100 tasks in each environment**. TS measures task output; CS measures communication and planning. Both retain the benchmark's reporting scale. The bars show that the advantage extends beyond final answers to how the agents communicate and plan.
+The MultiAgentBench comparison spans **100 tasks in each environment**. TS measures task output; CS measures communication and planning. Both retain the benchmark's reporting scale. Figure 1 shows SEPM leading on both dimensions across the three environments; relative to G-Memory, its largest TS gain is on database tasks (**+7.30 points**) and its largest CS gain is on research tasks (**+11.14 points**).
 
-| Method | Coding TS / CS | Research TS / CS | Database TS / CS |
-| --- | ---: | ---: | ---: |
-| No added memory | 54.90 / 39.81 | 62.40 / 55.16 | 64.93 / 62.43 |
-| Generative Agents | 55.74 / 46.09 | 61.16 / 64.64 | 65.21 / 77.16 |
-| MetaGPT | 57.62 / 47.23 | 70.11 / 62.27 | 70.14 / 80.29 |
-| G-Memory | 64.20 / 51.17 | 74.29 / 77.77 | 69.73 / 88.20 |
-| **SEPM** | **69.09 / 60.64** | **78.37 / 88.91** | **77.03 / 91.94** |
-
-<sub>Paper Table 3. These scores are separate from the ALFWorld/WebArena/OfficeBench mean below.</sub>
-
-Table 3 gives the values behind Figure 1. Compared with G-Memory, SEPM raises TS by **4.89**, **4.08**, and **7.30** points in coding, research, and database, respectively; the corresponding CS gains are **9.47**, **11.14**, and **3.74** points. The research setting shows the largest communication-score gain.
-
----
-
-## ✨ Key Contributions
+### Key Contributions
 
 1. **Coordination-native procedural memory.** Task dependency graphs represent both active collaborative plans and reusable procedures, so cross-agent prerequisites survive the transition from one task to the next.
 2. **Evidence-grounded alignment.** A shared blackboard records structured execution evidence; goal, plan, and world-state divergence signals guide corrections while agents retain their private context.
@@ -93,18 +79,9 @@ This implementation map follows a procedure from storage and retrieval into exec
 
 ---
 
-## 📊 Main Results
+## ✨ Main Results
 
-The figures and numbers in this section are **reported in the supplied SEPM manuscript**. Its main evaluation uses 134 ALFWorld, 812 WebArena, and 300 OfficeBench tasks per condition, with one base-seed run. [Evaluation](#-evaluation) explains the scope of the code and local experiment matrix in this workspace.
-
-| Evaluation axis | Paper scope |
-| --- | --- |
-| Cross-benchmark generality | AutoGen and DyLAN × ALFWorld (134 tasks), WebArena (812), OfficeBench (300) |
-| MultiAgentBench | Coding, research, and database × 100 tasks each |
-| Model sensitivity | Main configuration and 12 alternative execution/memory endpoints |
-| Mechanism analysis | Five component configurations and an explicit-graph versus textual-procedure control |
-
-The evaluation spans different host orchestrators, task environments, model configurations, and component choices. The selected-case scripts shipped with this repository are described in [Evaluation](#-evaluation); this table describes the manuscript's reported scope.
+The figures and numbers in this section are **reported in the supplied SEPM manuscript**. [Evaluation](#-evaluation) explains the scope of the code and local experiment matrix in this workspace.
 
 ### Cross-benchmark task performance
 
@@ -132,7 +109,7 @@ The unweighted three-benchmark mean rises from **37.94% to 60.84%** under AutoGe
 <table>
   <tr>
     <td width="50%" align="center" valign="top">
-      <a href="docs/readme-assets/overall-performance.png"><img src="docs/readme-assets/overall-performance.png" width="100%" alt="Average task scores for memory methods under AutoGen and DyLAN"></a><br>
+      <a href="docs/readme-assets/overall-performance.png"><img src="docs/readme-assets/overall-performance.png" width="65%" alt="Average task scores for memory methods under AutoGen and DyLAN"></a><br>
       <sub><strong>Paper Figure 4(a).</strong> Mean task score across the three benchmarks, by host.</sub>
     </td>
     <td width="50%" align="center" valign="top">
@@ -193,14 +170,14 @@ The component table separates the foundation from the two mechanisms built on it
 
 ### Performance and token cost
 
-On the 134 ALFWorld tasks under AutoGen, the paper reports **89.55%** success using **5.2 million** input and output tokens. This is higher success with fewer tokens than the reported Generative Agents (85.82%, 5.6M) and G-Memory (83.58%, 5.7M) runs. No added memory uses 4.4M tokens at 59.70% success.
+On the 134 ALFWorld tasks under AutoGen, the paper reports **89.55%** success using **5.2 million** input and output tokens. Figure 4(b) pairs each method's complete-run task score with its total token use: no added memory uses 4.4M tokens at 59.70% success, Generative Agents uses 5.6M at 85.82%, and G-Memory uses 5.7M at 83.58%.
 
 <p align="center">
-  <img src="docs/readme-assets/token-cost.png" width="80%" alt="ALFWorld success versus total token consumption under AutoGen"><br>
+  <img src="docs/readme-assets/token-cost.png" width="62%" alt="ALFWorld success versus total token consumption under AutoGen"><br>
   <em>Paper Figure 4(b). Success and token totals refer to the same complete ALFWorld runs.</em>
 </p>
 
-The cost plot shows the trade-off alongside task success. SEPM uses more tokens than the no-memory run, but fewer than the Generative Agents and G-Memory runs while achieving higher success in this ALFWorld evaluation.
+Compared with no added memory, SEPM uses about **18.2%** more tokens and raises success by **29.85 points**. Compared with Generative Agents and G-Memory, it uses about **7.1%** and **8.8%** fewer tokens while improving success by **3.73** and **5.97** points, respectively. The plot therefore places SEPM's performance gain in the context of the computation spent to obtain it.
 
 ---
 
@@ -214,6 +191,26 @@ The paper's cleaning-and-storage example shows how the task graph connects corre
 </p>
 
 The illustration traces both corrections back into memory: the team returns to the assigned plan, checks the cleaning outcome before storage, and records these conditions for future tasks. It is an explanatory example of the proposed workflow, rather than an additional benchmark result.
+
+---
+
+## 🔎 Case Study: Complete Workflow
+
+The same Figure 3 can be read as an end-to-end example of **retrieval → collaboration → realignment → memory revision**. The task is to wash dirty cups and dishes in a kitchen and put them in a cabinet.
+
+<p align="center">
+  <img src="docs/readme-assets/case-study.png" width="76%" alt="Complete SEPM cleaning and storage workflow from retrieved procedure to revised memory"><br>
+  <em>Paper Figure 3, shown again for the full workflow. The upper path follows planning and execution; the lower path connects detected deviations to an updated procedure.</em>
+</p>
+
+1. **Retrieve a procedure and instantiate the task graph.** The team recalls *Kitchenware Cleaning and Storage v1.0*. Its steps assign cup cleaning, dish cleaning, and cabinet storage, while its graph and warning preserve the prerequisite that items must be cleaned before storage.
+2. **Assign work with explicit dependencies.** Agent A finds and cleans cups, Agent B finds and cleans dishes, and Agent C inspects the cabinet and handles final storage. Cabinet inspection can run while A and B clean; handing an item to C depends on verified cleaning by its owner.
+3. **Record execution evidence.** A reports finding cups and cleaning them. B cannot find dishes, notices an apple, and starts to put it in the refrigerator. C requests a cup after it has been found. Each agent's subtask, observation, action, outcome, and error are recorded against the shared task state.
+4. **Detect two different deviations.** B's refrigerator action is outside the assigned dish-cleaning plan, so SEPM detects **plan divergence**. C's request exposes a **state/prerequisite issue**: finding a cup establishes its location, but does not prove it has been cleaned. The storage handoff cannot proceed from a location claim alone.
+5. **Realign without discarding valid progress.** B returns to the dish-cleaning subtask; seeing the apple remains an observation rather than a new task. C may continue inspecting the cabinet, but waits for evidence of A's cleaning outcome before storage. The team resumes from its last verified checkpoint instead of restarting the entire workflow.
+6. **Revise and reuse memory.** Verified actions and supported dependency edges inform *v1.1*. The revision retains cleaning-before-handoff and adds conditional guidance: unrelated items do not change the goal, disputed locations require verifiable environmental evidence, “found” is not “cleaned,” and corrected work resumes from a verified checkpoint. In the SEPM workflow, a proposed revision passes validation and promotion checks before entering the active procedure pool; later similar tasks can retrieve the revised graph and warnings.
+
+This expanded reading makes the memory–collaboration loop explicit: the procedure constrains coordination, the blackboard supplies evidence for corrections, and those verified corrections change what the team can remember and reuse.
 
 ---
 
