@@ -43,7 +43,7 @@ The framework separates private agent context, a shared execution blackboard, an
 The memory that guides collaboration is therefore revised by evidence from that collaboration.
 
 <p align="center">
-  <a href="docs/readme-assets/framework.png"><img src="docs/readme-assets/framework.png" width="64%" alt="SEPM architecture with task graph, blackboard, divergence detection, and evolving procedures"></a><br>
+  <a href="docs/readme-assets/framework.png"><img src="docs/readme-assets/framework.png" width="88%" alt="SEPM architecture with task graph, blackboard, divergence detection, and evolving procedures"></a><br>
   <sub><strong>SEPM framework.</strong> Retrieved procedures guide the task graph; blackboard evidence supports divergence-aware alignment and feeds verified revisions back into procedural memory.</sub>
 </p>
 
