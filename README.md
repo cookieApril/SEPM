@@ -212,7 +212,7 @@ Compared with no added memory, SEPM uses about **18.2%** more tokens and raises 
 The cleaning-and-storage case traces an end-to-end cycle of **retrieval → collaboration → realignment → memory revision**. The task is to wash dirty cups and dishes in a kitchen and put them in a cabinet.
 
 <p align="center">
-  <a href="docs/readme-assets/case-study.png"><img src="docs/readme-assets/case-study.png" width="62%" alt="Complete SEPM cleaning and storage workflow from retrieved procedure to revised memory"></a><br>
+  <a href="docs/readme-assets/case-study.png"><img src="docs/readme-assets/case-study.png" width="90%" alt="Complete SEPM cleaning and storage workflow from retrieved procedure to revised memory"></a><br>
   <sub><strong>Cleaning and storage workflow.</strong> The upper path follows planning and execution; the lower path connects detected deviations to an updated procedure.</sub>
 </p>
 
