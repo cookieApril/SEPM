@@ -60,7 +60,7 @@ class ProposalOperation(str, Enum):
     """Operation requested by a candidate against an SOP head."""
     CREATE = "create"
     UPDATE = "update"
-    DELETE = "delete"
+    DELETE = "delete" #Specific nodes in the project, rather than deleting the project
 
 
 class CandidateStatus(str, Enum):
@@ -77,7 +77,7 @@ class CandidateStatus(str, Enum):
 # ---------- Agents, plans, workspaces, and evidence ----------
 
 class AgentProfile(StrictModel):
-    """Private agent role data; permanent_facts never enter the shared blackboard."""
+    """Private agent role data."""
     agent_id: str = Field(min_length=1, max_length=128)
     role: str = Field(min_length=1, max_length=512)
     permanent_facts: dict[str, Any] = Field(default_factory=dict)
