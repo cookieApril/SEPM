@@ -43,8 +43,8 @@ The framework separates private agent context, a shared execution blackboard, an
 The memory that guides collaboration is therefore revised by evidence from that collaboration.
 
 <p align="center">
-  <img src="docs/readme-assets/framework.png" width="78%" alt="SEPM architecture with task graph, blackboard, divergence detection, and evolving procedures"><br>
-  <em>SEPM framework. Retrieved procedures guide the task graph; blackboard evidence supports divergence-aware alignment and feeds verified revisions back into procedural memory.</em>
+  <a href="docs/readme-assets/framework.png"><img src="docs/readme-assets/framework.png" width="64%" alt="SEPM architecture with task graph, blackboard, divergence detection, and evolving procedures"></a><br>
+  <sub><strong>SEPM framework.</strong> Retrieved procedures guide the task graph; blackboard evidence supports divergence-aware alignment and feeds verified revisions back into procedural memory.</sub>
 </p>
 
 The framework diagram follows one full cycle: retrieve a reusable procedure, instantiate its dependencies for the current team, record execution against those dependencies, correct deviations, and update the procedure pool using verified outcomes. It shows why the graph serves both collaboration and memory evolution.
@@ -88,22 +88,32 @@ The following comparisons examine SEPM across host systems, model configurations
 
 SEPM achieves the highest task score among the compared methods in all six benchmark–host settings. Under AutoGen, the gains over the same host without added memory are **+29.85 points** on ALFWorld, **+25.86** on WebArena, and **+13.00** on OfficeBench.
 
-| Host | Memory | ALFWorld ↑ | WebArena ↑ | OfficeBench ↑ |
-| --- | --- | ---: | ---: | ---: |
-| AutoGen | No added memory | 59.70 | 12.44 | 41.67 |
-| AutoGen | Generative Agents | 85.82 | 15.27 | 38.33 |
-| AutoGen | MetaGPT | 78.36 | 25.99 | 45.33 |
-| AutoGen | G-Memory | 83.58 | 30.30 | 50.00 |
-| AutoGen | **SEPM** | **89.55** | **38.30** | **54.67** |
-| DyLAN | No added memory | 53.73 | 14.90 | 33.33 |
-| DyLAN | Generative Agents | 65.67 | 15.27 | 33.00 |
-| DyLAN | MetaGPT | 49.25 | 22.41 | 35.00 |
-| DyLAN | G-Memory | 61.94 | 25.49 | 42.67 |
-| DyLAN | **SEPM** | **68.66** | **29.80** | **47.33** |
+<table width="100%">
+  <thead>
+    <tr><th>Host</th><th>Memory</th><th>ALFWorld</th><th>WebArena</th><th>OfficeBench</th><th width="30%">Reading the results</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="5" align="center" valign="middle"><strong>AutoGen</strong></td><td>No added memory</td><td align="right">59.70</td><td align="right">12.44</td><td align="right">41.67</td>
+      <td rowspan="10" valign="top">
+      <p>Every score is a task success percentage; higher is better. Bold identifies the best result for a host and benchmark.</p>
+      <p>SEPM leads all six comparisons. Its gains over the strongest alternative are <strong>+3.73 / +8.00 / +4.67</strong> points with AutoGen and <strong>+2.99 / +4.31 / +4.66</strong> with DyLAN, in ALFWorld / WebArena / OfficeBench order.</p>
+      <p>The leading alternative varies by task: Generative Agents is strongest on AutoGen ALFWorld, while G-Memory is strongest on AutoGen WebArena and OfficeBench.</p>
+      </td>
+    </tr>
+    <tr><td>Generative Agents</td><td align="right">85.82</td><td align="right">15.27</td><td align="right">38.33</td></tr>
+    <tr><td>MetaGPT</td><td align="right">78.36</td><td align="right">25.99</td><td align="right">45.33</td></tr>
+    <tr><td>G-Memory</td><td align="right">83.58</td><td align="right">30.30</td><td align="right">50.00</td></tr>
+    <tr><td><strong>SEPM</strong></td><td align="right"><strong>89.55</strong></td><td align="right"><strong>38.30</strong></td><td align="right"><strong>54.67</strong></td></tr>
+    <tr><td rowspan="5" align="center" valign="middle"><strong>DyLAN</strong></td><td>No added memory</td><td align="right">53.73</td><td align="right">14.90</td><td align="right">33.33</td></tr>
+    <tr><td>Generative Agents</td><td align="right">65.67</td><td align="right">15.27</td><td align="right">33.00</td></tr>
+    <tr><td>MetaGPT</td><td align="right">49.25</td><td align="right">22.41</td><td align="right">35.00</td></tr>
+    <tr><td>G-Memory</td><td align="right">61.94</td><td align="right">25.49</td><td align="right">42.67</td></tr>
+    <tr><td><strong>SEPM</strong></td><td align="right"><strong>68.66</strong></td><td align="right"><strong>29.80</strong></td><td align="right"><strong>47.33</strong></td></tr>
+  </tbody>
+</table>
 
-<sub>Task performance across AutoGen and DyLAN. Scores are percentages; bold marks the best observed score within each host and benchmark.</sub>
-
-The strongest alternative changes with the environment: Generative Agents leads the baselines on AutoGen ALFWorld, while G-Memory leads them on AutoGen WebArena and OfficeBench. SEPM leads in each host–benchmark block, with gains over the strongest alternative of **3.73/8.00/4.67** points under AutoGen and **2.99/4.31/4.66** under DyLAN (ALFWorld/WebArena/OfficeBench).
+<sub><strong>Task performance across AutoGen and DyLAN.</strong> The same memory methods are evaluated within each host; SEPM ranks first on every benchmark.</sub>
 
 The unweighted three-benchmark mean rises from **37.94% to 60.84%** under AutoGen and from **33.99% to 48.60%** under DyLAN. A textual-procedure control retains the step descriptions and prerequisites but replaces graph objects and adjacency relations with text. Explicit graphs improve its scores by **17.16**, **8.13**, and **12.34** points on ALFWorld, WebArena, and OfficeBench.
 
@@ -129,27 +139,32 @@ Across the 13 reported configurations, task scores span **57.46–93.28%** on AL
 <details>
 <summary><strong>Show all model-sensitivity scores</strong></summary>
 
-Each row reports one joint task-execution and procedural-memory setting under AutoGen; `gpt-5-mini` is the main cross-benchmark configuration.
+<table width="100%">
+  <thead><tr><th width="32%">How to read this comparison</th><th>Model endpoint</th><th>ALFWorld</th><th>WebArena</th><th>OfficeBench</th></tr></thead>
+  <tbody>
+    <tr>
+      <td rowspan="13" valign="top">
+      <p><strong>What changes?</strong> Each row uses one model endpoint for both task execution and procedural memory under AutoGen. The planning agent and goal-consistency judge stay fixed; <code>gpt-5-mini</code> is the main cross-benchmark configuration.</p>
+      <p><strong>What stands out?</strong> <code>deepseek-v4-flash-0731</code> leads on ALFWorld, while <code>gpt-5.6-terra</code> leads on WebArena and OfficeBench. Within the reported Qwen 3.5 family, the 27B setting exceeds the 0.8B setting on all three tasks.</p>
+      <p>Execution and memory management change together, so the comparison measures sensitivity to their joint configuration.</p>
+      </td><td>qwen3.5-0.8b</td><td align="right">58.21</td><td align="right">14.53</td><td align="right">45.67</td>
+    </tr>
+    <tr><td>qwen3.5-2b</td><td align="right">57.46</td><td align="right">14.78</td><td align="right">45.67</td></tr>
+    <tr><td>qwen3.5-9b</td><td align="right">67.16</td><td align="right">16.01</td><td align="right">49.67</td></tr>
+    <tr><td>qwen3.5-27b</td><td align="right">81.34</td><td align="right">30.42</td><td align="right">55.67</td></tr>
+    <tr><td>gemma-4-12b-it</td><td align="right">72.39</td><td align="right">22.54</td><td align="right">53.00</td></tr>
+    <tr><td>gemma-4-31b-it</td><td align="right">77.61</td><td align="right">28.69</td><td align="right">54.33</td></tr>
+    <tr><td>deepseek-v4-flash-0731</td><td align="right"><strong>93.28</strong></td><td align="right">38.05</td><td align="right">64.33</td></tr>
+    <tr><td>qwen3.8-max</td><td align="right">89.55</td><td align="right">39.41</td><td align="right">63.67</td></tr>
+    <tr><td>glm-5.2</td><td align="right">85.82</td><td align="right">37.93</td><td align="right">60.67</td></tr>
+    <tr><td>kimi-k3</td><td align="right">90.30</td><td align="right">42.36</td><td align="right">65.33</td></tr>
+    <tr><td>gpt-5-mini (main)</td><td align="right">89.55</td><td align="right">38.30</td><td align="right">54.67</td></tr>
+    <tr><td>gpt-5.6-terra</td><td align="right">91.79</td><td align="right"><strong>43.23</strong></td><td align="right"><strong>67.67</strong></td></tr>
+    <tr><td>claude-opus-5</td><td align="right">92.54</td><td align="right">42.49</td><td align="right">65.33</td></tr>
+  </tbody>
+</table>
 
-| Model endpoint | ALFWorld ↑ | WebArena ↑ | OfficeBench ↑ |
-| --- | ---: | ---: | ---: |
-| qwen3.5-0.8b | 58.21 | 14.53 | 45.67 |
-| qwen3.5-2b | 57.46 | 14.78 | 45.67 |
-| qwen3.5-9b | 67.16 | 16.01 | 49.67 |
-| qwen3.5-27b | 81.34 | 30.42 | 55.67 |
-| gemma-4-12b-it | 72.39 | 22.54 | 53.00 |
-| gemma-4-31b-it | 77.61 | 28.69 | 54.33 |
-| deepseek-v4-flash-0731 | **93.28** | 38.05 | 64.33 |
-| qwen3.8-max | 89.55 | 39.41 | 63.67 |
-| glm-5.2 | 85.82 | 37.93 | 60.67 |
-| kimi-k3 | 90.30 | 42.36 | 65.33 |
-| gpt-5-mini (main) | 89.55 | 38.30 | 54.67 |
-| gpt-5.6-terra | 91.79 | **43.23** | **67.67** |
-| claude-opus-5 | 92.54 | 42.49 | 65.33 |
-
-<sub>Joint execution/memory model sensitivity. Task scores are percentages; bold marks the highest observed value in each column.</sub>
-
-The best endpoint depends on the environment: `deepseek-v4-flash-0731` leads on ALFWorld, while `gpt-5.6-terra` leads on WebArena and OfficeBench. Because execution and memory management change together, these scores describe sensitivity to their joint configuration.
+<sub><strong>Joint execution/memory model sensitivity.</strong> Task scores are percentages; bold marks the highest observed value in each benchmark.</sub>
 
 </details>
 
@@ -157,17 +172,24 @@ The best endpoint depends on the environment: `deepseek-v4-flash-0731` leads on 
 
 The shared blackboard is the foundation for both memory and alignment in this ablation. The full configuration leads on all three tasks; the individual gains differ by environment.
 
-| AutoGen configuration | ALFWorld ↑ | WebArena ↑ | OfficeBench ↑ |
-| --- | ---: | ---: | ---: |
-| No added components | 59.70 | 12.44 | 41.67 |
-| Blackboard only | 69.40 | 27.71 | 45.00 |
-| Blackboard + memory | 86.57 | 33.99 | 45.33 |
-| Blackboard + alignment | 82.09 | 34.48 | 51.00 |
-| **Full SEPM** | **89.55** | **38.30** | **54.67** |
+<table width="100%">
+  <thead><tr><th>AutoGen configuration</th><th>ALFWorld</th><th>WebArena</th><th>OfficeBench</th><th width="36%">Contribution of each mechanism</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>No added components</td><td align="right">59.70</td><td align="right">12.44</td><td align="right">41.67</td>
+      <td rowspan="5" valign="top">
+      <p>The blackboard alone adds <strong>+9.70 / +15.27 / +3.33</strong> points over no added components on ALFWorld / WebArena / OfficeBench.</p>
+      <p>Adding procedural memory to the blackboard contributes another <strong>+17.17 / +6.28 / +0.33</strong> points. On OfficeBench, alignment after memory adds <strong>+9.34</strong> points. The full system leads all three tasks.</p>
+      </td>
+    </tr>
+    <tr><td>Blackboard only</td><td align="right">69.40</td><td align="right">27.71</td><td align="right">45.00</td></tr>
+    <tr><td>Blackboard + memory</td><td align="right">86.57</td><td align="right">33.99</td><td align="right">45.33</td></tr>
+    <tr><td>Blackboard + alignment</td><td align="right">82.09</td><td align="right">34.48</td><td align="right">51.00</td></tr>
+    <tr><td><strong>Full SEPM</strong></td><td align="right"><strong>89.55</strong></td><td align="right"><strong>38.30</strong></td><td align="right"><strong>54.67</strong></td></tr>
+  </tbody>
+</table>
 
-<sub>Component ablation under AutoGen. Task scores are percentages. Memory includes cross-task procedure extraction, revision, and reuse; alignment detects and resolves divergence.</sub>
-
-The component table separates the foundation from the two mechanisms built on it. The blackboard alone adds **9.70/15.27/3.33** points over no added components on ALFWorld/WebArena/OfficeBench. Adding memory to the blackboard contributes **17.17/6.28/0.33** more points; on OfficeBench, adding alignment after memory contributes **9.34** points. The full configuration is strongest in all three columns.
+<sub><strong>Component ablation under AutoGen.</strong> Task scores are percentages. Memory extracts, revises, and reuses procedures across tasks; alignment detects and resolves divergence.</sub>
 
 ### Performance and token cost
 
@@ -190,8 +212,8 @@ Compared with no added memory, SEPM uses about **18.2%** more tokens and raises 
 The cleaning-and-storage case traces an end-to-end cycle of **retrieval → collaboration → realignment → memory revision**. The task is to wash dirty cups and dishes in a kitchen and put them in a cabinet.
 
 <p align="center">
-  <img src="docs/readme-assets/case-study.png" width="76%" alt="Complete SEPM cleaning and storage workflow from retrieved procedure to revised memory"><br>
-  <em>Cleaning and storage workflow. The upper path follows planning and execution; the lower path connects detected deviations to an updated procedure.</em>
+  <a href="docs/readme-assets/case-study.png"><img src="docs/readme-assets/case-study.png" width="62%" alt="Complete SEPM cleaning and storage workflow from retrieved procedure to revised memory"></a><br>
+  <sub><strong>Cleaning and storage workflow.</strong> The upper path follows planning and execution; the lower path connects detected deviations to an updated procedure.</sub>
 </p>
 
 1. **Retrieve a procedure and instantiate the task graph.** The team recalls *Kitchenware Cleaning and Storage v1.0*. Its steps assign cup cleaning, dish cleaning, and cabinet storage, while its graph and warning preserve the prerequisite that items must be cleaned before storage.
