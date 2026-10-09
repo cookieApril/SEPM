@@ -52,7 +52,7 @@ The framework diagram follows one full cycle: retrieve a reusable procedure, ins
 MultiAgentBench measures both the quality of a team's output and the quality of its communication across coding, research, and database work.
 
 <p>
-  <a href="docs/readme-assets/multiagentbench.png"><img align="left" hspace="16" vspace="6" src="docs/readme-assets/multiagentbench.png" width="35%" alt="Task and communication scores on MultiAgentBench coding, research, and database tasks"></a>
+  <a href="docs/readme-assets/multiagentbench.png"><img align="left" hspace="16" vspace="6" src="docs/readme-assets/multiagentbench.png" width="47%" alt="Task and communication scores on MultiAgentBench coding, research, and database tasks"></a>
   <strong>Task quality and communication.</strong> Under AutoGen, SEPM has the highest Task Score (TS) and Communication Score (CS) among the compared methods in all three environments. TS measures output quality; CS measures communication and planning. The chart groups the three environments within each metric so the two outcomes can be compared at a glance.
   <br><br>
   Each environment contains <strong>100 tasks</strong>. Relative to G-Memory, SEPM's largest TS gain is on database tasks (<strong>+7.30 points</strong>), while its largest CS gain is on research tasks (<strong>+11.14 points</strong>). Both metrics retain the benchmark's reporting scale.
