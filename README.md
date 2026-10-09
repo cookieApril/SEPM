@@ -1,20 +1,32 @@
-<h1 align="center">SEPM: Self-Evolving Procedural Memory</h1>
+<h1 align="center">SEPM: Self-Evolving Procedural Memory Grounded in Task Graphs for Multi-Agent Collaboration</h1>
 
-<p align="center"><strong>Task-graph-grounded memory for multi-agent collaboration</strong></p>
+<!-- Replace the arXiv homepage with the paper's abstract URL when available. -->
+<div align="center">
+  <a href="https://arxiv.org/">
+    <img src="https://img.shields.io/badge/Paper-arXiv-b5212f.svg?logo=arxiv" alt="arXiv">
+  </a>
+  <a href="https://www.python.org/downloads/">
+    <img src="https://img.shields.io/badge/Python-3.10+-blue.svg" alt="Python 3.10+">
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/License-Apache%202.0-yellow.svg" alt="Apache 2.0 license">
+  </a>
+</div>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Paper-ICLR%202027%20submission-b5212f" alt="ICLR 2027 submission">
-  <a href="#-quick-start"><img src="https://img.shields.io/badge/Python-3.10%2B-3776ab?logo=python&logoColor=white" alt="Python 3.10+"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-6b7280" alt="Apache 2.0 license"></a>
-</p>
+<h5 align="center">If you find our work helpful, please give us a star ⭐ on GitHub. We greatly appreciate your support.</h5>
 
-<p align="center">
-  <a href="#-overview">Overview</a> ·
-  <a href="#-main-results">Results</a> ·
-  <a href="#-project-structure">Code</a> ·
-  <a href="#-quick-start">Quick start</a> ·
-  <a href="#-evaluation">Evaluation</a>
-</p>
+---
+
+## 📑 Contents
+
+- [👀 Overview](#-overview)
+- [✨ Key Contributions](#-key-contributions)
+- [📊 Main Results](#-main-results)
+- [🔎 Case Study](#-case-study)
+- [📁 Project Structure](#-project-structure)
+- [🚀 Quick Start](#-quick-start)
+- [🧪 Evaluation](#-evaluation)
+- [📄 Paper and License](#-paper-and-license)
 
 ---
 
@@ -25,11 +37,36 @@ Multi-agent teams need more than a list of successful actions. A useful procedur
 The implementation connects three memory layers: private agent context, a shared blackboard of task and execution evidence, and versioned procedural memories (SOPs). During a task, SEPM checks goal, plan, and state divergence; after a task, it can turn verified actions and dependencies into a reusable procedure. Candidates pass evidence, utility, and safety gates before publication.
 
 <p align="center">
-  <img src="docs/readme-assets/framework.png" width="94%" alt="SEPM architecture with task graph, blackboard, divergence detection, and evolving procedures"><br>
+  <img src="docs/readme-assets/framework.png" width="78%" alt="SEPM architecture with task graph, blackboard, divergence detection, and evolving procedures"><br>
   <em>Framework overview (paper Figure 2). Task graphs connect planning, shared execution records, alignment, and procedure revision.</em>
 </p>
 
-### What SEPM implements
+<p align="center">
+  <img src="docs/readme-assets/multiagentbench.png" width="68%" alt="MultiAgentBench task and communication scores across coding, research, and database"><br>
+  <em>Paper Figure 1. SEPM leads in both Task Score (TS) and Communication Score (CS) across the coding, research, and database environments under AutoGen.</em>
+</p>
+
+The MultiAgentBench comparison spans **100 tasks in each environment**. TS measures task output; CS measures communication and planning. Both retain the benchmark's reporting scale.
+
+| Method | Coding TS / CS | Research TS / CS | Database TS / CS |
+| --- | ---: | ---: | ---: |
+| No added memory | 54.90 / 39.81 | 62.40 / 55.16 | 64.93 / 62.43 |
+| Generative Agents | 55.74 / 46.09 | 61.16 / 64.64 | 65.21 / 77.16 |
+| MetaGPT | 57.62 / 47.23 | 70.11 / 62.27 | 70.14 / 80.29 |
+| G-Memory | 64.20 / 51.17 | 74.29 / 77.77 | 69.73 / 88.20 |
+| **SEPM** | **69.09 / 60.64** | **78.37 / 88.91** | **77.03 / 91.94** |
+
+<sub>Paper Table 3. These scores are separate from the ALFWorld/WebArena/OfficeBench mean below.</sub>
+
+---
+
+## ✨ Key Contributions
+
+1. **Coordination-native procedural memory.** Task dependency graphs represent both active collaborative plans and reusable procedures, so cross-agent prerequisites survive the transition from one task to the next.
+2. **Evidence-grounded alignment.** A shared blackboard records structured execution evidence; goal, plan, and world-state divergence signals guide corrections while agents retain their private context.
+3. **Self-evolving procedures.** Verified actions and dependencies can become graph-structured SOPs. Revisions, context-specific variants, and retirement are governed by validation, utility, safety, and version history.
+
+The repository implements these ideas as an installable Python memory layer:
 
 | Mechanism | Role in the workflow | Code |
 | --- | --- | --- |
@@ -40,16 +77,18 @@ The implementation connects three memory layers: private agent context, a shared
 
 The [storage schema](docs/STORAGE_SCHEMA.md) describes the graph objects, blackboard events, and SQLite version history.
 
-<p align="center">
-  <img src="docs/readme-assets/case-study.png" width="92%" alt="Cleaning and storage case illustrating plan and state divergence"><br>
-  <em>Illustrative case (paper Figure 3). The team redirects an unrelated action and verifies cleaning before handing items to the storage agent; the revised procedure keeps that prerequisite.</em>
-</p>
-
 ---
 
 ## 📊 Main Results
 
 The figures and numbers in this section are **reported in the supplied SEPM manuscript**. Its main evaluation uses 134 ALFWorld, 812 WebArena, and 300 OfficeBench tasks per condition, with one base-seed run. [Evaluation](#-evaluation) explains the scope of the code and local experiment matrix in this workspace.
+
+| Evaluation axis | Paper scope |
+| --- | --- |
+| Cross-benchmark generality | AutoGen and DyLAN × ALFWorld (134 tasks), WebArena (812), OfficeBench (300) |
+| MultiAgentBench | Coding, research, and database × 100 tasks each |
+| Model sensitivity | Main configuration and 12 alternative execution/memory endpoints |
+| Mechanism analysis | Five component configurations and an explicit-graph versus textual-procedure control |
 
 ### Cross-benchmark task performance
 
@@ -70,64 +109,27 @@ The paper reports the highest task score for SEPM in all six benchmark–host se
 
 <sub>Paper Table 1. Task scores are percentages; bold marks the best observed score within each host and benchmark.</sub>
 
-<p align="center">
-  <img src="docs/readme-assets/overall-performance.png" width="82%" alt="Average task scores for memory methods under AutoGen and DyLAN"><br>
-  <em>Paper Figure 4(a). The unweighted mean of the three displayed benchmarks rises from 37.94% to 60.84% under AutoGen and from 33.99% to 48.60% under DyLAN.</em>
-</p>
+The unweighted three-benchmark mean rises from **37.94% to 60.84%** under AutoGen and from **33.99% to 48.60%** under DyLAN. A textual-procedure control retains the step descriptions and prerequisites but replaces graph objects and adjacency relations with text. Explicit graphs improve its scores by **17.16**, **8.13**, and **12.34** points on ALFWorld, WebArena, and OfficeBench.
 
-### Why explicit dependency graphs matter
+<table>
+  <tr>
+    <td width="50%" align="center" valign="top">
+      <a href="docs/readme-assets/overall-performance.png"><img src="docs/readme-assets/overall-performance.png" width="100%" alt="Average task scores for memory methods under AutoGen and DyLAN"></a><br>
+      <sub><strong>Paper Figure 4(a).</strong> Mean task score across the three benchmarks, by host. Click to enlarge.</sub>
+    </td>
+    <td width="50%" align="center" valign="top">
+      <a href="docs/readme-assets/graph-vs-text.png"><img src="docs/readme-assets/graph-vs-text.png" width="100%" alt="Task score comparison between textual SOPs and explicit dependency graphs"></a><br>
+      <sub><strong>Paper Figure 5(a).</strong> Full SEPM versus the textual-procedure control. Click to enlarge.</sub>
+    </td>
+  </tr>
+</table>
 
-The manuscript compares full SEPM with a textual procedure control that retains the step descriptions and prerequisites but replaces graph objects and adjacency relations with text. The reported graph-based gains are **17.16**, **8.13**, and **12.34** points on ALFWorld, WebArena, and OfficeBench.
+### Model sensitivity
 
-<p align="center">
-  <img src="docs/readme-assets/graph-vs-text.png" width="88%" alt="Task score comparison between textual SOPs and explicit dependency graphs"><br>
-  <em>Paper Figure 5(a). Explicit graphs make prerequisite checks, plan comparison, and correction propagation operate over the same dependency structure.</em>
-</p>
-
-### Component contributions
-
-The shared blackboard is the foundation for both memory and alignment in this ablation. The full configuration leads on all three tasks; the individual gains differ by environment.
-
-| AutoGen configuration | ALFWorld ↑ | WebArena ↑ | OfficeBench ↑ |
-| --- | ---: | ---: | ---: |
-| No added components | 59.70 | 12.44 | 41.67 |
-| Blackboard only | 69.40 | 27.71 | 45.00 |
-| Blackboard + memory | 86.57 | 33.99 | 45.33 |
-| Blackboard + alignment | 82.09 | 34.48 | 51.00 |
-| **Full SEPM** | **89.55** | **38.30** | **54.67** |
-
-<sub>Paper Figure 5(b). Task scores are percentages. Memory includes cross-task procedure extraction, revision, and reuse; alignment detects and resolves divergence.</sub>
-
-### MultiAgentBench: task quality and communication
-
-SEPM also reports the highest Task Score (TS) and Communication Score (CS) across the coding, research, and database environments under AutoGen.
-
-<p align="center">
-  <img src="docs/readme-assets/multiagentbench.png" width="86%" alt="MultiAgentBench task and communication scores across coding, research, and database"><br>
-  <em>Paper Figure 1. TS measures task output; CS measures communication and planning. Both retain the benchmark's reporting scale.</em>
-</p>
-
-| Method | Coding TS / CS | Research TS / CS | Database TS / CS |
-| --- | ---: | ---: | ---: |
-| No added memory | 54.90 / 39.81 | 62.40 / 55.16 | 64.93 / 62.43 |
-| Generative Agents | 55.74 / 46.09 | 61.16 / 64.64 | 65.21 / 77.16 |
-| MetaGPT | 57.62 / 47.23 | 70.11 / 62.27 | 70.14 / 80.29 |
-| G-Memory | 64.20 / 51.17 | 74.29 / 77.77 | 69.73 / 88.20 |
-| **SEPM** | **69.09 / 60.64** | **78.37 / 88.91** | **77.03 / 91.94** |
-
-<sub>Paper Table 3. The manuscript evaluates 100 tasks in each environment; these scores are separate from the three-benchmark mean above.</sub>
-
-### Performance and token cost
-
-On the 134 ALFWorld tasks under AutoGen, the paper reports **89.55%** success using **5.2 million** input and output tokens. This is higher success with fewer tokens than the reported Generative Agents (85.82%, 5.6M) and G-Memory (83.58%, 5.7M) runs. No added memory uses 4.4M tokens at 59.70% success.
-
-<p align="center">
-  <img src="docs/readme-assets/token-cost.png" width="80%" alt="ALFWorld success versus total token consumption under AutoGen"><br>
-  <em>Paper Figure 4(b). Success and token totals refer to the same complete ALFWorld runs.</em>
-</p>
+Across the 13 reported configurations, task scores span **57.46–93.28%** on ALFWorld, **14.53–43.23%** on WebArena, and **45.67–67.67%** on OfficeBench. The task-execution and procedural-memory endpoints change together; the planning agent and goal-consistency judge stay fixed.
 
 <details>
-<summary><strong>Model sensitivity — all paper Table 2 scores</strong></summary>
+<summary><strong>Show all paper Table 2 scores</strong></summary>
 
 The paper jointly changes the task-execution and procedural-memory endpoint while keeping AutoGen, the planning agent, and the goal-consistency judge fixed. These rows therefore measure the **joint configuration**.
 
@@ -150,6 +152,40 @@ The paper jointly changes the task-execution and procedural-memory endpoint whil
 <sub>Paper Table 2. Task scores are percentages; bold marks the highest observed value in each column.</sub>
 
 </details>
+
+### Component contributions
+
+The shared blackboard is the foundation for both memory and alignment in this ablation. The full configuration leads on all three tasks; the individual gains differ by environment.
+
+| AutoGen configuration | ALFWorld ↑ | WebArena ↑ | OfficeBench ↑ |
+| --- | ---: | ---: | ---: |
+| No added components | 59.70 | 12.44 | 41.67 |
+| Blackboard only | 69.40 | 27.71 | 45.00 |
+| Blackboard + memory | 86.57 | 33.99 | 45.33 |
+| Blackboard + alignment | 82.09 | 34.48 | 51.00 |
+| **Full SEPM** | **89.55** | **38.30** | **54.67** |
+
+<sub>Paper Figure 5(b). Task scores are percentages. Memory includes cross-task procedure extraction, revision, and reuse; alignment detects and resolves divergence.</sub>
+
+### Performance and token cost
+
+On the 134 ALFWorld tasks under AutoGen, the paper reports **89.55%** success using **5.2 million** input and output tokens. This is higher success with fewer tokens than the reported Generative Agents (85.82%, 5.6M) and G-Memory (83.58%, 5.7M) runs. No added memory uses 4.4M tokens at 59.70% success.
+
+<p align="center">
+  <img src="docs/readme-assets/token-cost.png" width="80%" alt="ALFWorld success versus total token consumption under AutoGen"><br>
+  <em>Paper Figure 4(b). Success and token totals refer to the same complete ALFWorld runs.</em>
+</p>
+
+---
+
+## 🔎 Case Study
+
+The paper's cleaning-and-storage example shows how the task graph connects correction during execution to later procedural memory. Agent B encounters an apple and starts an unrelated action, triggering **plan realignment**. Agent C requests a cup before its cleaning has been verified, so the **cleaning-before-handoff prerequisite** blocks storage. After correction, the revised procedure retains the dependency and adds guidance for verifying state and resuming from a confirmed checkpoint.
+
+<p align="center">
+  <img src="docs/readme-assets/case-study.png" width="70%" alt="Cleaning and storage case illustrating plan and state divergence"><br>
+  <em>Illustrative case (paper Figure 3). Different divergence signals lead to different corrections and a more precise reusable procedure.</em>
+</p>
 
 ---
 
