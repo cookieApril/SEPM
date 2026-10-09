@@ -49,10 +49,11 @@ The memory that guides collaboration is therefore revised by evidence from that 
 
 The framework diagram follows one full cycle: retrieve a reusable procedure, instantiate its dependencies for the current team, record execution against those dependencies, correct deviations, and update the procedure pool using verified outcomes. It shows why the graph serves both collaboration and memory evolution.
 
-MultiAgentBench measures both the quality of a team's output and the quality of its communication across coding, research, and database work.
 
 <p>
-  <a href="docs/readme-assets/multiagentbench.png"><img align="left" hspace="16" vspace="6" src="docs/readme-assets/multiagentbench.png" width="47%" alt="Task and communication scores on MultiAgentBench coding, research, and database tasks"></a>
+  <a href="docs/readme-assets/multiagentbench.png"><img align="left" hspace="1" vspace="6" src="docs/readme-assets/multiagentbench.png" width="47%" alt="Task and communication scores on MultiAgentBench coding, research, and database tasks"></a>
+  MultiAgentBench measures both the quality of a team's output and the quality of its communication across coding, research, and database work.
+  <br><br>
   <strong>Task quality and communication.</strong> Under AutoGen, SEPM has the highest Task Score (TS) and Communication Score (CS) among the compared methods in all three environments. TS measures output quality; CS measures communication and planning. The chart groups the three environments within each metric so the two outcomes can be compared at a glance.
   <br><br>
   Each environment contains <strong>100 tasks</strong>. Relative to G-Memory, SEPM's largest TS gain is on database tasks (<strong>+7.30 points</strong>), while its largest CS gain is on research tasks (<strong>+11.14 points</strong>). Both metrics retain the benchmark's reporting scale.
@@ -180,18 +181,16 @@ The full system leads all three tasks. The blackboard alone improves on the base
 
 ### Performance and token cost
 
-The cost comparison sums input and output tokens over the complete 134-task ALFWorld evaluation under AutoGen. Each point pairs a method's task score with the tokens from that same run.
-
 <p>
   <a href="docs/readme-assets/token-cost.png"><img align="left" hspace="16" vspace="3" src="docs/readme-assets/token-cost.png" width="45%" alt="ALFWorld success versus total token consumption under AutoGen"></a>
+  The cost comparison sums input and output tokens over the complete 134-task ALFWorld evaluation under AutoGen. Each point pairs a method's task score with the tokens from that same run.
+  <br><br>
   <strong>ALFWorld performance and token cost.</strong> SEPM reaches <strong>89.55%</strong> success with <strong>5.2 million</strong> tokens. The no-memory run uses 4.4M tokens at 59.70% success; Generative Agents uses 5.6M at 85.82%; G-Memory uses 5.7M at 83.58%. The image places these methods in a common success–cost view.
-  <br>
+  <br><br>
   The plotted totals cover the entire evaluation, rather than one representative task. They include coordination and memory operations together with task execution.
-  <br>
-  Compared with no added memory, SEPM uses about **18.2%** more tokens and raises success by **29.85 points**. Compared with Generative Agents and G-Memory, it uses about **7.1%** and **8.8%** fewer tokens while improving success by **3.73** and **5.97** points, respectively.
-</p>
+ </p>
 <br clear="all">
-
+  Compared with no added memory, SEPM uses about **18.2%** more tokens and raises success by **29.85 points**. Compared with Generative Agents and G-Memory, it uses about **7.1%** and **8.8%** fewer tokens while improving success by **3.73** and **5.97** points, respectively.
 
 ---
 
