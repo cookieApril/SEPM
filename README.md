@@ -198,12 +198,13 @@ The cost comparison sums input and output tokens over the complete 134-task ALFW
 <p>
   <a href="docs/readme-assets/token-cost.png"><img align="left" hspace="16" vspace="3" src="docs/readme-assets/token-cost.png" width="45%" alt="ALFWorld success versus total token consumption under AutoGen"></a>
   <strong>ALFWorld performance and token cost.</strong> SEPM reaches <strong>89.55%</strong> success with <strong>5.2 million</strong> tokens. The no-memory run uses 4.4M tokens at 59.70% success; Generative Agents uses 5.6M at 85.82%; G-Memory uses 5.7M at 83.58%. The image places these methods in a common success–cost view.
-  <br><br>
+  <br>
   The plotted totals cover the entire evaluation, rather than one representative task. They include coordination and memory operations together with task execution.
+  <br>
+  Compared with no added memory, SEPM uses about **18.2%** more tokens and raises success by **29.85 points**. Compared with Generative Agents and G-Memory, it uses about **7.1%** and **8.8%** fewer tokens while improving success by **3.73** and **5.97** points, respectively.
 </p>
 <br clear="all">
 
-Compared with no added memory, SEPM uses about **18.2%** more tokens and raises success by **29.85 points**. Compared with Generative Agents and G-Memory, it uses about **7.1%** and **8.8%** fewer tokens while improving success by **3.73** and **5.97** points, respectively.
 
 ---
 
