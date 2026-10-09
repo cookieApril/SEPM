@@ -19,7 +19,7 @@ import sys
 import tempfile
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -711,7 +711,7 @@ def run(args: argparse.Namespace) -> tuple[dict[str, float], list[dict[str, Any]
                 "actor_completion_tokens": actor_chat.completion_tokens,
                 "memory_stats": dict(stats) if isinstance(stats, dict) else {},
                 "complete": complete,
-                "updated_at": datetime.now(UTC).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat(),
             },
         )
 
