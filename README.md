@@ -13,7 +13,6 @@
   </a>
 </div>
 
-<h5 align="center">If you find our work helpful, please give us a star ⭐ on GitHub. We greatly appreciate your support.</h5>
 
 ---
 
