@@ -12,9 +12,9 @@ benchmark logic or fabricating scores.
 
 from __future__ import annotations
 
-import os
 import hashlib
 import json
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -23,6 +23,8 @@ from .ablation.runtime import config_from_environment
 from .adapter import AgentMemoryAdapter
 from .config import MemoryConfig
 from .evaluation_adapter import EvaluationContext
+from .integrations import GMemoryBridge, GMemorySnapshotError, HostRuntimeBridge
+from .integrations.gmemory_bridge import ensure_development_snapshot
 from .models import (
     AgentProfile,
     BlackboardEntry,
@@ -35,8 +37,6 @@ from .models import (
     Workspace,
 )
 from .service import SEPMService
-from .integrations import GMemoryBridge, HostRuntimeBridge, GMemorySnapshotError
-from .integrations.gmemory_bridge import ensure_development_snapshot
 
 
 def _text(value: Any, limit: int = 8_000) -> str:
@@ -127,7 +127,7 @@ class SEPMBenchmarkRuntime:
         plan_actions: list[str] | None = None,
         plan_edges: list[tuple[int, int]] | None = None,
         enabled_methods: set[str] | None = None,
-    ) -> "SEPMBenchmarkRuntime":
+    ) -> SEPMBenchmarkRuntime:
         context = EvaluationContext.from_environment()
         if context.memory_method == "gmemory":
             raise GMemorySnapshotError(

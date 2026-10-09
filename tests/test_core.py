@@ -13,10 +13,10 @@ import unittest
 from datetime import datetime, timezone
 from pathlib import Path
 
+from sepm.ablation.validator_policy import PromptGatePolicy, ValidationScenario, benchmark_policy
 from sepm.config import MemoryConfig
 from sepm.divergence import normalized_plan_distance
 from sepm.evidence import EvidenceResolver
-from sepm.ablation.validator_policy import PromptGatePolicy, ValidationScenario, benchmark_policy
 from sepm.models import (
     AgentProfile,
     BlackboardEntry,
@@ -37,7 +37,6 @@ from sepm.models import (
 from sepm.safety import SafetyValidator
 from sepm.service import SEPMService
 from sepm.storage import ConcurrencyError
-
 
 
 def procedure(*steps: ProcedureStep) -> ProcedureGraph:

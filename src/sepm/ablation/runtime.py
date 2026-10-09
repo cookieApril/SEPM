@@ -12,7 +12,6 @@ from typing import Any
 
 from ..config import MemoryConfig
 
-
 # Names exactly match evaluation_matrix.json. Values may contain only MemoryConfig
 # fields, so misspelled settings fail in dataclasses.replace instead of silently
 # running the full method.

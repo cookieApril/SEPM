@@ -23,8 +23,8 @@ from sepm.evaluation_runner import (
     load_matrix,
     main,
     run_matrix,
-    source_reproduction_commands,
     smoke_llm,
+    source_reproduction_commands,
 )
 from sepm.external_results import extract_metrics, load_native_result
 
@@ -235,7 +235,7 @@ class EvaluationRunnerTests(unittest.TestCase):
         commands = source_reproduction_commands(config, "cross-benchmark-generality")
         self.assertEqual(len(commands), 1)
         repository = Path(commands[0]["repository"])
-        self.assertEqual(repository, Path(".").resolve())
+        self.assertEqual(repository, Path.cwd())
         self.assertIn("cross-benchmark-generality", commands[0]["commands"][0])
 
     def test_resume_skips_successful_case_cell(self) -> None:
@@ -413,7 +413,7 @@ class EvaluationRunnerTests(unittest.TestCase):
                 output.write_text('{"metrics":{"accuracy":1.0}}', encoding="utf-8")
                 return types.SimpleNamespace(returncode=0)
 
-            with patch("sepm.evaluation_runner.subprocess.run", side_effect=complete) as run:
+            with patch("sepm.evaluation_runner.subprocess.run", side_effect=complete) as run:  # noqa: SIM117
                 with patch.dict(os.environ, {"OPENAI_API_KEY": "test-relay-key"}, clear=False):
                     summary = run_matrix(config, [cell])
             self.assertEqual(summary, {"success": 1})

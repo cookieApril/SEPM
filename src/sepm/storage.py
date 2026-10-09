@@ -31,7 +31,6 @@ from .models import (
     Workspace,
 )
 
-
 # SQLite tables cover private memory, blackboard, candidates/trials, SOP versions, and audits.
 SCHEMA = """
 PRAGMA journal_mode=WAL;
@@ -105,12 +104,10 @@ CREATE TABLE IF NOT EXISTS audit_log (
 
 class ConcurrencyError(RuntimeError):
     """Raised when expected_version differs from the database head."""
-    pass
 
 
 class NotFoundError(LookupError):
     """Raised when a domain object cannot be found by business ID."""
-    pass
 
 
 class SQLiteStore:

@@ -32,7 +32,7 @@ class HostRuntimeBridge:
     upstream_commit: str
 
     @classmethod
-    def build(cls, *, mas: str, task: str, project_root: Path) -> "HostRuntimeBridge":
+    def build(cls, *, mas: str, task: str, project_root: Path) -> HostRuntimeBridge:
         normalized = mas.lower()
         if normalized == "autogen":
             return cls(

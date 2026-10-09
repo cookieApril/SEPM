@@ -65,7 +65,7 @@ def _mean(values: list[float]) -> float:
 
 def _patch_alfworld_textworld_eval_symbol() -> None:
     """Keep ALFWorld/TextWorld grammar evaluation compatible with modern Python."""
-    import textworld.envs.pddl.textgen as textgen
+    from textworld.envs.pddl import textgen
 
     def _derive_with_explicit_eval_locals(self: Any, context: Any = None) -> list[Any]:
         context = context or self.context
@@ -451,7 +451,7 @@ def _build_sepm_class():
                     max_tokens=1200,
                     **_sop_response_format_kwargs(),
                 )
-            except Exception as error:
+            except Exception as error:  # noqa: BLE001 - A provider failure must not erase the episode.
                 # SOP curation is post-hoc. A provider timeout must not erase a
                 # completed environment episode or prevent its checkpoint from
                 # being written. Record the transport failure and reject only

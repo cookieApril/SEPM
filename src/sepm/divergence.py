@@ -7,9 +7,9 @@ conflicts. This module reports divergence but never mutates canonical state.
 
 from __future__ import annotations
 
-from typing import Protocol
-from collections import Counter
 import re
+from collections import Counter
+from typing import ClassVar, Protocol
 
 from .config import MemoryConfig
 from .embedding import Embedder, bounded_similarity
@@ -25,7 +25,7 @@ class GoalJudge(Protocol):
 class LexicalGoalJudge:
     """Offline lexical fallback that checks negation before token Jaccard similarity."""
 
-    NEGATIONS = {"not", "never", "without", "禁止", "不要", "不得", "无需"}
+    NEGATIONS: ClassVar[set[str]] = {"not", "never", "without", "禁止", "不要", "不得", "无需"}
 
     def consistency_score(self, canonical_goal: str, agent_goal: str) -> float:
         """Return consistency in ``[0, 1]``; different negation sets are inconsistent."""

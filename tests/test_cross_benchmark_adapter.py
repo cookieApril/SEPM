@@ -35,7 +35,7 @@ class CrossBenchmarkAdapterTests(unittest.TestCase):
                 (),
                 {"task": "webarena", "case_id": "219"},
             )()
-            with patch.dict("os.environ", {}, clear=True):
+            with patch.dict("os.environ", {}, clear=True):  # noqa: SIM117
                 with self.assertRaisesRegex(RuntimeError, "not paper evidence"):
                     _write_manifest_smoke(
                         context,

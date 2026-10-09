@@ -8,8 +8,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from sepm.integrations import GMemoryBridge, GMemorySnapshotError, HostRuntimeBridge
 from sepm.benchmark_runtime import SEPMBenchmarkRuntime
+from sepm.integrations import GMemoryBridge, GMemorySnapshotError, HostRuntimeBridge
 
 
 class IntegrationBridgeTests(unittest.TestCase):
@@ -110,9 +110,8 @@ class IntegrationBridgeTests(unittest.TestCase):
                     "SEPM_EVAL_OUTPUT": str(output),
                 },
                 clear=True,
-            ):
-                with self.assertRaisesRegex(GMemorySnapshotError, "no upstream G-Memory"):
-                    SEPMBenchmarkRuntime.from_environment(main_goal="inspect map distance")
+            ), self.assertRaisesRegex(GMemorySnapshotError, "no upstream G-Memory"):
+                SEPMBenchmarkRuntime.from_environment(main_goal="inspect map distance")
 
 
 if __name__ == "__main__":

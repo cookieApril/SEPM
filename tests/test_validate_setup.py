@@ -9,7 +9,6 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
-
 SCRIPT = Path(__file__).parents[1] / "scripts" / "validate_paper_setup.py"
 SPEC = importlib.util.spec_from_file_location("validate_paper_setup", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None

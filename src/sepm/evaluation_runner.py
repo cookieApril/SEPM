@@ -14,19 +14,19 @@ import csv
 import hashlib
 import json
 import os
-import re
 import random
+import re
 import shutil
 import sqlite3
 import subprocess
 import sys
 import time
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 from .benchmark import run_all_benchmarks
-
 
 SUCCESS = "success"
 CONTRIBUTION_CONDITIONS = (
@@ -82,7 +82,7 @@ def load_matrix(path: str | Path) -> dict[str, Any]:
     provider = config["provider"]
     for name in ("base_url_env", "key_env"):
         if not isinstance(provider.get(name), str):
-            raise ValueError(f"provider.{name} is required")
+            raise ValueError(f"provider.{name} is required")  # noqa: TRY004
     forbidden = {"api_key", "token", "secret"}
     if forbidden.intersection(provider):
         raise ValueError("literal secrets are forbidden; use provider.key_env")
@@ -165,11 +165,13 @@ def load_matrix(path: str | Path) -> dict[str, Any]:
         for variant in benchmark.get("ablations", ["full"]):
             if variant not in known_ablations:
                 raise ValueError(f"unknown ablation variant {variant!r}")
-        if benchmark.get("paper_role") == "contribution-main":
-            if tuple(benchmark.get("ablations", [])) != CONTRIBUTION_CONDITIONS:
-                raise ValueError(
-                    f"{benchmark['id']} must use the configured minimal contribution conditions"
-                )
+        if (
+            benchmark.get("paper_role") == "contribution-main"
+            and tuple(benchmark.get("ablations", [])) != CONTRIBUTION_CONDITIONS
+        ):
+            raise ValueError(
+                f"{benchmark['id']} must use the configured minimal contribution conditions"
+            )
         if benchmark["runner"] == "external":
             jobs = benchmark.get("method_jobs", {})
             if not isinstance(jobs, dict):
@@ -243,10 +245,10 @@ def _supported_by_benchmark_cell_rules(
     if not rules:
         return True
     if not isinstance(rules, list):
-        raise ValueError(f"{benchmark['id']}.supported_cells must be a list")
+        raise ValueError(f"{benchmark['id']}.supported_cells must be a list")  # noqa: TRY004
     for rule in rules:
         if not isinstance(rule, dict):
-            raise ValueError(f"{benchmark['id']}.supported_cells entries must be objects")
+            raise ValueError(f"{benchmark['id']}.supported_cells entries must be objects")  # noqa: TRY004
         tasks = rule.get("tasks", ["*"])
         methods = rule.get("methods", ["*"])
         frameworks = rule.get("mas_frameworks", ["*"])
@@ -700,7 +702,7 @@ def _command_steps(job: dict[str, Any]) -> list[dict[str, Any]]:
         raise ValueError("external method job steps must be a non-empty list")
     for step in steps:
         if not isinstance(step, dict) or not isinstance(step.get("command"), list):
-            raise ValueError("each external step requires a command argument array")
+            raise ValueError("each external step requires a command argument array")  # noqa: TRY004
         if not step["command"] or not all(isinstance(part, str) for part in step["command"]):
             raise ValueError("external command arguments must be non-empty strings")
     return steps
@@ -742,7 +744,6 @@ def run_cell(
         )
         return "not_configured"
     env = os.environ.copy()
-    provider = config["provider"]
     actor_model = _lookup(config, "models", cell.actor_model)
     sop_model = (
         _lookup(config, "models", cell.sop_model)
@@ -899,7 +900,8 @@ def run_matrix(
             state.start(cell, result_path, log_path)
             try:
                 status = run_cell(config, cell, result_path, log_path)
-            except Exception as error:
+            # Preserve the failure and continue with the remaining matrix cells.
+            except Exception as error:  # noqa: BLE001
                 state.finish(cell.key, "failed", str(error))
                 print(f"FAILED {cell.key}: {error}", file=sys.stderr)
             else:
@@ -1090,7 +1092,7 @@ def source_reproduction_commands(
     """Return official reproduction entry points without expanding the paper method matrix."""
     workflows = config.get("source_reproductions", [])
     if not isinstance(workflows, list):
-        raise ValueError("source_reproductions must be a list")
+        raise ValueError("source_reproductions must be a list")  # noqa: TRY004
     selected = []
     for workflow in workflows:
         if benchmark_filter and workflow["id"] != benchmark_filter:

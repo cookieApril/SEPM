@@ -10,7 +10,14 @@ from __future__ import annotations
 from collections.abc import Iterable
 
 from .config import MemoryConfig
-from .models import ProcedureGraph, ProcedureStep, ProposalOperation, SOPCandidate, SOPVersion, SafetyDecision
+from .models import (
+    ProcedureGraph,
+    ProcedureStep,
+    ProposalOperation,
+    SafetyDecision,
+    SOPCandidate,
+    SOPVersion,
+)
 
 
 class SafetyValidator:
@@ -25,10 +32,16 @@ class SafetyValidator:
     def validate(self, candidate: SOPCandidate, current: SOPVersion | None = None) -> SafetyDecision:
         """Validate a create/update/delete candidate and return risk and violations."""
         violations: list[str] = []
-        if current and candidate.metadata and candidate.operation == ProposalOperation.UPDATE:
-            if (candidate.metadata.context_conditions != current.metadata.context_conditions
-                    or candidate.metadata.variant_of != current.metadata.variant_of):
-                violations.append("context-specific changes must create a variant, not overwrite the parent")
+        if (
+            current
+            and candidate.metadata
+            and candidate.operation == ProposalOperation.UPDATE
+            and (
+                candidate.metadata.context_conditions != current.metadata.context_conditions
+                or candidate.metadata.variant_of != current.metadata.variant_of
+            )
+        ):
+            violations.append("context-specific changes must create a variant, not overwrite the parent")
         graph = candidate.procedure
         if candidate.operation == ProposalOperation.DELETE:
             if current and current.metadata.safety_class in {"sensitive", "critical"}:
@@ -56,9 +69,11 @@ class SafetyValidator:
             text = step.instruction.lower()
             if self._is_irreversible(step) and not step.requires_confirmation:
                 violations.append(f"irreversible step {step.step_id} lacks confirmation")
-            if "migration" in text or "迁移" in text:
-                if not any(self._contains_any(item.instruction.lower(), self.BACKUP_WORDS) for item in graph.steps):
-                    violations.append("migration procedure lacks a backup/snapshot step")
+            if ("migration" in text or "迁移" in text) and not any(
+                self._contains_any(item.instruction.lower(), self.BACKUP_WORDS)
+                for item in graph.steps
+            ):
+                violations.append("migration procedure lacks a backup/snapshot step")
         preserved = self._preserves_mandatory_steps(current.procedure if current else None, graph)
         if not preserved:
             violations.append("update removed or weakened a mandatory safety step")

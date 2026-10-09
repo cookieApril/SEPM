@@ -25,7 +25,7 @@ class EvaluationContext:
     output_path: Path
 
     @classmethod
-    def from_environment(cls) -> "EvaluationContext":
+    def from_environment(cls) -> EvaluationContext:
         required = {
             "benchmark": "SEPM_EVAL_BENCHMARK",
             "task": "SEPM_EVAL_TASK",

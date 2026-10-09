@@ -10,8 +10,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
-import shutil
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -70,7 +68,7 @@ class GMemoryBridge:
     _events: list[dict[str, Any]] = field(default_factory=list, init=False)
 
     @classmethod
-    def open_snapshot(cls, snapshot_path: str | Path, read_only: bool = True) -> "GMemoryBridge":
+    def open_snapshot(cls, snapshot_path: str | Path, read_only: bool = True) -> GMemoryBridge:
         path = Path(snapshot_path)
         if not path.exists():
             raise GMemorySnapshotError(f"G-Memory snapshot does not exist: {path}")
@@ -234,7 +232,7 @@ def ensure_development_snapshot(
     revision = _git_revision(project_root / "external/GMemory")
     manifest = {
         "snapshot_id": hashlib.sha256(
-            f"{benchmark_task}|{revision}|{nodes_json}".encode("utf-8")
+            f"{benchmark_task}|{revision}|{nodes_json}".encode()
         ).hexdigest()[:16],
         "benchmark_task": benchmark_task,
         "frozen": True,
@@ -291,7 +289,8 @@ def _development_nodes(
                 continue
             try:
                 item = json.loads(subtask.read_text(encoding="utf-8"))
-            except Exception:
+            except (OSError, UnicodeError, json.JSONDecodeError):
+                # Ignore malformed records from unrelated evaluation cases.
                 continue
             nodes.append(
                 {

@@ -5,17 +5,31 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from unittest.mock import patch
 
+from sepm.benchmark_runtime import SEPMBenchmarkRuntime
 from sepm.config import MemoryConfig
 from sepm.divergence import normalized_plan_distance
 from sepm.evidence import EvidenceResolver
 from sepm.models import (
-    AgentProfile, BlackboardEntry, BlackboardKind, CandidateStatus, Evidence, EvidenceTier,
-    PlanEdge, PlanNode, ProcedureGraph, ProcedureStep, ProposalOperation, ReproductionTrial,
-    SOPCandidate, SOPMetadata, SOPVersion, TaskPlan, Workspace,
+    AgentProfile,
+    BlackboardEntry,
+    BlackboardKind,
+    CandidateStatus,
+    Evidence,
+    EvidenceTier,
+    PlanEdge,
+    PlanNode,
+    ProcedureGraph,
+    ProcedureStep,
+    ProposalOperation,
+    ReproductionTrial,
+    SOPCandidate,
+    SOPMetadata,
+    SOPVersion,
+    TaskPlan,
+    Workspace,
 )
 from sepm.safety import SafetyValidator
 from sepm.service import SEPMService
-from sepm.benchmark_runtime import SEPMBenchmarkRuntime
 
 
 class ContributionRegressionTests(unittest.TestCase):
@@ -32,18 +46,31 @@ class ContributionRegressionTests(unittest.TestCase):
             workspace_id="w", agent_id=agent, kind=BlackboardKind.OBSERVATION, **fields))
 
     def candidate(self, **fields):
-        values = dict(operation=ProposalOperation.CREATE,
-                      procedure=ProcedureGraph(steps=[ProcedureStep(instruction="Inspect result")]),
-                      metadata=SOPMetadata(title="Inspect", task_family="inspect"),
-                      source_workspace_ids=["w"], state_verified=True, causal_confidence=1,
-                      claimed_benefit=1)
+        values = {
+            "operation": ProposalOperation.CREATE,
+            "procedure": ProcedureGraph(steps=[ProcedureStep(instruction="Inspect result")]),
+            "metadata": SOPMetadata(title="Inspect", task_family="inspect"),
+            "source_workspace_ids": ["w"],
+            "state_verified": True,
+            "causal_confidence": 1,
+            "claimed_benefit": 1,
+        }
         values.update(fields)
         return SOPCandidate(**values)
 
     def trial(self, candidate, **fields):
-        values = dict(candidate_id=candidate.candidate_id, workspace_id="w", task_family="inspect",
-                      environment_fingerprint="env", success=True, baseline_reward=0,
-                      candidate_reward=1, cost=0, state_verified=True, causal_supported=True)
+        values = {
+            "candidate_id": candidate.candidate_id,
+            "workspace_id": "w",
+            "task_family": "inspect",
+            "environment_fingerprint": "env",
+            "success": True,
+            "baseline_reward": 0,
+            "candidate_reward": 1,
+            "cost": 0,
+            "state_verified": True,
+            "causal_supported": True,
+        }
         values.update(fields)
         return ReproductionTrial(**values)
 
@@ -127,7 +154,7 @@ class ContributionRegressionTests(unittest.TestCase):
 
     def test_commit_rolls_back_if_candidate_status_write_fails(self):
         c, _ = self.service.propose_sop(self.candidate())
-        with patch.object(self.service.store, "_mark_promoted", side_effect=RuntimeError("write failed")):
+        with patch.object(self.service.store, "_mark_promoted", side_effect=RuntimeError("write failed")):  # noqa: SIM117
             with self.assertRaisesRegex(RuntimeError, "write failed"):
                 self.service.record_reproduction(self.trial(c))
         self.assertEqual(self.service.store.list_active_sops()[1], 0)

@@ -16,7 +16,7 @@ authors = [{ name = "Research Prototype" }]
 dependencies = ["pydantic>=2.7,<3"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "pytest-asyncio>=0.24", "ruff>=0.6", "mypy>=1.11"]
+dev = ["pytest>=8", "pytest-asyncio>=0.24", "ruff==0.16.10", "mypy>=1.11"]
 eval = ["openai>=1.58,<3"]
 
 [project.scripts]

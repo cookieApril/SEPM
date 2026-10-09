@@ -16,7 +16,6 @@ import re
 import shutil
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
@@ -611,7 +610,7 @@ def _read_runtime_metrics(path: Path) -> dict[str, float]:
         return {}
     payload = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
-        raise RuntimeError(f"SEPM runtime metrics sidecar is not an object: {path}")
+        raise RuntimeError(f"SEPM runtime metrics sidecar is not an object: {path}")  # noqa: TRY004
     return {str(key): float(value) for key, value in payload.items()}
 
 
@@ -724,7 +723,7 @@ def _run_webarena_official(
     webarena_python = os.environ.get("WEBARENA_PYTHON", sys.executable)
     webarena_python_dir = str(Path(webarena_python).resolve().parent)
     env["PATH"] = f"{webarena_python_dir}{os.pathsep}{env.get('PATH', '')}"
-    env["PYTHONPATH"] = f"{str(webarena_root)}{os.pathsep}{env.get('PYTHONPATH', '')}"
+    env["PYTHONPATH"] = f"{webarena_root!s}{os.pathsep}{env.get('PYTHONPATH', '')}"
     command = [
         webarena_python,
         "run.py",
@@ -1023,10 +1022,11 @@ def _run_alfworld_sepm_official(
     os.chdir(gmemory_root)
     try:
         import yaml
-        from openai import OpenAI
         from envs.alfworld_env import AlfworldEnv, get_env_name_from_gamefile
+        from openai import OpenAI
+        from textworld.envs.pddl import textgen
+
         from sepm.benchmark_runtime import SEPMBenchmarkRuntime
-        import textworld.envs.pddl.textgen as textgen
 
         def _derive_with_explicit_eval_locals(self, context=None):
             context = context or self.context
@@ -1167,7 +1167,7 @@ def _run_alfworld_sepm_official(
                         f"action_parse_error: raw={raw_action_response!r}; parsed={action!r}",
                         task=task_main,
                     )
-        except Exception as error:
+        except Exception as error:  # noqa: BLE001 - Recover from any upstream actor failure.
             actor_error = str(error)
             runtime.record_error(f"alfworld-{args.mas}-agent", error, task=task_main)
             parse_error_count += 1
@@ -1183,7 +1183,7 @@ def _run_alfworld_sepm_official(
         )
         try:
             observation, reward, done = environment.step(action)
-        except Exception as error:
+        except Exception as error:  # noqa: BLE001 - Record upstream environment failures.
             runtime.record_error(f"alfworld-{args.mas}-agent", error, task=task_main)
             observation = str(error)
             reward = 0.0

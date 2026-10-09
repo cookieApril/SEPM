@@ -36,7 +36,7 @@ class BenchmarkRuntimeTests(unittest.TestCase):
         }
 
     def test_runtime_records_loop_events_and_metrics(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
+        with tempfile.TemporaryDirectory() as directory:  # noqa: SIM117
             with patch.dict(os.environ, self._env(directory), clear=True):
                 runtime = SEPMBenchmarkRuntime.from_environment(
                     main_goal="Book a verified item only after authorization",
@@ -73,7 +73,7 @@ class BenchmarkRuntimeTests(unittest.TestCase):
         self.assertEqual(metrics["divergence_recovery"], 0.0)
 
     def test_recovery_requires_explicit_verified_lifecycle(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
+        with tempfile.TemporaryDirectory() as directory:  # noqa: SIM117
             with patch.dict(os.environ, self._env(directory), clear=True):
                 runtime = SEPMBenchmarkRuntime.from_environment(
                     main_goal="Keep the verified account state",

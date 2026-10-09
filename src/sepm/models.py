@@ -281,7 +281,7 @@ class SOPCandidate(StrictModel):
     created_at: datetime = Field(default_factory=utc_now)
 
     @model_validator(mode="after")
-    def validate_operation(self) -> "SOPCandidate":
+    def validate_operation(self) -> SOPCandidate:
         if self.operation == ProposalOperation.CREATE:
             if self.target_sop_id is not None or self.base_version is not None:
                 raise ValueError("create uses a new SOP id; use metadata.variant_of for specialization")
