@@ -1,6 +1,6 @@
 {
   "experiment": "sop-model-sensitivity",
-  "policy": "docs/EXPERIMENTS.md E2 subset; frozen E2 hash seed",
+  "policy": "Frozen E2 case subset selected with the recorded hash seed",
   "benchmarks": {
     "alfworld": {
       "cases": [

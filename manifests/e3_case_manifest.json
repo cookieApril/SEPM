@@ -1,6 +1,6 @@
 {
   "experiment": "component-ablation",
-  "policy": "docs/EXPERIMENTS.md E3 subset; frozen E3 hash seed",
+  "policy": "Frozen E3 case subset selected with the recorded hash seed",
   "benchmarks": {
     "alfworld": {
       "cases": [

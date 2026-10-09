@@ -25,7 +25,6 @@ sepm = "sepm.cli:main"
 sepm-benchmark = "sepm.benchmark:main"
 sepm-eval = "sepm.evaluation_runner:main"
 sepm-ablation = "sepm.ablation.runner:main"
-sepm-tables = "sepm.paper_tables:main"
 
 [tool.hatch.build.targets.wheel]
 # Use the src layout to prevent accidental imports from the repository root.

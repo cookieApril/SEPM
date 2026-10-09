@@ -1,6 +1,8 @@
-# SEPM Framework
+# SEPM: Self-Evolving Procedural Memory
 
-SEPM is a pure-Python memory layer for multi-agent systems. It separates
+This repository contains the source code for *Self-Evolving Procedural Memory
+Grounded in Task Graphs for Multi-Agent Collaboration*. SEPM is a Python memory
+layer for multi-agent systems. It separates
 three kinds of memory:
 
 - `Private Memory`: persistent role information and the current task;
@@ -15,12 +17,8 @@ The core principle is:
 successful trajectory != promotable procedural memory
 ```
 
-Maintained documentation:
-
-- [docs/DIRECTORY_STRUCTURE.md](docs/DIRECTORY_STRUCTURE.md)
-- [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md)
-- [docs/RESEARCH_DESIGN.md](docs/RESEARCH_DESIGN.md)
-- [docs/STORAGE_SCHEMA.md](docs/STORAGE_SCHEMA.md)
+The [storage schema](docs/STORAGE_SCHEMA.md) describes the task graph,
+blackboard records, and versioned procedures.
 
 ## Implemented Mechanisms
 
@@ -68,9 +66,9 @@ under `external/` and are intentionally not vendored in this repository.
 | `src/sepm/` | Installable SEPM implementation and evaluation runner. |
 | `adapters/` | Benchmark-facing adapters for GMemory and cross-benchmark runs. |
 | `tests/` | Unit and integration-contract tests that do not require model calls. |
-| `scripts/` | Reproducible experiment and smoke-test entry points. |
+| `scripts/` | Experiment runner and setup validation. |
 | `manifests/` | Frozen case manifests used by the paper experiments. |
-| `docs/` | Method, storage, directory, and experiment specifications. |
+| `docs/` | Storage schema. |
 
 Raw traces, result data, logs, checkpoints, databases, third-party repositories,
 manuscript files, and visualization code are excluded from Git. Evaluation
@@ -159,12 +157,13 @@ failed outcomes, verified state evidence, and newer SOP versions.
 
 ## Evaluation
 
-The paper experiment design keeps three result tables: cross-MAS generality,
-SOP-model sensitivity, and the minimal component ablation. The current ablation
-configuration defines `no-extra-components`, `blackboard-only`, `sop-only`,
-`divergence-only`, and `full`.
-Mechanism diagnostics remain engineering tests, not paper experiments. See
-[docs/EXPERIMENTS.md](docs/EXPERIMENTS.md) for the complete protocol.
+`evaluation_matrix.json` and `manifests/` define the case selection and model
+settings for the paper experiments. The supported benchmark paths cover
+MultiAgentBench, ALFWorld, WebArena, and OfficeBench. The ablation conditions are
+`no-extra-components`, `blackboard-only`, `sop-only`, `divergence-only`, and
+`full`. `sepm.evaluation_runner` executes the matrix, while
+`scripts/run_paper_experiments.sh` groups its stages. The benchmark adapters
+require separate upstream checkouts under `external/`.
 
 Evaluation resume is cell-level: each benchmark/task/method/MAS/model/seed/case
 and condition has its own result, log, and SQLite checkpoint row when a case id
@@ -178,6 +177,8 @@ sepm-benchmark --output benchmark-results/mechanism/report.json
 pytest -q
 ```
 
-Full benchmark runs require the external repositories and API credentials
-described in [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md). Copy `.env.example` to
-`.env`; never commit the populated file.
+For a full run, create the Conda environment, place the upstream benchmark
+repositories under `external/`, and copy `.env.example` to `.env` with your API
+credentials. Run `python scripts/validate_paper_setup.py --require-jobs` before
+`bash scripts/run_paper_experiments.sh all`. Local outputs are written to
+`benchmark-results/`, which Git ignores.

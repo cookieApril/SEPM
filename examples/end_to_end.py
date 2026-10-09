@@ -1,6 +1,6 @@
 """Minimal end-to-end example from proposal to promotion and retrieval.
 
-The script writes ``demo_memory.db`` in the current directory for manual API
+The script writes ``sepm_demo.db`` in the current directory for manual API
 inspection. Repeated runs preserve SOP history. Automated tests should use the
 temporary databases in ``tests/test_core.py`` to keep state isolated.
 """
@@ -27,7 +27,7 @@ from sepm.service import SEPMService
 
 def main() -> None:
     """Create two workspaces, validate an SOP candidate, and show retrieval results."""
-    database = Path("demo_memory.db")
+    database = Path("sepm_demo.db")
     service = SEPMService(database)
     service.register_agent(AgentProfile(agent_id="researcher", role="find verified evidence"))
     for workspace_id, action in (("task-a", "search catalog"), ("task-b", "lookup index")):

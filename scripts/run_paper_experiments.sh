@@ -18,7 +18,6 @@ PAPER_RUN_LOCK_PATH="${PAPER_RUN_LOCK_PATH:-benchmark-results/unified-v3/paper-r
 mkdir -p benchmark-results/unified-v3 benchmark-results/logs
 EVAL_CMD=(python -m sepm.evaluation_runner)
 ABLATION_CMD=(python -m sepm.ablation.runner)
-TABLES_CMD=(python -m sepm.paper_tables)
 export PYTHONPATH="${PYTHONPATH:-src}"
 
 # Prevent two full runs from writing the same SQLite checkpoint. Without flock,
@@ -108,10 +107,6 @@ run_ablation() {
 
 build_outputs() {
   "${EVAL_CMD[@]}" report --config "$CONFIG"
-  "${TABLES_CMD[@]}" \
-    --summary benchmark-results/unified-v3/summary.json \
-    --actor-model "$ACTOR_MODEL" --sop-model "$SOP_MODEL" \
-    --mas "$ABLATION_MAS"
 }
 
 case "$PHASE" in
