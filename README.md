@@ -304,6 +304,6 @@ The runner has `preflight`, `smoke`, `matrices`, `generality`, `sop-models`, `ab
 
 ## 📄 Citation and License
 
-A public citation record will be added when available. The local research draft is in `paper/SEPM.pdf` in this workspace; `paper/` is not part of the source release.
+A public citation record will be added when available.
 
-This code is licensed under [Apache 2.0](LICENSE).
+This code is licensed under [MIT](LICENSE).
