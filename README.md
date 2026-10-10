@@ -8,8 +8,8 @@
   <a href="https://www.python.org/downloads/">
     <img src="https://img.shields.io/badge/Python-3.10+-blue.svg" alt="Python 3.10+">
   </a>
-  <a href="LICENSE">
-    <img src="https://img.shields.io/badge/License-Apache%202.0-yellow.svg" alt="Apache 2.0 license">
+   <a href="LICENSE">
+      <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT license">
   </a>
 </div>
 
