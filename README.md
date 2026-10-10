@@ -193,13 +193,13 @@ The full system leads all three tasks. The blackboard alone improves on the base
   The plotted totals cover the entire evaluation, rather than one representative task. They include coordination and memory operations together with task execution.
  </p>
 <br clear="all">
-  Compared with no added memory, SEPM uses about **18.2%** more tokens and raises success by **29.85 points**. Compared with Generative Agents and G-Memory, it uses about **7.1%** and **8.8%** fewer tokens while improving success by **3.73** and **5.97** points, respectively.
+  Compared with no added memory, SEPM uses about <strong>18.2%</strong> more tokens and raises success by <strong>29.85 points</strong>. Compared with Generative Agents and G-Memory, it uses about <strong>7.1%</strong> and <strong>8.8%</strong> fewer tokens while improving success by <strong>3.73</strong> and <strong>5.97</strong> points, respectively.
 
 ---
 
 ## 🔎 Case Study: Complete Workflow
 
-The cleaning-and-storage case traces an end-to-end cycle of **retrieval → collaboration → realignment → memory revision**. The task is to wash dirty cups and dishes in a kitchen and put them in a cabinet.
+The cleaning-and-storage case traces an end-to-end cycle of retrieval → collaboration → realignment → memory revision. The task is to wash dirty cups and dishes in a kitchen and put them in a cabinet.
 
 <p align="center">
   <a href="docs/readme-assets/case-study.png"><img src="docs/readme-assets/case-study.png" width="98%" alt="Complete SEPM cleaning and storage workflow from retrieved procedure to revised memory"></a><br>
