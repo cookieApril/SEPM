@@ -312,11 +312,14 @@ The runner has `preflight`, `smoke`, `matrices`, `generality`, `sop-models`, `ab
 If you find our work helpful, please consider citing it. We greatly appreciate your support.
 
 ```bibtex
-@article{liu2025envsimbench,
-  title   = {EnvSimBench: A Benchmark for Evaluating and Improving LLM-Based Environment Simulation},
-  author  = {Liu, Yi and Hui, TingFeng and Zhang, Wei and Sun, Li and Su, Ningxin and Wang, Jian and Su, Sen},
-  journal = {arXiv preprint},
-  year    = {2025}
+@misc{liu2026sepmselfevolvingproceduralmemory,
+      title={SEPM: Self-Evolving Procedural Memory Grounded in Task Graphs for Multi-Agent Collaboration}, 
+      author={Yi Liu and Junwei Zhao and Li Sun and Jiansong Zhang and Sen Su},
+      year={2026},
+      eprint={2610.14515},
+      archivePrefix={arXiv},
+      primaryClass={cs.MA},
+      url={https://arxiv.org/abs/2610.14515}, 
 }
 ```
 ---
