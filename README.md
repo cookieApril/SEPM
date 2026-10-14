@@ -5,8 +5,8 @@
   <!-- <a href="https://arxiv.org/">
     <img src="https://img.shields.io/badge/Paper-arXiv-b5212f.svg?logo=arxiv" alt="arXiv">
   </a> -->
-  <a href="https://openreview.net/">
-    <img src="https://img.shields.io/badge/Paper-OpenReview-7b1fa2.svg" alt="OpenReview">
+  <a href="https://arxiv.org/abs/2610.14515">
+    <img src="https://img.shields.io/badge/Paper-arXiv-b5212f.svg?logo=arxiv" alt="arXiv">
   </a>
   <a href="https://www.python.org/downloads/">
     <img src="https://img.shields.io/badge/Python-3.10+-blue.svg" alt="Python 3.10+">
