@@ -27,7 +27,8 @@
 - [📁 Project Structure](#-project-structure)
 - [🚀 Quick Start](#-quick-start)
 - [🧪 Evaluation](#-evaluation)
-- [📄 Citation and License](#-citation-and-license)
+- [📚 Citation ](#-citation )
+- [📞 Contact ](#-contact)
 
 ---
 
@@ -305,8 +306,25 @@ The runner has `preflight`, `smoke`, `matrices`, `generality`, `sop-models`, `ab
 
 ---
 
-## 📄 Citation and License
 
-A public citation record will be added when available.
+## 📚 Citation
 
-This code is licensed under [MIT](LICENSE).
+If you find our work helpful, please consider citing it. We greatly appreciate your support.
+
+```bibtex
+@article{liu2025envsimbench,
+  title   = {EnvSimBench: A Benchmark for Evaluating and Improving LLM-Based Environment Simulation},
+  author  = {Liu, Yi and Hui, TingFeng and Zhang, Wei and Sun, Li and Su, Ningxin and Wang, Jian and Su, Sen},
+  journal = {arXiv preprint},
+  year    = {2025}
+}
+```
+---
+
+## 📞 Contact
+
+For questions, suggestions, or collaboration, please reach out to:
+
+- **Yi Liu** — [louie@bupt.edu.cn](mailto:louie@bupt.edu.cn)
+- Open an issue on this repository.
+
