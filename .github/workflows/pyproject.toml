@@ -1,0 +1,28 @@
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sepm"
+version = "0.1.0"
+description = "Self-Evolving Procedural Memory Grounded in Task Graphs for Multi-Agent Collaboration"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.0,<3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.8",
+]
+
+[project.scripts]
+sepm = "sepm.cli:main"
+sepm-benchmark = "sepm.benchmark:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["sepm*"]
