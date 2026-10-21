@@ -33,6 +33,7 @@ Thumbs.db
 # Third-party benchmark and MAS repositories are installed separately.
 external/
 
+
 # Runtime state and raw experiment artifacts
 *.db
 *.db-shm
@@ -56,6 +57,8 @@ output/
 results/
 figures/
 plots/
+paper/
+image/
 
 # LaTeX build products
 *.aux
