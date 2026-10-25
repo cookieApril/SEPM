@@ -1065,7 +1065,6 @@ def _run_alfworld_sepm_official(
         f"{args.mas} ALFWorld task-solving agent",
         current_task=task_main,
         task_query=task_description,
-        sop_limit=1,
     )
     prompt_prefix = payload.get("prompt_prefix") or ""
     observation = task_description

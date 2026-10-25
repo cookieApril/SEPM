@@ -1,8 +1,8 @@
-"""Hybrid BM25/VectorSearch retrieval with lightweight online weight learning.
+"""Hybrid BM25/VectorSearch retrieval with query-adaptive weights (Eq. 3).
 
 Retrieval answers which SOP is most likely to help the current task by combining
-lexical BM25 relevance with vector semantic relevance. Safety-critical steps do
-not affect retrieval weights; update, delete, and supersede gates protect them.
+lexical BM25 relevance with vector semantic relevance. Only active SOPs whose
+context conditions are verified facts and whose exclusions do not apply compete.
 """
 
 from __future__ import annotations
@@ -14,77 +14,34 @@ from collections.abc import Sequence
 
 from .config import MemoryConfig
 from .embedding import Embedder, bounded_similarity
-from .models import RetrievalResult, SOPVersion, TaskPlan
+from .models import RetrievalResult, SOPVersion
 
 
 class AdaptiveWeightRouter:
-    """A tiny trainable softmax router over BM25 and vector relevance.
-
-    `learn` provides online SGD for an experimental learned router; deterministic
-    task priors make the untrained model useful.
-    """
+    """Softmax router over BM25 and vector logits driven by query cues (Appendix B.1, Table 3)."""
 
     LABELS = ("bm25", "vector")
+    # (cues, modified logit, increment); Chinese cues mirror the English ones.
+    ROUTING_CUES: tuple[tuple[tuple[str, ...], str, float], ...] = (
+        (("code", "debug", "implement", "coding", "代码", "调试"), "vector", 1.0),
+        (("latest", "current", "real-time", "实时", "最新"), "bm25", 0.8),
+        (("routine", "repeat", "standard", "日常", "重复", "标准"), "bm25", 0.6),
+    )
 
-    def __init__(self, embedder: Embedder, config: MemoryConfig | None = None) -> None:
-        self.embedder = embedder
+    def __init__(self, config: MemoryConfig | None = None) -> None:
         self.config = config or MemoryConfig()
-        self.bias = {label: 0.0 for label in self.LABELS}
-        self.hidden_size = 8
-        self.output_weights = {label: [0.0] * self.hidden_size for label in self.LABELS}
 
     def weights(self, query: str) -> dict[str, float]:
-        """Compute normalized query-dependent weights that sum to one."""
+        """Compute w_b and w_v; both are 0.50 without a cue or with adaptive retrieval disabled."""
         if not self.config.adaptive_retrieval:
             return {"bm25": 0.50, "vector": 0.50}
         lower = query.lower()
-        hidden = self._hidden(query)
-        logits = {
-            label: self.bias[label]
-            + sum(weight * activation for weight, activation in zip(self.output_weights[label], hidden))
-            for label in self.LABELS
-        }
-        # These priors make an untrained router useful; online learning adjusts them.
-        if any(word in lower for word in ("code", "debug", "implement", "coding", "代码", "调试")):
-            logits["vector"] += 1.0
-        if any(word in lower for word in ("latest", "current", "real-time", "today", "实时", "最新")):
-            logits["bm25"] += 0.8
-        if any(word in lower for word in ("routine", "repeat", "standard", "日常", "重复", "标准")):
-            logits["bm25"] += 0.6
+        logits = {label: 0.0 for label in self.LABELS}
+        for cues, label, increment in self.ROUTING_CUES:
+            if any(cue in lower for cue in cues):
+                logits[label] += increment
         probabilities = self._softmax([logits[label] for label in self.LABELS])
         return {label: value for label, value in zip(self.LABELS, probabilities)}
-
-    def learn(self, query: str, preferred_feature: str, learning_rate: float = 0.05) -> None:
-        """Take one online cross-entropy step toward the preferred retrieval feature."""
-        if not self.config.adaptive_retrieval:
-            return
-        if preferred_feature not in self.LABELS:
-            raise ValueError(f"preferred_feature must be one of {self.LABELS}")
-        hidden = self._hidden(query)
-        weights = self.weights(query)
-        for label in self.LABELS:
-            probability = weights[label]
-            target = 1.0 if label == preferred_feature else 0.0
-            gradient = target - probability
-            self.bias[label] += learning_rate * gradient
-            self.output_weights[label] = [
-                weight + learning_rate * gradient * activation
-                for weight, activation in zip(self.output_weights[label], hidden)
-            ]
-
-    def _hidden(self, query: str) -> list[float]:
-        """Fixed signed projection + tanh hidden layer over the task embedding."""
-        embedding = self.embedder.embed(query)
-        scale = math.sqrt(max(1, len(embedding)))
-        return [
-            math.tanh(
-                sum(
-                    value * math.sin((index + 1) * (unit + 1) * 0.017) / scale
-                    for index, value in enumerate(embedding)
-                )
-            )
-            for unit in range(self.hidden_size)
-        ]
 
     @staticmethod
     def _softmax(values: Sequence[float]) -> list[float]:
@@ -96,7 +53,7 @@ class AdaptiveWeightRouter:
 
 
 class SOPRetriever:
-    """Convert SOPs to features, apply dynamic weights, and return top results."""
+    """Filter compatible SOPs, apply query-dependent weights, and return the top K."""
     def __init__(
         self,
         embedder: Embedder,
@@ -105,17 +62,16 @@ class SOPRetriever:
     ) -> None:
         self.embedder = embedder
         self.config = config or MemoryConfig()
-        self.router = router or AdaptiveWeightRouter(embedder, self.config)
+        self.router = router or AdaptiveWeightRouter(self.config)
 
     def rank(
         self,
         query: str,
         sops: list[SOPVersion],
         limit: int = 5,
-        query_plan: TaskPlan | None = None,
         *, context_facts: set[str] | None = None,
     ) -> list[RetrievalResult]:
-        """Rank active SOPs; query_plan is retained for compatibility but is not scored."""
+        """Rank the candidate set C(q, F_q) by s_i(q) and return TopK."""
         weights = self.router.weights(query)
         facts = {fact.strip().casefold() for fact in (context_facts or set())}
         # Conditions are verified context facts, not positive lexical ranking features.
@@ -126,14 +82,9 @@ class SOPRetriever:
         bm25_scores = self._bm25_scores(query, documents)
         results: list[RetrievalResult] = []
         for index, sop in enumerate(sops):
-            document = documents[index]
-            vector_relevance = bounded_similarity(query, document, self.embedder)
-            bm25_relevance = bm25_scores[index]
             features = {
-                "bm25": bm25_relevance,
-                "vector": vector_relevance,
-                "bm25_relevance": bm25_relevance,
-                "vector_relevance": vector_relevance,
+                "bm25": bm25_scores[index],
+                "vector": bounded_similarity(query, documents[index], self.embedder),
             }
             score = sum(weights[name] * features[name] for name in weights)
             results.append(
@@ -143,8 +94,8 @@ class SOPRetriever:
                     features=features,
                     weights=weights,
                     explanation=(
-                        "Candidate(q)=BM25(q) union VectorSearch(q); ranking combines lexical and semantic relevance; "
-                        "safety-critical steps are protected during SOP updates/deletes"
+                        "s(q)=w_b*BM25(q)+w_v*sim(f(q),f(S)) over SOPs whose context conditions "
+                        "hold and whose exclusions do not apply"
                     ),
                 )
             )
@@ -152,7 +103,7 @@ class SOPRetriever:
 
     @staticmethod
     def _tokens(text: str) -> list[str]:
-        return re.findall(r"[\w\u4e00-\u9fff]+", text.lower())
+        return re.findall(r"[\w一-鿿]+", text.lower())
 
     @staticmethod
     def _document(sop: SOPVersion) -> str:
@@ -164,12 +115,13 @@ class SOPRetriever:
                 *sop.metadata.applicability,
                 *sop.metadata.tags,
                 *sop.metadata.context_conditions,
-                *sop.metadata.warnings,
+                *(warning.text for warning in sop.metadata.warnings),
                 *(step.instruction for step in sop.procedure.steps),
             ]
         )
 
     def _bm25_scores(self, query: str, documents: list[str]) -> list[float]:
+        """BM25 with k1=1.5, b=0.75, normalized by the maximum in the candidate set."""
         query_terms = self._tokens(query)
         tokenized = [self._tokens(document) for document in documents]
         if not query_terms or not tokenized:

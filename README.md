@@ -70,7 +70,7 @@ The gains across both measures illustrate the aim of the framework: memory shoul
 
 1. **Coordination-native procedural memory.** Task dependency graphs represent both active collaborative plans and reusable procedures, so cross-agent prerequisites survive the transition from one task to the next.
 2. **Evidence-grounded alignment.** A shared blackboard records structured execution evidence; goal, plan, and world-state divergence signals guide corrections while agents retain their private context.
-3. **Self-evolving procedures.** Verified actions and dependencies can become graph-structured SOPs. Revisions, context-specific variants, and retirement are governed by validation, utility, safety, and version history.
+3. **Self-evolving procedures.** Verified actions and dependencies can become graph-structured SOPs. Revisions, context-specific variants, and retirement are governed by validation, utility, safety, and versioned commits that merge non-conflicting changes.
 
 The repository implements these ideas as an installable Python memory layer:
 
@@ -81,7 +81,7 @@ The repository implements these ideas as an installable Python memory layer:
 | Evolving procedures | Propose, validate, reproduce, and version graph-structured SOPs | [`service.py`](src/sepm/service.py), [`safety.py`](src/sepm/safety.py) |
 | Contextual retrieval | Filter applicable SOPs and rank them with lexical and vector relevance | [`retrieval.py`](src/sepm/retrieval.py) |
 
-This implementation map follows a procedure from storage and retrieval into execution, alignment, and revision. [`SEPMService`](src/sepm/service.py) connects the modules, while the [storage schema](docs/STORAGE_SCHEMA.md) documents the graph objects, blackboard events, and SQLite version history.
+This implementation map follows a procedure from storage and retrieval into execution, alignment, and revision. [`SEPMService`](src/sepm/service.py) connects the modules, while the [storage schema](docs/STORAGE_SCHEMA.md) documents the graph objects, blackboard events, and SQLite version storage.
 
 ---
 
@@ -279,9 +279,9 @@ from sepm.adapter import AgentMemoryAdapter
 from sepm.service import SEPMService
 
 adapter = AgentMemoryAdapter(SEPMService("sepm.db"))
-context = adapter.on_agent_start(profile, workspace, task_query, query_plan)
+context = adapter.on_agent_start(profile, workspace, task_query, context_facts=verified_facts)
 step_result = adapter.on_agent_step(blackboard_entry)
-adapter.on_sop_outcome(sop_id, success=True, query=task_query)
+adapter.on_sop_outcome(sop_id, success=True)
 ```
 
 See [`examples/end_to_end.py`](examples/end_to_end.py) for concrete model objects and a runnable procedure lifecycle.

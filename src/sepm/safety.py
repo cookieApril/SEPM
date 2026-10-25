@@ -7,6 +7,7 @@ statistical utility or learned models, so higher success cannot override a viola
 
 from __future__ import annotations
 
+import re
 from collections.abc import Iterable
 
 from .config import MemoryConfig
@@ -25,6 +26,7 @@ class SafetyValidator:
 
     CONFIRMATION_WORDS = ("confirm", "approval", "authorize", "确认", "批准", "授权")
     BACKUP_WORDS = ("backup", "snapshot", "备份", "快照")
+    IRREVERSIBLE_MARKERS = ("pay", "payment", "delete", "drop", "transfer", "付款", "支付", "删除", "转账")
 
     def __init__(self, config: MemoryConfig | None = None) -> None:
         self.config = config or MemoryConfig()
@@ -69,7 +71,7 @@ class SafetyValidator:
             text = step.instruction.lower()
             if self._is_irreversible(step) and not step.requires_confirmation:
                 violations.append(f"irreversible step {step.step_id} lacks confirmation")
-            if ("migration" in text or "迁移" in text) and not any(
+            if self._contains_any(text, ("migration", "迁移")) and not any(
                 self._contains_any(item.instruction.lower(), self.BACKUP_WORDS)
                 for item in graph.steps
             ):
@@ -96,14 +98,24 @@ class SafetyValidator:
 
     @staticmethod
     def _contains_any(text: str, words: Iterable[str]) -> bool:
-        return any(word in text for word in words)
+        """Match whole words and inflections: 'drop' matches 'dropped' but not 'dropdown'."""
+        for word in words:
+            if not word.isascii():
+                if word in text:
+                    return True
+                continue
+            stems = {re.escape(word)}
+            if word.endswith("e"):
+                stems.add(re.escape(word[:-1]))
+            pattern = r"\b(?:" + "|".join(sorted(stems)) + r")(?:\w?(?:s|es|d|ed|ing|ment|ments))?\b"
+            if re.search(pattern, text):
+                return True
+        return False
 
-    @staticmethod
-    def _is_irreversible(step: ProcedureStep) -> bool:
+    def _is_irreversible(self, step: ProcedureStep) -> bool:
         """Identify irreversible actions such as payments, deletions, and transfers."""
         text = f"{step.action_type} {step.instruction}".lower()
-        markers = ("pay", "payment", "delete", "drop", "transfer", "付款", "支付", "删除", "转账")
-        return any(marker in text for marker in markers)
+        return self._contains_any(text, self.IRREVERSIBLE_MARKERS)
 
     def _preserves_mandatory_steps(self, old: ProcedureGraph | None, new: ProcedureGraph) -> bool:
         """Conservatively check that an update preserves safeguards and confirmations."""

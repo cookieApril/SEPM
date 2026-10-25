@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .models import AgentProfile, BlackboardEntry, TaskPlan, Workspace
+from .models import AgentProfile, BlackboardEntry, Workspace
 from .service import SEPMService
 
 
@@ -25,14 +25,15 @@ class AgentMemoryAdapter:
         profile: AgentProfile,
         workspace: Workspace,
         task_query: str,
-        query_plan: TaskPlan | None = None,
         sop_limit: int = 5,
+        *,
+        context_facts: set[str] | None = None,
     ) -> dict[str, Any]:
-        """Register the agent/workspace and inject relevant procedural memory."""
+        """Register the agent/workspace and inject compatible procedural memory."""
         # Agent and workspace writes are upserts, so retried startup hooks create no duplicates.
         self.service.register_agent(profile)
         workspace = self.service.create_workspace(workspace)
-        sops = self.service.retrieve_sops(task_query, sop_limit, query_plan)
+        sops = self.service.retrieve_sops(task_query, sop_limit, context_facts=context_facts)
         return {
             "private_memory": profile.model_dump(mode="json"),
             "shared_task_state": workspace.model_dump(mode="json"),
@@ -48,6 +49,6 @@ class AgentMemoryAdapter:
             "divergence": divergence.model_dump(mode="json"),
         }
 
-    def on_sop_outcome(self, sop_id: str, success: bool, query: str) -> dict[str, Any]:
-        """Feed the actual SOP outcome into success statistics and retrieval routing."""
-        return self.service.record_sop_outcome(sop_id, success, query=query).model_dump(mode="json")
+    def on_sop_outcome(self, sop_id: str, success: bool) -> dict[str, Any]:
+        """Feed the verified outcome of an adopted SOP into its success statistics."""
+        return self.service.record_sop_outcome(sop_id, success).model_dump(mode="json")

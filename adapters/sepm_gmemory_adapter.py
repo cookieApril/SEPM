@@ -17,6 +17,7 @@ import re
 import shutil
 import sys
 import tempfile
+import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -73,16 +74,6 @@ def _patch_alfworld_textworld_eval_symbol() -> None:
         return [textgen.TerminalSymbol(value)]
 
     textgen.EvalSymbol.derive = _derive_with_explicit_eval_locals
-
-
-def _string_list(value: Any, field_name: str) -> list[str]:
-    if value is None:
-        return []
-    if isinstance(value, str):
-        return [value]
-    if not isinstance(value, list):
-        raise TypeError(f"{field_name} must be a string or list")
-    return [str(item) for item in value]
 
 
 def _normalize_actor_action(text: str) -> str:
@@ -278,23 +269,6 @@ def _validate_official_data(gmemory_root: Path, task: str) -> None:
         )
 
 
-def _candidate_prompt(task_main: str, task_description: str, trajectory: str) -> str:
-    return f"""Convert this completed multi-agent trajectory into a conservative candidate SOP.
-Return exactly one JSON object with keys: title, description, applicability, exclusions,
-atomic_steps, and rationale. atomic_steps must be a non-empty list of short action strings.
-Do not claim causal validation and do not include hidden reasoning.
-
-Task main:
-{task_main}
-
-Task description:
-{task_description}
-
-Observed action/observation trajectory:
-{trajectory}
-"""
-
-
 def _build_sepm_class():
     """Import both projects lazily, after runner-provided credentials are installed."""
     from mas.memory.common import MASMessage
@@ -302,23 +276,42 @@ def _build_sepm_class():
     from openai import OpenAI
 
     from sepm.ablation import config_from_environment
-    from sepm.adapter import AgentMemoryAdapter
     from sepm.config import MemoryConfig
-    from sepm.models import (
-        AgentProfile,
-        BlackboardEntry,
-        BlackboardKind,
-        Evidence,
-        EvidenceTier,
-        ProcedureGraph,
-        ProcedureStep,
-        ProposalOperation,
-        SOPCandidate,
-        SOPMetadata,
-        Workspace,
-    )
-    from sepm.prompts import SOP_AGENT_SYSTEM_PROMPT
+    from sepm.domains import domain_for
+    from sepm.episode import ProceduralEpisode, format_procedure
     from sepm.service import SEPMService
+
+    class OpenAISOPModel:
+        """SOP endpoint returning one parsed JSON object; usage is added to adapter stats."""
+
+        def __init__(self, client: Any, model_name: str, stats: dict[str, float]) -> None:
+            self.client = client
+            self.model_name = model_name
+            self.stats = stats
+
+        def complete_json(self, system: str, user: str) -> dict[str, Any]:
+            self.stats["sop_model_calls"] += 1.0
+            try:
+                response = self.client.chat.completions.create(
+                    model=self.model_name,
+                    messages=[
+                        {"role": "system", "content": system},
+                        {"role": "user", "content": user},
+                    ],
+                    temperature=0.0,
+                    max_tokens=1200,
+                    **_sop_response_format_kwargs(),
+                )
+            except Exception:
+                # Curation is post-hoc; the episode result stands and only this update is lost.
+                self.stats["sop_transport_failures"] += 1.0
+                raise
+            usage = getattr(response, "usage", None)
+            self.stats["sop_prompt_tokens"] += float(getattr(usage, "prompt_tokens", 0) or 0)
+            self.stats["sop_completion_tokens"] += float(getattr(usage, "completion_tokens", 0) or 0)
+            parsed = _parse_json_object(response.choices[0].message.content or "")
+            self.stats["sop_json_valid"] += 1.0
+            return parsed
 
     @dataclass
     class SEPMMASMemory(MASMemoryBase):
@@ -329,6 +322,7 @@ def _build_sepm_class():
         task_family: str = ""
         experiment_id: str = ""
         seed: int = 0
+        max_steps: int = 30
         stats: dict[str, float] = field(default_factory=dict)
 
         def __post_init__(self) -> None:
@@ -337,7 +331,7 @@ def _build_sepm_class():
                 MemoryConfig(database_path=self.database_path)
             )
             self.service = SEPMService(config=memory_config)
-            self.adapter = AgentMemoryAdapter(self.service)
+            self.domain = domain_for(self.task_family)
             request_timeout = float(
                 os.environ.get("SEPM_EVAL_REQUEST_TIMEOUT_SECONDS", "120")
             )
@@ -345,163 +339,100 @@ def _build_sepm_class():
                 raise ValueError(
                     "SEPM_EVAL_REQUEST_TIMEOUT_SECONDS must be positive"
                 )
-            self.sop_client = OpenAI(
-                base_url=self.sop_base_url,
-                api_key=self.sop_api_key,
-                timeout=request_timeout,
-                max_retries=int(os.environ.get("SEPM_EVAL_MAX_RETRIES", "2")),
+            for key in (
+                "sop_model_calls",
+                "sop_json_valid",
+                "sop_candidates",
+                "sop_candidates_passed",
+                "sop_safety_rejections",
+                "sop_transport_failures",
+                "sop_prompt_tokens",
+                "sop_completion_tokens",
+            ):
+                self.stats.setdefault(key, 0.0)
+            self.sop_model = OpenAISOPModel(
+                OpenAI(
+                    base_url=self.sop_base_url,
+                    api_key=self.sop_api_key,
+                    timeout=request_timeout,
+                    max_retries=int(os.environ.get("SEPM_EVAL_MAX_RETRIES", "2")),
+                ),
+                self.sop_model_name,
+                self.stats,
             )
             self.current_task_context = None
-            self.workspace = None
+            self.episode: ProceduralEpisode | None = None
             self.pending_agent = "solver"
-            self.stats.update(
-                {
-                    "sop_model_calls": 0.0,
-                    "sop_json_valid": 0.0,
-                    "sop_candidates": 0.0,
-                    "sop_candidates_passed": 0.0,
-                    "sop_safety_rejections": 0.0,
-                    "sop_transport_failures": 0.0,
-                    "sop_prompt_tokens": 0.0,
-                    "sop_completion_tokens": 0.0,
-                }
-            )
 
         def init_task_context(self, task_main: str, task_description: str | None = None):
             context = super().init_task_context(task_main, task_description)
             digest = hashlib.sha256(
                 f"{self.experiment_id}|{self.task_family}|{self.seed}|{task_main}".encode()
             ).hexdigest()[:24]
-            self.workspace = Workspace(workspace_id=f"gmemory-{digest}", main_goal=task_main)
-            self.service.create_workspace(self.workspace)
+            # The suffix keeps repeated task texts and retried episodes in separate workspaces.
+            self.episode = ProceduralEpisode(
+                self.service,
+                self.domain,
+                workspace_id=f"gmemory-{digest}-{uuid.uuid4().hex[:8]}",
+                task_goal=task_main,
+                sop_model=self.sop_model,
+                stats=self.stats,
+                max_steps=self.max_steps,
+            )
             return context
+
+        def _require_episode(self) -> ProceduralEpisode:
+            if self.episode is None:
+                raise RuntimeError("init_task_context must run before SEPM memory hooks")
+            return self.episode
 
         def add_agent_node(self, agent_message: Any, upstream_agent_ids: list[str]) -> str:
             node_id = super().add_agent_node(agent_message, upstream_agent_ids)
             self.pending_agent = agent_message.agent_name or "unknown-agent"
-            self.service.register_agent(
-                AgentProfile(
-                    agent_id=self.pending_agent,
-                    role=self.pending_agent,
-                    current_task=self.current_task_context.task_main,
-                )
-            )
+            self._require_episode().register_agent(self.pending_agent)
             return node_id
 
         def move_memory_state(self, action: str, observation: str, **kwargs: Any) -> None:
             super().move_memory_state(action, observation, **kwargs)
-            assert self.workspace is not None
-            evidence = Evidence(
-                tier=EvidenceTier.TOOL_OBSERVATION,
-                source=f"gmemory:{self.task_family}:environment",
-                value=observation,
-                verifier="official G-Memory environment",
-            )
-            self.adapter.on_agent_step(
-                BlackboardEntry(
-                    workspace_id=self.workspace.workspace_id,
-                    agent_id=self.pending_agent,
-                    kind=BlackboardKind.ACTION,
-                    action=action,
-                    observation=observation,
-                    evidence=[evidence],
-                )
-            )
+            self._require_episode().record_step(self.pending_agent, str(action), str(observation))
+
+        def take_alignment_notices(self) -> list[str]:
+            """Corrections for the next actor call; empty outside an episode."""
+            return self.episode.take_notices() if self.episode is not None else []
 
         def retrieve_memory(self, query_task: str, **kwargs: Any):
-            ranked = self.service.retrieve_sops(query_task, kwargs.get("successful_topk", 1))
+            context = self._require_episode().retrieve(
+                query_task, int(kwargs.get("successful_topk") or 5)
+            )
+            injected = [(sop, "") for sop in context.active]
+            if context.trial is not None:
+                injected.append(
+                    (context.trial, "Candidate procedure under validation; verify each step.\n")
+                )
             trajectories: list[MASMessage] = []
-            insights: list[str] = []
-            for result in ranked:
-                sop = result.sop
-                steps = [step.instruction for step in sop.procedure.steps]
-                trajectory = "\n".join(f"> {step}" for step in steps)
+            for sop, prefix in injected:
                 message = MASMessage(
                     task_main=sop.metadata.title,
                     task_description=sop.metadata.description or sop.metadata.title,
-                    task_trajectory=trajectory,
+                    task_trajectory=prefix + format_procedure(sop),
                     label=True,
                 )
-                message.add_extra_field("key_steps", "\n".join(steps))
+                message.add_extra_field(
+                    "key_steps", "\n".join(step.instruction for step in sop.procedure.steps)
+                )
                 trajectories.append(message)
-                insights.extend(steps)
+            insights = [
+                warning.text
+                + (f" (when: {warning.trigger_condition})" if warning.trigger_condition else "")
+                for sop in context.active
+                for warning in sop.metadata.warnings
+            ]
             return trajectories, [], insights
 
         def add_memory(self, mas_message: Any) -> None:
-            # A model may propose a candidate, but it never supplies causal evidence.
-            # Therefore a post-hoc successful trace is not promoted by this adapter.
-            if mas_message.label is not True:
-                return
-            self.stats["sop_model_calls"] += 1.0
-            try:
-                response = self.sop_client.chat.completions.create(
-                    model=self.sop_model_name,
-                    messages=[
-                        {"role": "system", "content": SOP_AGENT_SYSTEM_PROMPT},
-                        {
-                            "role": "user",
-                            "content": _candidate_prompt(
-                                mas_message.task_main,
-                                mas_message.task_description or "",
-                                mas_message.task_trajectory or "",
-                            ),
-                        },
-                    ],
-                    temperature=0.0,
-                    max_tokens=1200,
-                    **_sop_response_format_kwargs(),
-                )
-            except Exception as error:  # noqa: BLE001 - A provider failure must not erase the episode.
-                # SOP curation is post-hoc. A provider timeout must not erase a
-                # completed environment episode or prevent its checkpoint from
-                # being written. Record the transport failure and reject only
-                # this candidate; a later explicit failed-cell run may retry it.
-                self.stats["sop_transport_failures"] += 1.0
-                print(f"SOP candidate transport rejected: {error}", file=sys.stderr)
-                return
-            usage = getattr(response, "usage", None)
-            self.stats["sop_prompt_tokens"] += float(getattr(usage, "prompt_tokens", 0) or 0)
-            self.stats["sop_completion_tokens"] += float(
-                getattr(usage, "completion_tokens", 0) or 0
-            )
-            try:
-                raw = _parse_json_object(response.choices[0].message.content or "")
-                raw_steps = raw["atomic_steps"]
-                if not isinstance(raw_steps, list) or not raw_steps:
-                    raise ValueError("atomic_steps must be a non-empty list")
-                steps = [
-                    ProcedureStep(step_id=f"step-{index}", instruction=str(step))
-                    for index, step in enumerate(raw_steps, 1)
-                ]
-                applicability = _string_list(raw.get("applicability"), "applicability")
-                exclusions = _string_list(raw.get("exclusions"), "exclusions")
-                candidate = SOPCandidate(
-                    operation=ProposalOperation.CREATE,
-                    procedure=ProcedureGraph(steps=steps),
-                    metadata=SOPMetadata(
-                        title=str(raw["title"]),
-                        description=str(raw.get("description", raw.get("rationale", ""))),
-                        task_family=self.task_family,
-                        applicability=applicability,
-                        exclusions=exclusions,
-                        tags=["gmemory-adapter", self.task_family],
-                    ),
-                    source_workspace_ids=[self.workspace.workspace_id],
-                    state_verified=True,
-                    causal_confidence=0.0,
-                )
-                self.stats["sop_json_valid"] += 1.0
-            except (KeyError, TypeError, ValueError, json.JSONDecodeError) as error:
-                print(f"SOP candidate parse rejected: {error}", file=sys.stderr)
-                return
-            stored, safety = self.service.propose_sop(candidate)
-            self.stats["sop_candidates"] += 1.0
-            if not safety.allowed:
-                self.stats["sop_safety_rejections"] += 1.0
-                return
-            validated, _ = self.service.validate_candidate(stored.candidate_id)
-            if validated.status.value in {"validated", "promoted"}:
-                self.stats["sop_candidates_passed"] += 1.0
+            # MASMemoryBase.save_task_context calls this once per episode with the official label.
+            success = mas_message.label is True
+            self._require_episode().finish(success=success, reward=1.0 if success else 0.0)
 
         def backward(self, reward: Any, **kwargs: Any) -> None:
             return None
@@ -576,6 +507,8 @@ def run(args: argparse.Namespace) -> tuple[dict[str, float], list[dict[str, Any]
             )
             self.prompt_tokens = 0
             self.completion_tokens = 0
+            # Supplies SEPM realignment corrections for the next actor call, if any.
+            self.notice_provider: Callable[[], list[str]] | None = None
 
         def __call__(
             self,
@@ -587,9 +520,16 @@ def run(args: argparse.Namespace) -> tuple[dict[str, float], list[dict[str, Any]
         ) -> str:
             # The configured relay times out when the legacy GMemory client sends
             # stop=["\n"]. Official env.process_action already selects the first line.
+            payload = [{"role": item.role, "content": item.content} for item in messages]
+            notices = self.notice_provider() if self.notice_provider is not None else []
+            if notices and payload:
+                # Propagate the manager's correction to the acting agent (Algorithm 1, line 8).
+                payload[-1]["content"] += "\n\nSEPM alignment notice:\n" + "\n".join(
+                    f"- {notice}" for notice in notices
+                )
             response = self.client.chat.completions.create(
                 model=self.model_name,
-                messages=[{"role": item.role, "content": item.content} for item in messages],
+                messages=payload,
                 temperature=0.0 if temperature is None else temperature,
                 max_tokens=self.default_max_tokens if max_tokens is None else max_tokens,
                 n=1 if num_comps is None else num_comps,
@@ -678,7 +618,9 @@ def run(args: argparse.Namespace) -> tuple[dict[str, float], list[dict[str, Any]
             task_family=args.task,
             experiment_id=output.stem,
             seed=args.seed,
+            max_steps=configured_steps,
         )
+        actor_chat.notice_provider = memory.take_alignment_notices
     else:
         from mas.utils import EmbeddingFunc
 
@@ -780,7 +722,11 @@ def run(args: argparse.Namespace) -> tuple[dict[str, float], list[dict[str, Any]
         "episode_checkpoint": str(checkpoint_path),
         "resumed_case_count": len(checkpoint["cases"]),
         "scratch_policy": "adapter-owned work_dir/tmp; old env closed before reset",
-        "causal_policy": "post-hoc candidates remain unpromoted without external causal evidence",
+        "causal_policy": (
+            "candidates promote only via recorded reproduction trials against the unassisted "
+            "same-task-type baseline; attribution requires executed candidate steps"
+        ),
+        "alignment_policy": "per-step blackboard alignment; corrections appended to the next actor call",
     }
     return metrics, recorder.cases, metadata
 

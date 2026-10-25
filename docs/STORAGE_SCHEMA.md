@@ -35,8 +35,13 @@ Core definitions:
 ```
 
 `Workspace.plan` stores the canonical task-plan snapshot. It is serialized to
-`workspaces.workspace_json` together with `main_goal`, `goal_version`, and
-`plan_version`. Each edge represents a `source -> target` ordering or dependency.
+`workspaces.workspace_json` together with `main_goal`, `goal_version`,
+`plan_version`, and `assignments`. Each edge means the outcome of `source` is a
+prerequisite of `target`. `assignments` maps an agent ID to its assigned goal and
+plan node IDs; divergence detection compares the agent with that goal and with the
+assigned nodes plus their direct prerequisites. SOP warnings are stored in
+`metadata.warnings` as `{text, trigger_condition, evidence}` objects; legacy
+plain-string warnings load as unconditional lessons.
 
 ### 2.2 SOP Procedure Graph
 
@@ -59,9 +64,14 @@ Core definitions:
 
 `ProcedureGraph` verifies that every edge endpoint exists during model
 validation. Candidate graphs are stored in `candidates.candidate_json`. After
-publication, each immutable version is stored in `sop_versions.sop_json`, while
-`sop_heads` maintains only the pointer to the active version. Updates never
-overwrite historical graphs.
+publication, versions are stored in `sop_versions.sop_json`, while `sop_heads`
+maintains the pointer to the active version. Only the head and the previous
+version are kept (`MemoryConfig.retained_previous_versions`, default 1); a commit
+deletes older versions in the same transaction. Each version records its
+`change`: `create`, `structure` (steps or dependencies), or `warnings`, the base
+version and structure fingerprint it was built from, and `rebased_onto` when it
+was merged onto a newer head. A change whose base structure still matches the
+head is rebased; one whose base structure was rewritten is a conflict.
 
 ## 3. In-Memory Blackboard Structure
 
@@ -124,7 +134,7 @@ flowchart LR
     Workspace["workspaces / Workspace + TaskPlan"] --> BB
     Workspace --> Trial["trials / ReproductionTrial"]
     Candidate["candidates / SOPCandidate + ProcedureGraph"] --> Trial
-    Candidate --> Version["sop_versions / immutable SOPVersion"]
+    Candidate --> Version["sop_versions / head + previous SOPVersion"]
     Head["sop_heads / current version"] --> Version
     BB --> Candidate
     Version --> Retrieval["SOPRetriever"]

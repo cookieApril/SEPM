@@ -8,6 +8,7 @@ prefers readable behavior tests over tests of private implementation details.
 
 from __future__ import annotations
 
+import math
 import tempfile
 import unittest
 from datetime import datetime, timezone
@@ -272,22 +273,13 @@ class SEPMTests(unittest.TestCase):
         results = self.service.retrieve_sops("rank verified catalog results", limit=3)
         self.assertEqual(results[0].sop.sop_id, decision.sop.sop_id)
         self.assertAlmostEqual(sum(results[0].weights.values()), 1.0)
-        planned = self.service.retrieve_sops(
-            "verified results",
-            query_plan=TaskPlan(
-                nodes=[
-                    PlanNode(node_id=verify_id, action="generic")
-                    for verify_id in (decision.sop.procedure.steps[0].step_id, decision.sop.procedure.steps[1].step_id)
-                ],
-                edges=decision.sop.procedure.edges,
-            ),
-        )
-        self.assertIn("bm25_relevance", planned[0].features)
-        self.assertNotIn("graph_relevance", planned[0].features)
-        before = self.service.router.weights("routine task")["bm25"]
-        self.service.router.learn("routine task", "bm25", learning_rate=0.2)
-        after = self.service.router.weights("routine task")["bm25"]
-        self.assertGreater(after, before)
+        self.assertEqual(set(results[0].features), {"bm25", "vector"})
+
+    def test_router_applies_table3_logit_increments(self) -> None:
+        router = self.service.router
+        self.assertEqual(router.weights("verified results"), {"bm25": 0.5, "vector": 0.5})
+        self.assertAlmostEqual(router.weights("routine task")["bm25"], math.exp(0.6) / (1 + math.exp(0.6)))
+        self.assertAlmostEqual(router.weights("debug the code")["vector"], math.exp(1.0) / (1 + math.exp(1.0)))
 
     def test_optimistic_concurrency_blocks_stale_update(self) -> None:
         self.workspace("w-a")

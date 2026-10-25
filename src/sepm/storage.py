@@ -5,9 +5,10 @@ relational columns and indexes. This preserves Pydantic schema evolution without
 forcing queue and pagination queries to scan JSON. Writes use ``BEGIN IMMEDIATE``
 and short-lived connections for multiple stateless workers on one host.
 
-``sop_versions`` stores immutable history. ``sop_heads`` points to the current
-version and maintains the active flag. expected_version comparisons implement
-optimistic concurrency without overwriting old versions.
+``sop_versions`` stores the current version and a bounded number of previous
+versions (one by default); older versions are deleted in the commit that
+supersedes them. ``sop_heads`` points to the current version and maintains the
+active flag. expected_version comparisons implement optimistic concurrency.
 """
 
 from __future__ import annotations
@@ -113,7 +114,10 @@ class NotFoundError(LookupError):
 class SQLiteStore:
     """Short-connection transactional store with database-authoritative worker state."""
 
-    def __init__(self, path: str | Path) -> None:
+    def __init__(self, path: str | Path, *, retained_previous_versions: int = 1) -> None:
+        if retained_previous_versions < 0:
+            raise ValueError("retained_previous_versions must be >= 0")
+        self.retained_previous_versions = retained_previous_versions
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self._schema_lock = threading.Lock()
@@ -424,12 +428,17 @@ class SQLiteStore:
                 "ON CONFLICT(sop_id) DO UPDATE SET current_version=excluded.current_version, active=excluded.active",
                 (sop.sop_id, sop.version, int(sop.active)),
             )
-            self._audit(connection, "sop_committed", sop.sop_id, {"version": sop.version})
+            # Keep the new head and the configured number of previous versions only.
+            pruned = connection.execute(
+                "DELETE FROM sop_versions WHERE sop_id=? AND version<?",
+                (sop.sop_id, sop.version - self.retained_previous_versions),
+            ).rowcount
+            self._audit(connection, "sop_committed", sop.sop_id, {"version": sop.version, "pruned_versions": pruned})
             if candidate_id:
                 self._mark_promoted(connection, candidate_id)
 
     def deactivate_sop(self, sop_id: str, expected_version: int, candidate_id: str | None = None) -> None:
-        """Logically deactivate the current head without deleting version history."""
+        """Logically deactivate the current head without deleting its retained versions."""
         with self.transaction() as connection:
             if candidate_id and self._candidate_promoted(connection, candidate_id):
                 return
@@ -480,16 +489,6 @@ class SQLiteStore:
             connection.execute("UPDATE sop_versions SET sop_json=? WHERE sop_id=? AND version=?",
                                (self._json(updated), sop_id, sop.version))
             return updated.model_copy(update={"active": bool(row["active"])})
-
-    def update_sop_metrics(self, sop: SOPVersion, expected_version: int) -> None:
-        """Update only runtime metrics in place; procedure and metadata must not change."""
-        with self.transaction() as connection:
-            cursor = connection.execute(
-                "UPDATE sop_versions SET sop_json=? WHERE sop_id=? AND version=?",
-                (self._json(sop), sop.sop_id, expected_version),
-            )
-            if cursor.rowcount != 1:
-                raise ConcurrencyError("SOP metrics update failed")
 
     @staticmethod
     def _audit(connection: sqlite3.Connection, event: str, entity_id: str, payload: dict[str, Any]) -> None:

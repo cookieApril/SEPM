@@ -464,7 +464,6 @@ class RetrievalCase:
     case_id: str
     query: str
     relevant_sop_ids: set[str]
-    query_plan: TaskPlan
 
 
 def _retrieval_cases() -> list[RetrievalCase]:
@@ -473,32 +472,21 @@ def _retrieval_cases() -> list[RetrievalCase]:
             "catalog-query",
             "rank verified catalog results",
             {"catalog"},
-            TaskPlan(nodes=[PlanNode(node_id="catalog-step", action="search")]),
         ),
         RetrievalCase(
             "payment-query",
             "confirm authorization before payment",
             {"payment"},
-            TaskPlan(nodes=[PlanNode(node_id="payment-step", action="payment")]),
         ),
         RetrievalCase(
             "migration-query",
             "backup snapshot for database migration",
             {"migration"},
-            TaskPlan(nodes=[PlanNode(node_id="migration-step", action="migration")]),
         ),
         RetrievalCase(
             "debug-query",
             "debug code test failure",
             {"debug"},
-            TaskPlan(nodes=[PlanNode(node_id="debug-step", action="debug")]),
-        ),
-        # Text is intentionally nondiscriminative to test graph structure over vector-only ties.
-        RetrievalCase(
-            "ambiguous-graph-query",
-            "standard procedure",
-            {"payment"},
-            TaskPlan(nodes=[PlanNode(node_id="payment-step", action="payment")]),
         ),
     ]
 
@@ -567,7 +555,7 @@ def run_retrieval_benchmark() -> dict[str, Any]:
     full_rankings = [
         [
             item.sop.sop_id
-            for item in retriever.rank(case.query, corpus, len(corpus), case.query_plan)
+            for item in retriever.rank(case.query, corpus, len(corpus))
         ]
         for case in cases
     ]

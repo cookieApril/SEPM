@@ -23,8 +23,7 @@ from .ablation.runtime import config_from_environment
 from .adapter import AgentMemoryAdapter
 from .config import MemoryConfig
 from .evaluation_adapter import EvaluationContext
-from .integrations import GMemoryBridge, GMemorySnapshotError, HostRuntimeBridge
-from .integrations.gmemory_bridge import ensure_development_snapshot
+from .integrations import GMemorySnapshotError, HostRuntimeBridge
 from .models import (
     AgentProfile,
     BlackboardEntry,
@@ -115,7 +114,6 @@ class SEPMBenchmarkRuntime:
     last_divergence_signature: dict[str, str] = field(default_factory=dict)
     active_divergence_events: dict[str, str] = field(default_factory=dict)
     divergence_lifecycle: list[dict[str, Any]] = field(default_factory=list)
-    external_memory_bridge: GMemoryBridge | None = None
     host_bridge: HostRuntimeBridge | None = None
     host_trace: list[dict[str, Any]] = field(default_factory=list)
 
@@ -139,32 +137,13 @@ class SEPMBenchmarkRuntime:
             )
         base = MemoryConfig(database_path=_database_path(context))
         config = config_from_environment(base)
-        method_enabled = context.memory_method in (enabled_methods or {"sepm", "gmemory"})
+        method_enabled = context.memory_method in (enabled_methods or {"sepm"})
         has_active_component = (
             config.enable_procedural_memory
             or config.enable_divergence_detection
             or config.share_blackboard_across_agents
         )
-        external_memory_bridge = None
-        if context.memory_method == "gmemory":
-            snapshot = os.environ.get("SEPM_GMEMORY_SNAPSHOT")
-            project_root = Path(os.environ.get("SEPM_PROJECT_ROOT", ".")).resolve()
-            snapshot_path = (
-                Path(snapshot)
-                if snapshot
-                else ensure_development_snapshot(
-                    project_root=project_root,
-                    benchmark_task=context.task,
-                    evaluation_case_id=context.case_id,
-                )
-            )
-            external_memory_bridge = GMemoryBridge.open_snapshot(snapshot_path, read_only=True)
-            evidence_path = os.environ.get("SEPM_GMEMORY_EVIDENCE")
-            if evidence_path:
-                external_memory_bridge.evidence_path = Path(evidence_path)
-        enabled = method_enabled and (
-            has_active_component or external_memory_bridge is not None
-        )
+        enabled = method_enabled and has_active_component
         host_bridge = HostRuntimeBridge.build(
             mas=context.mas_framework,
             task=context.task,
@@ -183,7 +162,6 @@ class SEPMBenchmarkRuntime:
             workspace=workspace,
             config=config,
             enabled=enabled,
-            external_memory_bridge=external_memory_bridge,
             host_bridge=host_bridge,
         )
 
@@ -195,8 +173,16 @@ class SEPMBenchmarkRuntime:
         current_task: str,
         task_query: str | None = None,
         sop_limit: int = 5,
+        context_facts: set[str] | None = None,
+        assigned_goal: str | None = None,
+        assigned_nodes: list[int] | None = None,
     ) -> dict[str, Any]:
-        """Register an agent and return SOP context to inject into its prompt/state."""
+        """Register an agent, bind its assignment, and return SOP context for its prompt.
+
+        ``assigned_nodes`` are plan-action indices, as in ``plan_actions``; together
+        with ``assigned_goal`` they define the reference goal and subgraph used by
+        goal and plan divergence detection.
+        """
         host_prefix = (
             self.host_bridge.actor_prefix(agent_id=agent_id, observation=_text(task_query or current_task))
             if self.host_bridge is not None
@@ -207,47 +193,6 @@ class SEPMBenchmarkRuntime:
                 "enabled": False,
                 "prompt_prefix": host_prefix,
                 "procedural_memory": [],
-            }
-        if self.external_memory_bridge is not None:
-            profile = AgentProfile(
-                agent_id=agent_id,
-                role=_text(role, 512),
-                current_task=_text(current_task, 4_000),
-                permanent_facts={
-                    "benchmark": self.context.benchmark,
-                    "task": self.context.task,
-                    "case_id": self.context.case_id,
-                    "mas": self.context.mas_framework,
-                },
-            )
-            self.service.register_agent(profile)
-            self.service.create_workspace(self.workspace)
-            retrievals = self.external_memory_bridge.retrieve(
-                task=_text(task_query or current_task or self.workspace.main_goal, 4_000),
-                observation=_text(current_task, 4_000),
-                agent_role=_text(role, 512),
-                top_k=sop_limit,
-            )
-            prefix = "\n\n".join(
-                item
-                for item in (
-                    host_prefix,
-                    self.external_memory_bridge.format_for_actor(retrievals),
-                )
-                if item
-            )
-            return {
-                "enabled": True,
-                "prompt_prefix": prefix,
-                "procedural_memory": [],
-                "gmemory_retrievals": [
-                    {
-                        "node_id": item.node_id,
-                        "score": item.score,
-                        "task": item.task,
-                    }
-                    for item in retrievals
-                ],
             }
         profile = AgentProfile(
             agent_id=agent_id,
@@ -264,9 +209,17 @@ class SEPMBenchmarkRuntime:
             profile,
             self.workspace,
             _text(task_query or current_task or self.workspace.main_goal, 4_000),
-            self.workspace.plan,
             sop_limit=sop_limit,
+            context_facts=context_facts,
         )
+        if assigned_goal is not None or assigned_nodes:
+            self.workspace = self.service.assign_agent(
+                self.workspace.workspace_id,
+                agent_id,
+                goal=_text(assigned_goal, 10_000) if assigned_goal is not None else None,
+                node_ids=[f"n{index}" for index in assigned_nodes or []],
+            )
+            payload["shared_task_state"] = self.workspace.model_dump(mode="json")
         sops = payload["procedural_memory"]
         for item in sops:
             sop = item.get("sop", {})
@@ -492,7 +445,7 @@ class SEPMBenchmarkRuntime:
             if self.sop_outcomes[sop_id] != success:
                 raise ValueError("SOP outcome already recorded with a different value")
             return {"recorded": False, "reason": "already_recorded"}
-        result = self.adapter.on_sop_outcome(sop_id, success, self.workspace.main_goal)
+        result = self.adapter.on_sop_outcome(sop_id, success)
         self.sop_outcomes[sop_id] = success
         return {"recorded": True, "sop": result}
 
@@ -540,56 +493,30 @@ class SEPMBenchmarkRuntime:
                     else 0.0
                 ),
                 "unsafe_accepted": float(self.unsafe_accepted_count),
-                "gmemory_retrieval_invocations": float(
-                    self.external_memory_bridge.retrieval_invocations
-                    if self.external_memory_bridge is not None
-                    else 0
-                ),
-                "gmemory_retrieval_count": float(
-                    self.external_memory_bridge.retrieval_count
-                    if self.external_memory_bridge is not None
-                    else 0
-                ),
                 "host_trace_events": float(len(self.host_trace)),
             }
         )
-        if self.context.memory_method == "gmemory" and self.external_memory_bridge is not None:
-            self.external_memory_bridge.write_evidence()
         self._write_host_trace()
         return metrics
 
     def identity_metadata(self) -> dict[str, Any]:
-        memory_identity = "none"
-        memory_mode = f"{self.context.task}:{self.context.memory_method}:official-loop"
-        snapshot_id = ""
-        if self.context.memory_method == "gmemory":
-            if self.external_memory_bridge is None:
-                raise GMemorySnapshotError("G-Memory result cannot be accepted without bridge invocation")
-            memory_identity = self.external_memory_bridge.identity
-            memory_mode = f"{self.context.task}:gmemory:read-only-frozen-snapshot"
-            snapshot_id = self.external_memory_bridge.snapshot_id
-        elif self.context.memory_method == "sepm":
-            memory_identity = "sepm.benchmark_runtime.SEPMBenchmarkRuntime:sepm-runtime-hooks"
-            memory_mode = f"{self.context.task}:sepm:sepm-runtime-hooks"
+        # from_environment rejects G-Memory, so only SEPM and no-memory reach here.
+        sepm = self.context.memory_method == "sepm"
         metadata = {
-            "memory_execution_mode": memory_mode,
-            "memory_adapter_identity": memory_identity,
-            "memory_adapter_class": (
-                self.external_memory_bridge.__class__.__name__
-                if self.external_memory_bridge is not None
-                else ("SEPMBenchmarkRuntime" if self.context.memory_method == "sepm" else "NoAddedMemory")
+            "memory_execution_mode": (
+                f"{self.context.task}:sepm:sepm-runtime-hooks"
+                if sepm
+                else f"{self.context.task}:{self.context.memory_method}:official-loop"
             ),
-            "memory_adapter_module": (
-                self.external_memory_bridge.__class__.__module__
-                if self.external_memory_bridge is not None
-                else __name__
+            "memory_adapter_identity": (
+                "sepm.benchmark_runtime.SEPMBenchmarkRuntime:sepm-runtime-hooks" if sepm else "none"
             ),
+            "memory_adapter_class": "SEPMBenchmarkRuntime" if sepm else "NoAddedMemory",
+            "memory_adapter_module": __name__,
             "memory_enabled": self.context.memory_method != "no-memory",
-            "gmemory_snapshot_id": snapshot_id,
+            "gmemory_snapshot_id": "",
             "result_schema_version": "e1-runtime-identity-v2",
         }
-        if self.external_memory_bridge is not None:
-            metadata["gmemory_upstream_components"] = self.external_memory_bridge.upstream_components
         if self.host_bridge is not None:
             metadata.update(self.host_bridge.metadata())
         return metadata
@@ -700,8 +627,8 @@ class SEPMBenchmarkRuntime:
     def _prompt_prefix(sops: list[dict[str, Any]]) -> str:
         if not sops:
             return ""
-        lines = ["Relevant shared SOP hint:"]
-        for index, item in enumerate(sops[:1], 1):
+        lines = ["Relevant shared SOPs:"]
+        for index, item in enumerate(sops, 1):
             sop = item.get("sop", {})
             metadata = sop.get("metadata", {})
             procedure = sop.get("procedure", {})
@@ -711,7 +638,8 @@ class SEPMBenchmarkRuntime:
             for condition in metadata.get("context_conditions", []):
                 lines.append(f"   Applies only when: {condition}")
             for warning in metadata.get("warnings", []):
-                lines.append(f"   Warning: {warning}")
+                trigger = warning.get("trigger_condition")
+                lines.append(f"   Warning: {warning['text']}" + (f" (when: {trigger})" if trigger else ""))
             for step in steps:
                 instruction = step.get("instruction", "")
                 if instruction:

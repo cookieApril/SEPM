@@ -15,18 +15,11 @@ from adapters.sepm_gmemory_adapter import (
     _parse_json_object,
     _remaining_tasks,
     _select_cases,
-    _string_list,
     _validate_official_data,
 )
 
 
 class GMemoryAdapterTests(unittest.TestCase):
-    def test_string_list_preserves_scalar_as_one_item(self) -> None:
-        self.assertEqual(_string_list("use valid actions", "applicability"), ["use valid actions"])
-        self.assertEqual(_string_list(["one", 2], "exclusions"), ["one", "2"])
-        with self.assertRaises(TypeError):
-            _string_list({"bad": "shape"}, "applicability")
-
     def test_episode_checkpoint_round_trip_and_identity_gate(self) -> None:
         identity = {"task": "alfworld", "seed": 0}
         payload = {

@@ -9,6 +9,8 @@ and benchmarks.
 
 from __future__ import annotations
 
+import hashlib
+import json
 from datetime import datetime, timezone
 from enum import Enum, IntEnum
 from typing import Any
@@ -60,7 +62,8 @@ class ProposalOperation(str, Enum):
     """Operation requested by a candidate against an SOP head."""
     CREATE = "create"
     UPDATE = "update"
-    DELETE = "delete" #Specific nodes in the project, rather than deleting the project
+    # Retirement: deactivates the SOP head while keeping its retained versions.
+    DELETE = "delete"
 
 
 class CandidateStatus(str, Enum):
@@ -142,14 +145,52 @@ class TaskPlan(StrictModel):
         return value
 
 
+class AgentAssignment(StrictModel):
+    """Manager binding of one agent to its reference goal and task-graph nodes."""
+    goal: str | None = Field(default=None, max_length=10_000)
+    node_ids: list[str] = Field(default_factory=list, max_length=500)
+
+
+def assigned_subgraph(plan: TaskPlan, node_ids: list[str]) -> TaskPlan:
+    """Return an agent's assigned nodes plus their direct prerequisites from other agents."""
+    assigned = set(node_ids)
+    keep = assigned | {edge.source for edge in plan.edges if edge.target in assigned}
+    return TaskPlan(
+        nodes=[node for node in plan.nodes if node.node_id in keep],
+        edges=[edge for edge in plan.edges if edge.source in keep and edge.target in keep],
+    )
+
+
 class Workspace(StrictModel):
-    """Canonical goal and plan snapshot for one collaborative task."""
+    """Canonical goal, task graph, and agent assignments for one collaborative task."""
     workspace_id: str = Field(default_factory=lambda: str(uuid4()))
     main_goal: str = Field(min_length=1, max_length=10_000)
     goal_version: int = Field(default=1, ge=1)
     plan: TaskPlan = Field(default_factory=TaskPlan)
     plan_version: int = Field(default=1, ge=1)
+    assignments: dict[str, AgentAssignment] = Field(default_factory=dict)
     created_at: datetime = Field(default_factory=utc_now)
+
+    @model_validator(mode="after")
+    def assignments_reference_plan(self) -> Workspace:
+        known = {node.node_id for node in self.plan.nodes}
+        for agent_id, assignment in self.assignments.items():
+            missing = set(assignment.node_ids) - known
+            if missing:
+                raise ValueError(f"assignment for {agent_id!r} references unknown nodes: {sorted(missing)}")
+        return self
+
+    def reference_goal(self, agent_id: str) -> str:
+        """Assigned goal g*_{tau,a}; the global objective when the agent has no assignment."""
+        assignment = self.assignments.get(agent_id)
+        return assignment.goal if assignment and assignment.goal else self.main_goal
+
+    def reference_plan(self, agent_id: str) -> TaskPlan:
+        """Assigned subgraph G_{tau,a}; the full task graph when no nodes are assigned."""
+        assignment = self.assignments.get(agent_id)
+        if assignment is None or not assignment.node_ids:
+            return self.plan
+        return assigned_subgraph(self.plan, assignment.node_ids)
 
 
 class Evidence(StrictModel):
@@ -201,6 +242,15 @@ class DivergenceReport(StrictModel):
     recommended_action: str = Field(default="", max_length=2_000)
 
 
+class AlignmentResult(StrictModel):
+    """Blackboard-derived alignment of one agent and the corrections to propagate."""
+    report: DivergenceReport
+    missing_prerequisites: list[str] = Field(default_factory=list)
+    off_plan_actions: list[str] = Field(default_factory=list)
+    resolved_state: dict[str, Any] = Field(default_factory=dict)
+    notices: list[str] = Field(default_factory=list)
+
+
 class Resolution(StrictModel):
     """Evidence resolution; next_action specifies evidence collection if unresolved."""
     conflict_type: ConflictType
@@ -212,7 +262,7 @@ class Resolution(StrictModel):
     next_action: str
 
 
-# ---------- SOP candidates, validation trials, and immutable versions ----------
+# ---------- SOP candidates, validation trials, and versions ----------
 
 class ProcedureStep(StrictModel):
     """Atomic SOP step with preconditions, postconditions, and explicit safety fields."""
@@ -249,6 +299,26 @@ class ProcedureGraph(StrictModel):
         _validate_dependencies(ids, value)
         return value
 
+    def as_plan(self) -> TaskPlan:
+        """Instantiate the procedure as a task graph whose node IDs are the step IDs."""
+        return TaskPlan(
+            nodes=[PlanNode(node_id=step.step_id[:128], action=step.instruction[:1_000]) for step in self.steps],
+            edges=[PlanEdge(source=edge.source[:128], target=edge.target[:128]) for edge in self.edges],
+        )
+
+
+def procedure_fingerprint(procedure: ProcedureGraph) -> str:
+    """Stable hash of steps and dependencies; warnings and statistics do not affect it."""
+    canonical = json.dumps(procedure.model_dump(mode="json"), sort_keys=True, ensure_ascii=False)
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:16]
+
+
+class ConditionalWarning(StrictModel):
+    """Conditional lesson with its triggering condition and supporting evidence."""
+    text: str = Field(min_length=1, max_length=2_000)
+    trigger_condition: str = Field(default="", max_length=2_000)
+    evidence: list[str] = Field(default_factory=list, max_length=50)
+
 
 class SOPMetadata(StrictModel):
     """SOP metadata governing scope, retrieval, and safety policy."""
@@ -261,7 +331,15 @@ class SOPMetadata(StrictModel):
     safety_class: str = Field(default="normal", pattern="^(normal|sensitive|critical)$")
     variant_of: str | None = Field(default=None, max_length=128)
     context_conditions: list[str] = Field(default_factory=list, max_length=100)
-    warnings: list[str] = Field(default_factory=list, max_length=100)
+    warnings: list[ConditionalWarning] = Field(default_factory=list, max_length=100)
+
+    @field_validator("warnings", mode="before")
+    @classmethod
+    def coerce_plain_warnings(cls, value: Any) -> Any:
+        """Accept legacy plain-text warnings as unconditional lessons."""
+        if isinstance(value, list):
+            return [{"text": item} if isinstance(item, str) else item for item in value]
+        return value
 
 
 class SOPCandidate(StrictModel):
@@ -270,6 +348,8 @@ class SOPCandidate(StrictModel):
     operation: ProposalOperation
     target_sop_id: str | None = None
     base_version: int | None = Field(default=None, ge=1)
+    # Structure the update was built from; the service fills it from base_version.
+    base_fingerprint: str | None = Field(default=None, max_length=64)
     procedure: ProcedureGraph | None = None
     metadata: SOPMetadata | None = None
     source_workspace_ids: list[str] = Field(min_length=1, max_length=100)
@@ -295,15 +375,8 @@ class SOPCandidate(StrictModel):
         return self
 
     def claimed_utility(self, cost_weight: float = 1.0) -> float:
-        """Return Success - lambda * Cost for the candidate's declared update value."""
+        """Precheck estimate u_claim = b_claim - lambda * c_claim (Eq. 12)."""
         return self.claimed_benefit - cost_weight * self.claimed_cost
-
-    @field_validator("procedure")
-    @classmethod
-    def create_update_need_procedure(cls, value: ProcedureGraph | None, info: Any) -> ProcedureGraph | None:
-        if info.data.get("operation") in {ProposalOperation.CREATE, ProposalOperation.UPDATE} and value is None:
-            raise ValueError("create/update proposals require a procedure")
-        return value
 
 
 class SafetyDecision(StrictModel):
@@ -330,14 +403,27 @@ class ReproductionTrial(StrictModel):
     causal_supported: bool
     created_at: datetime = Field(default_factory=utc_now)
 
-    @property
-    def net_benefit(self) -> float:
-        """Candidate reward relative to baseline after execution cost."""
-        return self.candidate_reward - self.baseline_reward - self.cost
+    def net_benefit(self, cost_weight: float = 1.0) -> float:
+        """Trial utility u_t = r_candidate - r_baseline - lambda * c_t (Eq. 13)."""
+        return self.candidate_reward - self.baseline_reward - cost_weight * self.cost
+
+
+class SOPChange(StrictModel):
+    """What a revision changed and which base it was built from.
+
+    A structural change rewrites steps and dependencies (Pi, G); a warnings change
+    only appends conditional lessons (W). Both read the base structure, so a change
+    can be rebased onto a newer head only while that structure is unchanged.
+    """
+    kind: str = Field(pattern="^(create|structure|warnings)$")
+    base_version: int | None = Field(default=None, ge=1)
+    base_fingerprint: str | None = Field(default=None, max_length=64)
+    rebased_onto: int | None = Field(default=None, ge=1)
+    added_warnings: int = Field(default=0, ge=0)
 
 
 class SOPVersion(StrictModel):
-    """Published immutable SOP content with in-place runtime statistics."""
+    """Published SOP content with in-place runtime statistics."""
     sop_id: str
     version: int = Field(ge=1)
     procedure: ProcedureGraph
@@ -348,6 +434,7 @@ class SOPVersion(StrictModel):
     validation_score: float = Field(default=0.0, ge=0.0, le=1.0)
     mean_net_benefit: float = 0.0
     active: bool = True
+    change: SOPChange | None = None
     created_at: datetime = Field(default_factory=utc_now)
 
 

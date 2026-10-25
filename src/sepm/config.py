@@ -21,16 +21,16 @@ class MemoryConfig:
     goal_divergence_threshold: float = 0.35
     plan_divergence_threshold: float = 0.40
     state_confidence_threshold: float = 0.70
-    # SOP validation and promotion gates. The first qualified trial publishes by default.
+    # SOP validation and promotion gates (Eq. 9). The first qualified trial publishes by default.
     min_reproductions: int = 1
     min_distinct_task_families: int = 1
     min_causal_confidence: float = 0.65
-    min_validation_score: float = 0.75
     min_net_benefit: float = 0.0
     utility_cost_weight: float = 1.0
     safety_risk_threshold: float = 0.50
-    # Storage capacity guard.
+    # Storage capacity guard and SOP version retention (head plus this many previous versions).
     max_blackboard_entries: int = 10_000
+    retained_previous_versions: int = 1
     # These switches are for controlled ablations only. Defaults preserve the full method;
     # the paper runner maps a variant to a new immutable configuration without mutating a run.
     enable_procedural_memory: bool = True
