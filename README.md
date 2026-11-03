@@ -40,7 +40,7 @@ Self-evolving memory lets LLM agents improve from their own experience: reflecti
 In collaborative tasks, a procedure is rarely self-contained. Whether a step is valid often depends on **cross-agent prerequisites**: an artifact produced by a teammate, a state change made by another agent, or a completed handoff.
 
 <p align="center">
-  <a href="docs/readme-assets/motivation.png"><img src="docs/readme-assets/motivation.png" width="60%" alt="Three robots cleaning and storing kitchenware with no memory, textual memory, and SEPM"></a><br>
+  <a href="docs/images/motivation.png"><img src="docs/images/motivation.png" width="60%" alt="Three robots cleaning and storing kitchenware with no memory, textual memory, and SEPM"></a><br>
   <sub><strong>Why team memory needs a shared task graph.</strong> Three robots must wash dirty cups and dishes and store them in a cabinet. Without memory, the team stores a dirty cup in every episode. Textual memory records "store after cleaning", but no agent can check whether it holds. SEPM stores the prerequisite as a dependency edge, so C stores a cup only after A's cleaning has been verified.</sub>
 </p>
 
@@ -62,7 +62,7 @@ This raises two questions that existing memories leave open:
 ## 🧩 How SEPM Works
 
 <p align="center">
-  <a href="docs/readme-assets/framework.png"><img src="docs/readme-assets/framework.png" width="95%" alt="SEPM architecture with task graph, blackboard, divergence detection, and evolving procedures"></a><br>
+  <a href="docs/images/framework.png"><img src="docs/images/framework.png" width="95%" alt="SEPM architecture with task graph, blackboard, divergence detection, and evolving procedures"></a><br>
   <sub><strong>Overview of SEPM.</strong> Retrieved procedures become task graphs on a shared blackboard. The graph supports goal, plan, and state alignment during execution and drives procedure evolution afterwards.</sub>
 </p>
 
@@ -127,7 +127,7 @@ Output: task outcome y and updated procedure pool P
 The cleaning-and-storage task traces one full cycle of retrieval → collaboration → realignment → memory revision. The team must wash the dirty cups and dishes in a kitchen and put them in a cabinet.
 
 <p align="center">
-  <a href="docs/readme-assets/case-study.png"><img src="docs/readme-assets/case-study.png" width="98%" alt="Complete SEPM cleaning and storage workflow from retrieved procedure to revised memory"></a><br>
+  <a href="docs/images/case-study.png"><img src="docs/images/case-study.png" width="98%" alt="Complete SEPM cleaning and storage workflow from retrieved procedure to revised memory"></a><br>
   <sub><strong>Cleaning-and-storage example.</strong> Plan divergence (B stores an apple) and state divergence (C requests a cup that has been found but not cleaned) trigger realignment, and the executed procedure is revised from v1.0 to v1.1.</sub>
 </p>
 
@@ -177,7 +177,7 @@ The cleaning-and-storage task traces one full cycle of retrieval → collaborati
 <sub><strong>Task performance under two host systems.</strong> ALFWorld and OfficeBench: mean of three runs; WebArena: one run. <sup>†</sup> Single-agent memory adapted to the team with role-specific allocation (following LEGOMem). Bold marks the best result in each column.</sub>
 
 <p align="center">
-  <a href="docs/readme-assets/overall-performance.png"><img src="docs/readme-assets/overall-performance.png" width="62%" alt="Mean task score over three benchmarks for each memory method under AutoGen and DyLAN"></a><br>
+  <a href="docs/images/overall-performance.png"><img src="docs/images/overall-performance.png" width="62%" alt="Mean task score over three benchmarks for each memory method under AutoGen and DyLAN"></a><br>
   <sub><strong>Mean task score over the three main benchmarks.</strong> Dashed lines mark each host without added memory.</sub>
 </p>
 
@@ -191,7 +191,7 @@ The cleaning-and-storage task traces one full cycle of retrieval → collaborati
 This ablation isolates SEPM's central design choice. **Full w/o explicit graph** states each step's prerequisites as text instead of graph edges, with the same content, retrieval rules, context budget, and update mechanism.
 
 <p align="center">
-  <a href="docs/readme-assets/graph-vs-text.png"><img src="docs/readme-assets/graph-vs-text.png" width="62%" alt="Component ablation and comparison between explicit graphs and textual procedures"></a><br>
+  <a href="docs/images/graph-vs-text.png"><img src="docs/images/graph-vs-text.png" width="62%" alt="Component ablation and comparison between explicit graphs and textual procedures"></a><br>
   <sub><strong>Ablation under AutoGen.</strong> Bars add the blackboard, memory, and alignment in turn; Full w/o explicit graph uses information-matched textual procedures.</sub>
 </p>
 
@@ -212,11 +212,11 @@ This ablation isolates SEPM's central design choice. **Full w/o explicit graph**
 <table>
   <tr>
     <td width="58%" align="center" valign="top">
-      <a href="docs/readme-assets/component-gains.png"><img src="docs/readme-assets/component-gains.png" width="100%" alt="Conditional gain of memory and alignment"></a><br>
+      <a href="docs/images/component-gains.png"><img src="docs/images/component-gains.png" width="100%" alt="Conditional gain of memory and alignment"></a><br>
       <sub><strong>Conditional gain of each component.</strong></sub>
     </td>
     <td width="42%" align="center" valign="top">
-      <a href="docs/readme-assets/component-interaction.png"><img src="docs/readme-assets/component-interaction.png" width="100%" alt="Interaction between memory and alignment"></a><br>
+      <a href="docs/images/component-interaction.png"><img src="docs/images/component-interaction.png" width="100%" alt="Interaction between memory and alignment"></a><br>
       <sub><strong>Interaction</strong> <i>I</i> = <i>s</i><sub>BMA</sub> − <i>s</i><sub>BM</sub> − <i>s</i><sub>BA</sub> + <i>s</i><sub>B</sub> (B: blackboard, M: memory, A: alignment).</sub>
     </td>
   </tr>
@@ -227,7 +227,7 @@ Memory adds **17.16 points** on top of the blackboard on ALFWorld, where action 
 ### 3. Memory that keeps improving along the task sequence
 
 <p align="center">
-  <a href="docs/readme-assets/learning-curve.png"><img src="docs/readme-assets/learning-curve.png" width="62%" alt="Task score across five segments of the task sequence"></a><br>
+  <a href="docs/images/learning-curve.png"><img src="docs/images/learning-curve.png" width="62%" alt="Task score across five segments of the task sequence"></a><br>
   <sub><strong>Task score along the task sequence under AutoGen</strong>, split into five equal segments (B1–B5). Labels give the B1-to-B5 gain of SEPM (bold) and G-Memory.</sub>
 </p>
 
@@ -238,7 +238,7 @@ The pool grows **selectively**: most candidate revisions are rejected (133 of 16
 ### 4. Transfer across task types, hosts, and models
 
 <p align="center">
-  <a href="docs/readme-assets/transfer.png"><img src="docs/readme-assets/transfer.png" width="62%" alt="Transfer of frozen SEPM pools across task types, hosts, and models"></a><br>
+  <a href="docs/images/transfer.png"><img src="docs/images/transfer.png" width="62%" alt="Transfer of frozen SEPM pools across task types, hosts, and models"></a><br>
   <sub><strong>Transfer of frozen SEPM pools (one run).</strong> (a) ALFWorld leave-one-type-out; hollow markers show online SEPM. (b) Transfer across hosts and models.</sub>
 </p>
 
@@ -251,7 +251,7 @@ The pool grows **selectively**: most candidate revisions are rejected (133 of 16
 #### Task and coordination quality: MultiAgentBench
 
 <p>
-  <a href="docs/readme-assets/multiagentbench.png"><img align="left" hspace="12" vspace="4" src="docs/readme-assets/multiagentbench.png" width="47%" alt="Task and Coordination Scores on MultiAgentBench"></a>
+  <a href="docs/images/multiagentbench.png"><img align="left" hspace="12" vspace="4" src="docs/images/multiagentbench.png" width="47%" alt="Task and Coordination Scores on MultiAgentBench"></a>
   MultiAgentBench measures both the quality of a team's output (<strong>Task Score, TS</strong>) and the quality of its communication and planning (<strong>Coordination Score, CS</strong>) on 100 tasks in each of the coding, research, and database scenarios.
   <br><br>
   SEPM leads in both scores in all three scenarios. The strongest alternative is <strong>LLMA-Mem</strong>, which shares procedural memory and keeps episodic memory private. SEPM improves on it by <strong>2.44–3.17 TS</strong> and <strong>2.57–6.45 CS</strong> points, with the largest margin on research coordination.
@@ -297,7 +297,7 @@ SEPM raises the TDW-MAT transport rate from **63.33% to 73.75%** and reduces C-W
 ImplicitMemBench tests whether earlier experience changes later behavior when the test does not refer to it, that is, whether stored experience actually **acts on execution**. In SEPM, lessons from the learning phase apply as conditional warnings to the remaining steps, and the resumed task graph keeps the exposure context available.
 
 <p align="center">
-  <a href="docs/readme-assets/implicitmembench.png"><img src="docs/readme-assets/implicitmembench.png" width="50%" alt="ImplicitMemBench scores of memory methods"></a><br>
+  <a href="docs/images/implicitmembench.png"><img src="docs/images/implicitmembench.png" width="50%" alt="ImplicitMemBench scores of memory methods"></a><br>
   <sub><strong>ImplicitMemBench scores.</strong> Dashed and dotted lines mark the oracle and a single LLM call.</sub>
 </p>
 
@@ -339,7 +339,7 @@ Two observations stand out. The multi-agent host alone does not help: AutoGen wi
 ### 6. Robust to the execution and memory model
 
 <p align="center">
-  <a href="docs/readme-assets/model-gain.png"><img src="docs/readme-assets/model-gain.png" width="55%" alt="Gain of SEPM over no added memory across execution and memory models"></a><br>
+  <a href="docs/images/model-gain.png"><img src="docs/images/model-gain.png" width="55%" alt="Gain of SEPM over no added memory across execution and memory models"></a><br>
   <sub><strong>Gain over no added memory with different execution and memory models</strong> (AutoGen).</sub>
 </p>
 
@@ -373,7 +373,7 @@ Scores span 35.82 / 28.70 / 22.00 points across models. Within Qwen3.5, scaling 
 ### 7. Higher success at moderate cost
 
 <p>
-  <a href="docs/readme-assets/token-cost.png"><img align="left" hspace="12" vspace="4" src="docs/readme-assets/token-cost.png" width="45%" alt="ALFWorld success versus total token consumption under AutoGen"></a>
+  <a href="docs/images/token-cost.png"><img align="left" hspace="12" vspace="4" src="docs/images/token-cost.png" width="45%" alt="ALFWorld success versus total token consumption under AutoGen"></a>
   Each point pairs a method's ALFWorld success rate (three-run mean) with the total input and output tokens of its complete 134-task evaluation under AutoGen (seed 0). Totals include coordination and memory operations together with task execution.
   <br><br>
   SEPM reaches <strong>89.05%</strong> success with <strong>5.2M</strong> tokens. No added memory uses 4.4M tokens at 59.45%; Generative Agents uses 5.6M at 85.32%; G-Memory 5.7M at 83.08%; LEGOMem 5.4M at 84.08%.
@@ -401,7 +401,7 @@ SEPM/
 └── pyproject.toml
 ```
 
-Local `paper/`, `benchmark-results/`, `Evaluation/`, and `external/` directories are excluded from Git by [`.gitignore`](.gitignore). The PNGs in [`docs/readme-assets/`](docs/readme-assets/) are rendered from the paper's vector figures by [`scripts/render_readme_assets.sh`](scripts/render_readme_assets.sh), which also records the source PDF of each image.
+Local `paper/`, `benchmark-results/`, `Evaluation/`, and `external/` directories are excluded from Git by [`.gitignore`](.gitignore). The PNGs in [`docs/images/`](docs/images/) are rendered from the paper's vector figures by [`scripts/render_readme_assets.sh`](scripts/render_readme_assets.sh), which also records the source PDF of each image.
 
 ---
 
@@ -533,7 +533,7 @@ The analyses below come from the supplementary material. Each entry states **why
 **How.** (1) We vary the interference phase from about 200 to 2000 tokens: the 200-token setting truncates the original interference, and the longer settings append neutral turns that reuse no names or symbols from the learning phase. (2) Instead of resetting the pool per item, we accumulate it across all 300 items in the original and a shuffled order.
 
 <p align="center">
-  <a href="docs/readme-assets/implicit-interference.png"><img src="docs/readme-assets/implicit-interference.png" width="55%" alt="Procedural memory score versus interference length"></a><br>
+  <a href="docs/images/implicit-interference.png"><img src="docs/images/implicit-interference.png" width="55%" alt="Procedural memory score versus interference length"></a><br>
   <sub><strong>Procedural memory first-attempt accuracy versus interference length</strong> (<code>gpt-5-mini</code>, one run). About 500 tokens corresponds to the original items.</sub>
 </p>
 
@@ -596,7 +596,7 @@ The analyses below come from the supplementary material. Each entry states **why
 <sub>AutoGen, seed 0. Precision is judged by two annotators on 100 sampled triggers per benchmark.</sub>
 
 <p align="center">
-  <a href="docs/readme-assets/alignment-sensitivity.png"><img src="docs/readme-assets/alignment-sensitivity.png" width="95%" alt="Sensitivity of task score to alignment hyperparameters"></a><br>
+  <a href="docs/images/alignment-sensitivity.png"><img src="docs/images/alignment-sensitivity.png" width="95%" alt="Sensitivity of task score to alignment hyperparameters"></a><br>
   <sub><strong>Sensitivity to alignment hyperparameters</strong> under AutoGen (one run), varying one parameter at a time: goal threshold δ<sub>g</sub>, plan threshold δ<sub>p</sub>, goal weight β, and evidence-confidence threshold. Vertical lines mark the defaults.</sub>
 </p>
 
@@ -633,7 +633,7 @@ The analyses below come from the supplementary material. Each entry states **why
 **Why.** The component ablation and its interaction term *I* could depend on the particular task order of a single run.
 
 <p align="center">
-  <a href="docs/readme-assets/ablation-seeds.png"><img src="docs/readme-assets/ablation-seeds.png" width="80%" alt="Difference between three-run mean and seed-0 run for each ablation configuration"></a><br>
+  <a href="docs/images/ablation-seeds.png"><img src="docs/images/ablation-seeds.png" width="80%" alt="Difference between three-run mean and seed-0 run for each ablation configuration"></a><br>
   <sub><strong>Three-run mean minus the seed-0 run</strong> for each ablation configuration and the interaction <i>I</i> (points). WebArena uses one run and is omitted.</sub>
 </p>
 
