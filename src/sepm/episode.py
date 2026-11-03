@@ -42,7 +42,12 @@ from .models import (
     Workspace,
     utc_now,
 )
-from .prompts import CANDIDATE_EXTRACTION_PROMPT, SOP_AGENT_SYSTEM_PROMPT, WARNING_EXTRACTION_PROMPT
+from .prompts import (
+    CANDIDATE_EXTRACTION_PROMPT,
+    FAILURE_LESSON_PROMPT,
+    SOP_AGENT_SYSTEM_PROMPT,
+    WARNING_EXTRACTION_PROMPT,
+)
 from .service import SEPMService
 from .storage import ConcurrencyError
 
@@ -94,6 +99,22 @@ def format_procedure(sop: SOPVersion) -> str:
         for warning in sop.metadata.warnings
     ]
     return "\n".join(lines)
+
+
+def format_procedure_text(sop: SOPVersion) -> str:
+    """Textual control: the same steps, prerequisites, and warnings as prose, without graph references."""
+    labels = {step.step_id: step.instruction for step in sop.procedure.steps}
+    parts = [" ".join(f"{step.instruction.rstrip('.')}." for step in sop.procedure.steps)]
+    parts += [f"Make sure that {labels[e.source].rstrip('.')} is done before {labels[e.target].rstrip('.')}." for e in sop.procedure.edges]
+    parts += [
+        warning.text + (f" (when: {warning.trigger_condition})" if warning.trigger_condition else "")
+        for warning in sop.metadata.warnings
+    ]
+    return " ".join(part for part in parts if part)
+
+
+def render_procedure(sop: SOPVersion, explicit_task_graph: bool = True) -> str:
+    return format_procedure(sop) if explicit_task_graph else format_procedure_text(sop)
 
 
 def _cited_steps(value: Any, step_count: int) -> list[int]:
@@ -165,7 +186,7 @@ class ProceduralEpisode:
             )
             trial = ranked[0].sop if ranked else None
         self.context = EpisodeContext(active=active, trial=trial)
-        if self.context.reference is not None:
+        if self.context.reference is not None and self.service.config.explicit_task_graph:
             self.service.instantiate_plan(self.workspace_id, self.context.reference.procedure)
         self._bump("sop_retrieved_episodes", bool(active))
         self._bump("sop_trial_episodes", trial is not None)
@@ -177,8 +198,12 @@ class ProceduralEpisode:
             self.service.register_agent(AgentProfile(agent_id=agent_id, role=(role or agent_id)[:512]))
             self._agents.add(agent_id)
 
-    def record_step(self, agent_id: str, action: str, observation: str) -> list[str]:
-        """Write one step to the blackboard, align the agent, and return new corrections."""
+    def record_step(self, agent_id: str, action: str, observation: str, *, goal: str | None = None) -> list[str]:
+        """Write one step to the blackboard, align the agent, and return new corrections.
+
+        ``goal`` is the agent's stated goal for this step, when the host exposes one;
+        it is compared with the agent's assignment by the goal-divergence detector.
+        """
         self.register_agent(agent_id)
         failed = self.domain.matcher.failed(observation)
         self.steps.append(EpisodeStep(agent_id, action, observation, failed))
@@ -189,6 +214,7 @@ class ProceduralEpisode:
                 kind=BlackboardKind.ACTION,
                 action=action[:4_000],
                 observation=observation[:8_000],
+                goal=goal[:10_000] if goal else None,
                 evidence=[
                     Evidence(
                         tier=EvidenceTier.TOOL_OBSERVATION,
@@ -259,6 +285,10 @@ class ProceduralEpisode:
         if self.finished:
             return
         self.finished = True
+        if self.service.config.frozen_pool:
+            # Transfer evaluation: the pool is read-only.
+            self._bump("frozen_pool_episodes")
+            return
         context = self.context or EpisodeContext()
         for sop in context.active:
             self.service.record_sop_outcome(sop.sop_id, success)
@@ -336,6 +366,11 @@ class ProceduralEpisode:
             self._bump("sop_candidate_rejections")
             print(f"SOP candidate rejected: {error}", file=sys.stderr)
             return
+        lessons = self._failure_lessons()
+        if lessons:
+            # Recorded failures become conditional warnings of the extracted procedure.
+            candidate.metadata.warnings = lessons
+            self._bump("sop_failure_lessons", amount=len(lessons))
         stored, safety = self.service.propose_sop(candidate)
         self._bump("sop_candidates")
         if not safety.allowed:
@@ -401,30 +436,7 @@ class ProceduralEpisode:
             procedure=format_procedure(sop),
             trajectory=self.numbered_trajectory(),
         )
-        try:
-            raw = self.sop_model.complete_json(SOP_AGENT_SYSTEM_PROMPT, prompt)
-            items = raw["warnings"]
-            if not isinstance(items, list):
-                raise TypeError("warnings must be a list")
-        except Exception as error:  # noqa: BLE001 - Memory curation must never fail the episode.
-            self._bump("sop_warning_rejections")
-            print(f"SOP warnings rejected: {error}", file=sys.stderr)
-            return
-        warnings: list[ConditionalWarning] = []
-        for item in items[: self.max_warnings]:
-            if not isinstance(item, dict) or not str(item.get("text", "")).strip():
-                continue
-            cited = _cited_steps(item.get("evidence_steps"), len(self.steps))
-            if not cited:
-                # A lesson without trajectory evidence is not supported.
-                continue
-            warnings.append(
-                ConditionalWarning(
-                    text=str(item["text"]).strip()[:2_000],
-                    trigger_condition=str(item.get("trigger_condition") or "").strip()[:2_000],
-                    evidence=[f"{self.workspace_id}#step-{k}" for k in cited],
-                )
-            )
+        warnings = self._extract_warnings(prompt)
         if not warnings:
             return
         try:
@@ -437,6 +449,49 @@ class ProceduralEpisode:
         if change is not None and change.kind == "warnings" and change.base_version == sop.version:
             self._bump("sop_warning_revisions")
             self._bump("sop_warning_rebases", change.rebased_onto is not None)
+
+    def _failure_lessons(self) -> list[ConditionalWarning]:
+        """Warnings supported by failed steps of this episode (none without failures)."""
+        failed = [index for index, step in enumerate(self.steps, 1) if step.failed]
+        if not failed:
+            return []
+        prompt = FAILURE_LESSON_PROMPT.format(
+            failed_steps=", ".join(map(str, failed)),
+            max_warnings=self.max_warnings,
+            task=self.task_goal,
+            trajectory=self.numbered_trajectory(),
+        )
+        # Only failed steps can support a failure lesson.
+        return self._extract_warnings(prompt, allowed_steps=set(failed))
+
+    def _extract_warnings(self, prompt: str, allowed_steps: set[int] | None = None) -> list[ConditionalWarning]:
+        try:
+            raw = self.sop_model.complete_json(SOP_AGENT_SYSTEM_PROMPT, prompt)
+            items = raw["warnings"]
+            if not isinstance(items, list):
+                raise TypeError("warnings must be a list")
+        except Exception as error:  # noqa: BLE001 - Memory curation must never fail the episode.
+            self._bump("sop_warning_rejections")
+            print(f"SOP warnings rejected: {error}", file=sys.stderr)
+            return []
+        warnings: list[ConditionalWarning] = []
+        for item in items[: self.max_warnings]:
+            if not isinstance(item, dict) or not str(item.get("text", "")).strip():
+                continue
+            cited = _cited_steps(item.get("evidence_steps"), len(self.steps))
+            if allowed_steps is not None:
+                cited = [k for k in cited if k in allowed_steps]
+            if not cited:
+                # A lesson without trajectory evidence is not supported.
+                continue
+            warnings.append(
+                ConditionalWarning(
+                    text=str(item["text"]).strip()[:2_000],
+                    trigger_condition=str(item.get("trigger_condition") or "").strip()[:2_000],
+                    evidence=[f"{self.workspace_id}#step-{k}" for k in cited],
+                )
+            )
+        return warnings
 
     def _bump(self, key: str, condition: bool = True, *, amount: float = 1.0) -> None:
         if condition:

@@ -87,6 +87,42 @@ class ALFWorldDomain(TaskDomain):
         return [], []
 
 
+# Feedback forms used by ImplicitMemBench learning phases to signal that the
+# preceding assistant turn failed (fixed from the item format, not from outcomes).
+IMPLICIT_MEMORY_FAILURE_MARKERS = (
+    "error", "warning", "alert", "denied", "not helpful", "unsupported", "exceeded",
+    "busy", "queue full", "overloaded", "lagging", "congested", "saturated", "read-only",
+    "maintenance window", "pressure high", "confus", "don't understand", "too complex",
+    "failed", "fails", "cue detected", "user feedback", "impatien", "rate limit",
+)
+
+
+@dataclass(frozen=True)
+class TextDomain(TaskDomain):
+    """Free-text hosts: one context fact per task family plus caller-supplied facts."""
+    extra_facts: frozenset[str] = frozenset()
+
+    def context_facts(self, task_goal: str) -> set[str]:
+        return {f"task_family:{self.task_family}", *self.extra_facts}
+
+
+def text_domain(
+    task_family: str,
+    embedder: Any,
+    *,
+    failure_markers: tuple[str, ...] = (),
+    extra_facts: set[str] | None = None,
+    threshold: float = 0.5,
+) -> TextDomain:
+    from .alignment import EmbeddingActionMatcher
+
+    return TextDomain(
+        task_family=task_family,
+        matcher=EmbeddingActionMatcher(embedder, failure_markers, threshold),
+        extra_facts=frozenset(extra_facts or ()),
+    )
+
+
 def domain_for(task_family: str) -> TaskDomain:
     """Return the rules for a benchmark task family."""
     return ALFWorldDomain() if task_family == "alfworld" else TaskDomain(task_family)

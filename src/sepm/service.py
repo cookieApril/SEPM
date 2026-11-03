@@ -232,11 +232,11 @@ class SEPMService:
         if "plan_divergence" in report.reasons and view is not None:
             actions = {node.node_id: node.action for node in reference.nodes}
             notices.extend(
-                f"Before {actions[target]!r}, complete and verify the prerequisite {actions[source]!r}."
+                f"Before {actions[target][:160]!r}, complete and verify the prerequisite {actions[source][:160]!r}."
                 for source, target in view.missing_prerequisites
             )
             notices.extend(
-                f"{action!r} is outside the current procedure; return to its next unverified step."
+                f"{action[:160]!r} is outside the current procedure; return to its next unverified step."
                 for action in view.off_plan_actions
             )
         resolved: dict[str, Any] = {}

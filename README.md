@@ -286,6 +286,24 @@ adapter.on_sop_outcome(sop_id, success=True)
 
 See [`examples/end_to_end.py`](examples/end_to_end.py) for concrete model objects and a runnable procedure lifecycle.
 
+### Use SEPM as a memory plug-in
+
+For hosts driven step by step, [`sepm.plugins`](src/sepm/plugins/) exposes one contract that
+SEPM and the baseline memories (official G-Memory / Generative Agents / MetaGPT classes, Mem0)
+all implement, so a host can swap memories without other changes:
+
+```python
+from sepm.llm_client import LLMClient, UsageMeter
+from sepm.plugins.sepm_plugin import SEPMPlugin
+
+memory = SEPMPlugin(database_path="pool.db", task_family="my_tasks",
+                    client=LLMClient(), meter=UsageMeter())
+memory.begin_task("task-1", goal)
+prompt_block = memory.context("agent-a", goal)            # procedures + warnings for the prompt
+corrections = memory.record("agent-a", action, observation) # blackboard + alignment
+memory.end_task(success=True, reward=1.0)                  # outcome, trials, extraction
+```
+
 ---
 
 ## 🧪 Evaluation
@@ -303,6 +321,18 @@ bash scripts/run_paper_experiments.sh all
 ```
 
 The runner has `preflight`, `smoke`, `matrices`, `generality`, `sop-models`, `ablation`, and `report` stages. It writes resumable results under `benchmark-results/`; [`scripts/validate_paper_setup.py`](scripts/validate_paper_setup.py) checks required jobs and external paths before a formal run. Use `python -m sepm.evaluation_runner --help` and `python -m sepm.ablation.runner --help` for matrix filters and individual stages.
+
+### Re-running the paper experiments
+
+* **LLM-only benchmarks (any OS):** `bash scripts/run_local_suite.sh {main|interference|accumulate}`
+  runs ImplicitMemBench ([`sepm.bench.implicitmem`](src/sepm/bench/implicitmem.py)), and
+  `python -m sepm.bench.marble_mab --conditions research:sepm coding:no-memory …` runs
+  MultiAgentBench coding/research on MARBLE ([`sepm.bench.marble_mab`](src/sepm/bench/marble_mab.py)).
+* **ALFWorld, OfficeBench, MultiAgentBench database (Linux + Docker):** follow
+  [`docs/LINUX_RUNBOOK.md`](docs/LINUX_RUNBOOK.md) (`scripts/run_linux_suite.sh <stage>`).
+* `python -m sepm.bench.report` collects every result into `benchmark-results/REPORT.md`.
+* Implementation choices and deviations from the stated protocol are listed in
+  [`docs/REPRODUCTION_NOTES.md`](docs/REPRODUCTION_NOTES.md).
 
 ---
 

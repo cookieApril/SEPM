@@ -6,6 +6,7 @@ benchmark adapters and the core service.
 
 from __future__ import annotations
 
+import json
 import os
 from dataclasses import replace
 from typing import Any
@@ -29,6 +30,8 @@ ABLATION_OVERRIDES: dict[str, dict[str, Any]] = {
     "sop-only": {"enable_divergence_detection": False},
     "divergence-only": {"enable_procedural_memory": False},
     "full": {},
+    # Fig. 7a control: same memory, alignment, and retrieval, without explicit graphs.
+    "textual-procedures": {"explicit_task_graph": False},
 }
 
 
@@ -41,5 +44,12 @@ def apply_ablation(base: MemoryConfig, variant: str) -> MemoryConfig:
 
 
 def config_from_environment(base: MemoryConfig | None = None) -> MemoryConfig:
-    """Read the runner-provided variant for third-party benchmark adapters."""
-    return apply_ablation(base or MemoryConfig(), os.getenv("SEPM_EVAL_ABLATION", "full"))
+    """Read the runner-provided variant (and an optional frozen pool) for adapters."""
+    config = apply_ablation(base or MemoryConfig(), os.getenv("SEPM_EVAL_ABLATION", "full"))
+    if os.getenv("SEPM_FREEZE_POOL") == "1":
+        config = replace(config, frozen_pool=True)
+    overrides = os.getenv("SEPM_CONFIG_OVERRIDES")
+    if overrides:
+        # Hyperparameter sensitivity (e.g. {"goal_divergence_threshold": 0.25}); unknown keys fail.
+        config = replace(config, **json.loads(overrides))
+    return config

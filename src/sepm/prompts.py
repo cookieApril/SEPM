@@ -48,6 +48,22 @@ Numbered trajectory:
 {trajectory}
 """
 
+# Failure lessons (Section 4.4): recorded failures inside an episode become conditional
+# warnings of the candidate extracted from it.
+FAILURE_LESSON_PROMPT = """Some steps of the episode below FAILED (see the observations of steps {failed_steps}).
+Identify at most {max_warnings} conditional lessons that would avoid these failures in a later
+task. Return exactly one JSON object {{"warnings": [{{"text": str, "trigger_condition": str,
+"evidence_steps": [int, ...]}}]}}. text is one short instruction; trigger_condition states when
+it applies; evidence_steps cites the numbered trajectory steps that show the failure.
+Return {{"warnings": []}} when the trajectory does not support a lesson.
+
+Task:
+{task}
+
+Numbered trajectory:
+{trajectory}
+"""
+
 # Conditional warnings (Appendix B.5): lessons from a failed execution of a procedure.
 WARNING_EXTRACTION_PROMPT = """The team followed the procedure below and the episode FAILED.
 Identify at most {max_warnings} conditional lessons that would have prevented this failure.

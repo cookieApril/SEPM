@@ -16,8 +16,9 @@ from __future__ import annotations
 import re
 from collections.abc import Mapping
 from dataclasses import dataclass, field
-from typing import Protocol
+from typing import Any, Protocol
 
+from .embedding import cosine_similarity
 from .models import PlanEdge, PlanNode, TaskPlan
 
 STOPWORDS = frozenset(
@@ -80,6 +81,38 @@ class LexicalActionMatcher:
 
 
 @dataclass(frozen=True)
+class EmbeddingActionMatcher:
+    """Match free-text actions (messages, tool calls) to steps by embedding similarity.
+
+    Text hosts have no leading command verb, so lexical verb matching rarely fires;
+    an action executes the most similar step when cosine similarity reaches ``threshold``.
+    """
+    embedder: Any
+    failure_markers: tuple[str, ...] = ()
+    threshold: float = 0.5
+    # A free-text message that executes no step is conversation, not an off-plan action.
+    unmatched_is_neutral: bool = True
+
+    def is_neutral(self, action: str) -> bool:
+        return not action.strip()
+
+    def failed(self, observation: str) -> bool:
+        lower = observation.lower()
+        return any(marker in lower for marker in self.failure_markers)
+
+    def match(self, action: str, plan: TaskPlan) -> str | None:
+        if not action.strip() or not plan.nodes:
+            return None
+        vector = self.embedder.embed(action[:2_000])
+        best, best_score = None, self.threshold
+        for node in plan.nodes:
+            score = cosine_similarity(vector, self.embedder.embed(node.action[:2_000]))
+            if score >= best_score:
+                best, best_score = node.node_id, score
+        return best
+
+
+@dataclass(frozen=True)
 class AlignmentView:
     """Reference view and local plan for Eq. 6, with the edits that separate them."""
     reference_view: TaskPlan
@@ -133,7 +166,8 @@ def derive_alignment(reference: TaskPlan, records: list[ActionRecord], matcher: 
             continue
         node_id = matcher.match(record.action, graph)
         if node_id is None:
-            off_plan.append((index, record.action))
+            if not getattr(matcher, "unmatched_is_neutral", False):
+                off_plan.append((index, record.action))
             continue
         last_attempt[node_id] = index
         if not matcher.failed(record.observation):

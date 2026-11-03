@@ -23,6 +23,9 @@ dev = [
 sepm = "sepm.cli:main"
 sepm-benchmark = "sepm.benchmark:main"
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["sepm*"]

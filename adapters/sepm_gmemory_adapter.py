@@ -17,6 +17,7 @@ import re
 import shutil
 import sys
 import tempfile
+import time
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -24,10 +25,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-SUPPORTED_TASKS = ("alfworld", "sciworld", "pddl", "fever", "hotpotqa")
-SUPPORTED_MEMORY_METHODS = ("no-memory", "gmemory", "sepm")
+SUPPORTED_TASKS = ("alfworld", "officebench", "sciworld", "pddl", "fever", "hotpotqa")
+SUPPORTED_MEMORY_METHODS = ("no-memory", "generative", "metagpt", "gmemory", "sepm")
+# Official G-Memory module_map names of the baseline memories.
+OFFICIAL_MEMORY_NAMES = {"no-memory": "empty", "generative": "generative", "metagpt": "metagpt", "gmemory": "g-memory"}
 TASK_METRICS = {
     "alfworld": "success_rate",
+    "officebench": "pass_rate",
     "sciworld": "progress_rate",
     "pddl": "progress_rate",
     "fever": "exact_match",
@@ -184,6 +188,10 @@ class StructuredRecorder:
     current_task_config: dict[str, Any] | None = None
     base_seed: int = 0
     checkpoint_callback: Callable[[list[dict[str, Any]]], None] | None = None
+    # Returns cumulative memory/actor counters; per-task deltas are stored with each case.
+    counters_provider: Callable[[], dict[str, float]] | None = None
+    _task_started: float = 0.0
+    _counters_at_start: dict[str, float] = field(default_factory=dict)
 
     def log(self, message: str) -> None:
         self.delegate.log(message)
@@ -206,6 +214,8 @@ class StructuredRecorder:
         except ImportError:
             pass
         self.delegate.task_begin(self.current_task_id, task_config)
+        self._task_started = time.time()
+        self._counters_at_start = dict(self.counters_provider()) if self.counters_provider else {}
 
     def task_end(self, reward: float, done: bool) -> None:
         self.delegate.task_end(reward, done)
@@ -217,6 +227,13 @@ class StructuredRecorder:
                 "official_task_index": self.current_task_id,
                 "reward": float(reward),
                 "done": bool(done),
+                "task_type": config.get("task_type"),
+                "seconds": round(time.time() - self._task_started, 1),
+                "counters": {
+                    key: value - self._counters_at_start.get(key, 0.0)
+                    for key, value in (self.counters_provider() if self.counters_provider else {}).items()
+                    if value - self._counters_at_start.get(key, 0.0)
+                },
             }
         )
         if self.checkpoint_callback is not None:
@@ -245,7 +262,9 @@ def _select_cases(tasks: list[dict[str, Any]], case_id: str | None) -> list[dict
 def _validate_official_data(gmemory_root: Path, task: str) -> None:
     """Fail before environment construction when the official data layout is incomplete."""
     required: list[Path]
-    if task == "alfworld":
+    if task == "officebench":
+        required = [gmemory_root.parent / "OfficeBench" / "tasks", gmemory_root.parent / "OfficeBench" / "apps"]
+    elif task == "alfworld":
         required = [
             gmemory_root / "data/alfworld/alfworld_tasks_suffix.json",
             gmemory_root / "data/alfworld/json_2.1.1/valid_unseen",
@@ -269,6 +288,71 @@ def _validate_official_data(gmemory_root: Path, task: str) -> None:
         )
 
 
+def _pool_statistics(memory: Any) -> dict[str, Any]:
+    """Procedure-pool statistics (paper Table 9) read from the SEPM store."""
+    from sepm.models import CandidateStatus
+
+    store = memory.service.store
+    by_status = {status.value: store.list_candidates(status, limit=1, offset=0)[1] for status in CandidateStatus}
+    active, active_total = store.list_active_sops(limit=10_000, offset=0)
+    return {
+        "candidates_by_status": by_status,
+        "active_procedures": active_total,
+        "specialized_variants": sum(1 for sop in active if sop.metadata.variant_of),
+        "warnings_on_active": sum(len(sop.metadata.warnings) for sop in active),
+        "avg_versions_per_active": sum(sop.version for sop in active) / len(active) if active else 0.0,
+    }
+
+
+def _filter_task_types(tasks: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Leave-one-type-out support: SEPM_TASK_TYPES keeps, SEPM_EXCLUDE_TASK_TYPES drops task types."""
+    include = {item for item in os.environ.get("SEPM_TASK_TYPES", "").split(",") if item}
+    exclude = {item for item in os.environ.get("SEPM_EXCLUDE_TASK_TYPES", "").split(",") if item}
+    return [
+        task for task in tasks
+        if (not include or task.get("task_type") in include) and task.get("task_type") not in exclude
+    ]
+
+
+def _build_officebench_manager(official_run: Any, mas_type: str, gmemory_root: Path, max_steps: int, work_dir: Path) -> Any:
+    """TaskManager for OfficeBench using G-Memory's own MAS workflows and recorder."""
+    from envs import BaseRecorder
+    from mas_workflow import get_mas
+
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from officebench_env import OfficeBenchEnv, officebench_tasks
+
+    office_root = gmemory_root.parent / "OfficeBench"
+    env = OfficeBenchEnv(office_root, docker_name=os.environ.get("OFFICEBENCH_IMAGE", "officebench"),
+                         container_name=os.environ.get("OFFICEBENCH_CONTAINER", f"officebench-{os.getpid()}"),
+                         max_trials=max_steps, output_root=work_dir / "officebench-outputs")
+    return official_run.TaskManager(
+        task_name="officebench", mas_type=mas_type, memory_type="sepm", tasks=officebench_tasks(office_root),
+        env=env, recorder=BaseRecorder(working_dir=str(work_dir), namespace="total_task"),
+        mas=get_mas(mas_type), mas_config=dict(official_run.CONFIG.get(mas_type, {})),
+    )
+
+
+def _run_officebench_tasks(manager: Any) -> None:
+    """G-Memory's run_task loop with OfficeBench's instruction instead of a G-Memory dataset prompt."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from officebench_env import OFFICEBENCH_INSTRUCTION
+
+    manager.recorder.dataset_begin()
+    try:
+        for task_id, task_config in enumerate(manager.tasks):
+            manager.recorder.task_begin(task_id, task_config)
+            task_main, task_description = manager.mas.env.set_env(task_config)
+            task_config.update(task_main=task_main, task_description=task_description, few_shots=[])
+            for agent in manager.mas.agents_team.values():
+                agent.add_task_instruction(OFFICEBENCH_INSTRUCTION)
+            reward, done = manager.mas.schedule(task_config)
+            manager.recorder.task_end(reward, done)
+    finally:
+        manager.mas.env.close()
+    manager.recorder.dataset_end()
+
+
 def _build_sepm_class():
     """Import both projects lazily, after runner-provided credentials are installed."""
     from mas.memory.common import MASMessage
@@ -278,7 +362,7 @@ def _build_sepm_class():
     from sepm.ablation import config_from_environment
     from sepm.config import MemoryConfig
     from sepm.domains import domain_for
-    from sepm.episode import ProceduralEpisode, format_procedure
+    from sepm.episode import ProceduralEpisode, render_procedure
     from sepm.service import SEPMService
 
     class OpenAISOPModel:
@@ -414,7 +498,7 @@ def _build_sepm_class():
                 message = MASMessage(
                     task_main=sop.metadata.title,
                     task_description=sop.metadata.description or sop.metadata.title,
-                    task_trajectory=prefix + format_procedure(sop),
+                    task_trajectory=prefix + render_procedure(sop, self.service.config.explicit_task_graph),
                     label=True,
                 )
                 message.add_extra_field(
@@ -507,6 +591,7 @@ def run(args: argparse.Namespace) -> tuple[dict[str, float], list[dict[str, Any]
             )
             self.prompt_tokens = 0
             self.completion_tokens = 0
+            self.calls = 0
             # Supplies SEPM realignment corrections for the next actor call, if any.
             self.notice_provider: Callable[[], list[str]] | None = None
 
@@ -535,6 +620,7 @@ def run(args: argparse.Namespace) -> tuple[dict[str, float], list[dict[str, Any]
                 n=1 if num_comps is None else num_comps,
             )
             usage = getattr(response, "usage", None)
+            self.calls += 1
             self.prompt_tokens += int(getattr(usage, "prompt_tokens", 0) or 0)
             self.completion_tokens += int(getattr(usage, "completion_tokens", 0) or 0)
             content = response.choices[0].message.content or ""
@@ -558,10 +644,18 @@ def run(args: argparse.Namespace) -> tuple[dict[str, float], list[dict[str, Any]
         pass
 
     official_run.WORKING_DIR = str(work_dir)
-    configured_steps = int(official_run.CONFIG[args.task].get("max_steps", 30))
-    if args.task == "alfworld":
-        _patch_alfworld_textworld_eval_symbol()
-    manager = official_run.build_task(args.task, args.mas, "sepm", configured_steps)
+    if args.task == "officebench":
+        configured_steps = int(os.environ.get("SEPM_OFFICEBENCH_MAX_STEPS", "20"))
+        manager = _build_officebench_manager(official_run, args.mas, gmemory_root, configured_steps, work_dir)
+    else:
+        configured_steps = int(official_run.CONFIG[args.task].get("max_steps", 30))
+        if args.task == "alfworld":
+            _patch_alfworld_textworld_eval_symbol()
+        manager = official_run.build_task(args.task, args.mas, "sepm", configured_steps)
+    if os.environ.get("SEPM_AGENT_COUNT"):
+        # Team-size analysis (E10): number of task agents in the host.
+        # Only DyLAN exposes a team size (node_num); G-Memory's AutoGen has fixed roles.
+        manager.mas_config["node_num"] = int(os.environ["SEPM_AGENT_COUNT"])
     # ALFWorld creates a new underlying environment on reset and must close the
     # previous one first. ScienceWorld reuses one Py4J gateway across load/reset;
     # closing it here makes every subsequent reset fail with "Gateway is not
@@ -574,7 +668,10 @@ def run(args: argparse.Namespace) -> tuple[dict[str, float], list[dict[str, Any]
         copied = copy.deepcopy(task)
         copied[OFFICIAL_INDEX_KEY] = index
         indexed_tasks.append(copied)
-    selected_tasks = _select_cases(indexed_tasks, case_id)
+    selected_tasks = _filter_task_types(_select_cases(indexed_tasks, case_id))
+    if args.seed > 0 and not case_id:
+        # Seeds 1 and 2 use independent permutations of the adapter's task order (App. C.4).
+        random.Random(args.seed).shuffle(selected_tasks)
     checkpoint_path = work_dir / "episode-checkpoint.json"
     checkpoint_identity = {
         "task": args.task,
@@ -624,15 +721,20 @@ def run(args: argparse.Namespace) -> tuple[dict[str, float], list[dict[str, Any]
     else:
         from mas.utils import EmbeddingFunc
 
-        official_memory_name = "empty" if memory_method == "no-memory" else "g-memory"
+        official_memory_name = OFFICIAL_MEMORY_NAMES[memory_method]
         _, memory_type = module_map("io", official_memory_name)
-        embedding = EmbeddingFunc(official_run.CONFIG["embedding_model"]) if memory_method == "gmemory" else None
+        embedding = EmbeddingFunc(official_run.CONFIG["embedding_model"]) if memory_method != "no-memory" else None
+        # A shared directory lets a pool be built in one run and reused (frozen) in another.
+        memory_dir = Path(os.environ.get("SEPM_GMEMORY_WORKDIR") or work_dir)
         memory = memory_type(
             namespace=official_memory_name,
-            global_config={"working_dir": str(work_dir), "hop": 1},
+            global_config={"working_dir": str(memory_dir), "hop": 1},
             llm_model=actor_chat,
             embedding_func=embedding,
         )
+        if os.environ.get("SEPM_FREEZE_POOL") == "1":
+            memory.add_memory = lambda *_args, **_kwargs: None
+            memory.backward = lambda *_args, **_kwargs: None
     memory_stats = getattr(memory, "stats", None)
     if isinstance(memory_stats, dict):
         memory_stats.update(
@@ -658,6 +760,15 @@ def run(args: argparse.Namespace) -> tuple[dict[str, float], list[dict[str, Any]
         )
 
     recorder.checkpoint_callback = save_episode_checkpoint
+
+    def counters() -> dict[str, float]:
+        stats = getattr(memory, "stats", {})
+        values = {key: float(value) for key, value in (stats.items() if isinstance(stats, dict) else [])}
+        values.update(actor_calls=float(actor_chat.calls), actor_prompt_tokens=float(actor_chat.prompt_tokens),
+                      actor_completion_tokens=float(actor_chat.completion_tokens))
+        return values
+
+    recorder.counters_provider = counters
     reasoning_type, _ = module_map("io", None)
     reasoning = reasoning_type(llm_model=actor_chat)
     manager.mas.add_observer(recorder)
@@ -667,7 +778,10 @@ def run(args: argparse.Namespace) -> tuple[dict[str, float], list[dict[str, Any]
         f"remaining={len(manager.tasks)}, path={checkpoint_path}"
     )
     try:
-        official_run.run_task(manager)
+        if args.task == "officebench":
+            _run_officebench_tasks(manager)
+        else:
+            official_run.run_task(manager)
         save_episode_checkpoint(recorder.cases, complete=True)
     finally:
         _close_environment(manager.env)
@@ -688,6 +802,7 @@ def run(args: argparse.Namespace) -> tuple[dict[str, float], list[dict[str, Any]
         "success_rate": _mean(dones),
         "actor_prompt_tokens": float(actor_chat.prompt_tokens),
         "actor_completion_tokens": float(actor_chat.completion_tokens),
+        "actor_calls": float(actor_chat.calls),
         **memory_stats,
         "sop_json_valid_rate": float(memory_stats.get("sop_json_valid", 0.0)) / calls if calls else 0.0,
         "sop_candidate_pass_rate": (
@@ -727,6 +842,11 @@ def run(args: argparse.Namespace) -> tuple[dict[str, float], list[dict[str, Any]
             "same-task-type baseline; attribution requires executed candidate steps"
         ),
         "alignment_policy": "per-step blackboard alignment; corrections appended to the next actor call",
+        "task_order": "adapter order" if args.seed == 0 else f"random.Random({args.seed}).shuffle",
+        "frozen_pool": os.environ.get("SEPM_FREEZE_POOL") == "1",
+        "task_type_filter": {"include": os.environ.get("SEPM_TASK_TYPES", ""),
+                             "exclude": os.environ.get("SEPM_EXCLUDE_TASK_TYPES", "")},
+        "pool_statistics": _pool_statistics(memory) if memory_method == "sepm" else None,
     }
     return metrics, recorder.cases, metadata
 

@@ -43,6 +43,11 @@ class MemoryConfig:
     require_causal_gate: bool = True
     enable_safety_gate: bool = True
     adaptive_retrieval: bool = True
+    # Textual-procedure control: procedures are injected as prose and no task-graph
+    # objects (nodes, adjacency) are instantiated for plan comparison.
+    explicit_task_graph: bool = True
+    # Transfer experiments: retrieve from the pool but never write to it.
+    frozen_pool: bool = False
     # These terms only mark sensitive steps; SafetyValidator rules decide rejection.
     safety_keywords: tuple[str, ...] = field(
         default=(
