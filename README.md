@@ -376,7 +376,7 @@ Scores span 35.82 / 28.70 / 22.00 points across models. Within Qwen3.5, scaling 
   <a href="docs/images/token-cost.png"><img align="left" hspace="12" vspace="4" src="docs/images/token-cost.png" width="45%" alt="ALFWorld success versus total token consumption under AutoGen"></a>
   Each point pairs a method's ALFWorld success rate (three-run mean) with the total input and output tokens of its complete 134-task evaluation under AutoGen (seed 0). Totals include coordination and memory operations together with task execution.
   <br><br>
-  SEPM reaches <strong>89.05%</strong> success with <strong>5.2M</strong> tokens. No added memory uses 4.4M tokens at 59.45%; Generative Agents uses 5.6M at 85.32%; G-Memory 5.7M at 83.08%; LEGOMem 5.4M at 84.08%.
+  SEPM reaches <strong>89.05%</strong> success with <strong>5.2M</strong> tokens. No added memory uses 4.4M tokens at 59.45%, MetaGPT 4.8M at 77.86%, Generative Agents 5.6M at 85.32%, and G-Memory 5.7M at 83.08%.
   <br><br>
   Relative to no added memory, SEPM uses about <strong>18%</strong> more tokens for <strong>+29.60</strong> points. It uses fewer tokens than Generative Agents, G-Memory, and LEGOMem on all three benchmarks (<a href="#more-cost">full cost breakdown</a>).
 </p>
