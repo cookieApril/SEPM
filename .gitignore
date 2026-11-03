@@ -59,7 +59,7 @@ results/
 figures/
 plots/
 paper/
-image/
+
 
 # LaTeX build products
 *.aux
