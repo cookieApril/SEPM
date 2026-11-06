@@ -90,7 +90,7 @@ class LiteChroma:
         return not where or all(metadata.get(key) == value for key, value in where.items())
 
     def similarity_search_with_score(
-        self, query: str, k: int = 4, filter: dict[str, Any] | None = None, **_: Any  # noqa: A002
+        self, query: str, k: int = 4, filter: dict[str, Any] | None = None, **_: Any
     ) -> list[tuple[Document, float]]:
         if k <= 0:
             return []
@@ -110,7 +110,7 @@ class LiteChroma:
         return scored[:k]
 
     def similarity_search(
-        self, query: str, k: int = 4, filter: dict[str, Any] | None = None, **kwargs: Any  # noqa: A002
+        self, query: str, k: int = 4, filter: dict[str, Any] | None = None, **kwargs: Any
     ) -> list[Document]:
         return [doc for doc, _ in self.similarity_search_with_score(query, k, filter, **kwargs)]
 
@@ -139,7 +139,7 @@ def _install_shims() -> None:
     if "sentence_transformers" not in sys.modules:
         st = types.ModuleType("sentence_transformers")
 
-        class SentenceTransformer:  # noqa: D401 - never instantiated in this harness
+        class SentenceTransformer:
             def __init__(self, *args: Any, **kwargs: Any) -> None:
                 raise RuntimeError("local sentence-transformers embeddings are disabled; pass an embedder")
 

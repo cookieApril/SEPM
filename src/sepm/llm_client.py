@@ -1,7 +1,7 @@
 """Thread-safe OpenAI-compatible chat/embedding client with per-component accounting.
 
 Experiment harnesses share one ``LLMClient`` per run so that token totals,
-call counts, and the component breakdown of Table 14 come from the same
+call counts, and the component breakdown of Supp. Table S16b come from the same
 counters. Secrets are read from the environment and never stored in results.
 """
 
@@ -99,7 +99,7 @@ class LLMClient:
         while True:
             try:
                 return fn()
-            except Exception as error:  # noqa: BLE001 - relay errors are transient by default
+            except Exception as error:
                 status = getattr(error, "status_code", None)
                 # An exhausted account balance pauses the run until it is topped up, instead of
                 # failing every remaining item.

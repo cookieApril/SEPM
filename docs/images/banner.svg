@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="260" viewBox="0 0 1200 260" font-family="Segoe UI, Helvetica Neue, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#EAF4FF"/>
+      <stop offset="0.5" stop-color="#F3EEFF"/>
+      <stop offset="1" stop-color="#E8FBF4"/>
+    </linearGradient>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8A94A6"/>
+    </marker>
+  </defs>
+  <rect width="1200" height="260" rx="22" fill="url(#bg)"/>
+  <circle cx="1130" cy="30" r="70" fill="#FFE7A3" opacity="0.45"/>
+  <circle cx="60" cy="235" r="60" fill="#C9F2E3" opacity="0.6"/>
+  <text x="60" y="92" font-size="64" font-weight="800" fill="#2B3A55">SEPM</text>
+  <text x="60" y="132" font-size="24" font-weight="600" fill="#3D6FD9">Self-Evolving Procedural Memory</text>
+  <text x="60" y="164" font-size="20" fill="#5B6478">grounded in task graphs for multi-agent collaboration</text>
+  <g font-size="14" font-weight="600">
+    <rect x="60" y="190" rx="13" width="150" height="28" fill="#DCEBFF"/>
+    <text x="135" y="209" text-anchor="middle" fill="#2F64C8">shared blackboard</text>
+    <rect x="222" y="190" rx="13" width="190" height="28" fill="#FFE3DA"/>
+    <text x="317" y="209" text-anchor="middle" fill="#D2563A">divergence-aware alignment</text>
+    <rect x="424" y="190" rx="13" width="196" height="28" fill="#D6F5EA"/>
+    <text x="522" y="209" text-anchor="middle" fill="#1E8F6E">evidence-gated evolution</text>
+  </g>
+  <g stroke="#8A94A6" stroke-width="2.4" fill="none" marker-end="url(#arr)">
+    <path d="M770 95 L862 70"/>
+    <path d="M770 125 L862 175"/>
+    <path d="M920 70 L1012 118"/>
+    <path d="M920 175 L1012 136"/>
+  </g>
+  <g font-size="15" font-weight="700" text-anchor="middle">
+    <rect x="690" y="88" rx="14" width="84" height="46" fill="#9B8CFF"/>
+    <text x="732" y="116" fill="#fff">find</text>
+    <rect x="862" y="46" rx="14" width="96" height="46" fill="#4F9DFF"/>
+    <text x="910" y="74" fill="#fff">clean</text>
+    <rect x="862" y="152" rx="14" width="96" height="46" fill="#34C3A0"/>
+    <text x="910" y="180" fill="#fff">inspect</text>
+    <rect x="1012" y="104" rx="14" width="96" height="46" fill="#FF8A65"/>
+    <text x="1060" y="132" fill="#fff">store</text>
+  </g>
+  <text x="900" y="232" font-size="14" text-anchor="middle" fill="#5B6478">a step runs only after its prerequisites are verified</text>
+</svg>

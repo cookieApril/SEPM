@@ -58,14 +58,14 @@ case "$STAGE" in
     for t in $TASKS; do for m in $METHODS; do
       case $t in alfworld) cid=0;; officebench) cid=1-1/0;; esac
       job smoke "$t" autogen "$m" 0 full "SEPM_EVAL_CASE_ID=$cid"; done; done ;;
-  e1)     # Table 1 / Fig. 4 / Fig. 6 / Tables 9, 13, 14 (AutoGen + DyLAN)
+  e1)     # Table 1 / Fig. 6 / Tables S13, S14, S16 (AutoGen + DyLAN)
     for s in $SEEDS; do for t in $TASKS; do for mas in autogen dylan; do for m in $METHODS; do
       job e1 "$t" "$mas" "$m" "$s" full; done; done; done; done ;;
-  ablation)  # Fig. 7 / Table 12 (AutoGen). "No added components" = e1 no-memory, "Full" = e1 sepm.
+  ablation)  # Figs. 7-8 (AutoGen). "No added components" = e1 no-memory, "Full" = e1 sepm.
     for s in $SEEDS; do for t in $TASKS; do
       for a in blackboard-only sop-only divergence-only textual-procedures; do
         job ablation "$t" autogen sepm "$s" "$a"; done; done; done ;;
-  loo)    # Fig. 9a: ALFWorld leave-one-type-out; build on 5 types, test frozen on the 6th
+  loo)    # Fig. 5a: ALFWorld leave-one-type-out; build on 5 types, test frozen on the 6th
     for ty in put clean heat cool examine puttwo; do for m in sepm gmemory; do
       pool="$OUT/loo/pools/${m}__without_${ty}"; mkdir -p "$pool"
       job loo alfworld autogen "$m" 0 full "SEPM_EXCLUDE_TASK_TYPES=$ty" "SEPM_GMEMORY_WORKDIR=$pool" \
@@ -78,7 +78,7 @@ case "$STAGE" in
           "SEPM_GMEMORY_WORKDIR=$pool" "SEPM_DB=$pool/sepm.db"
     done; done
     ;;
-  transfer)  # Fig. 9b: frozen AutoGen pool used under DyLAN (needs e1 seed-0 SEPM AutoGen runs)
+  transfer)  # Fig. 5b: frozen AutoGen pool used under DyLAN (needs e1 seed-0 SEPM AutoGen runs)
     for t in $TASKS; do
       src="$OUT/e1/${t}__autogen__sepm__full__s0.sepm.db"
       [ -f "$src" ] || { echo "missing $src (run e1 first)"; continue; }
@@ -86,7 +86,7 @@ case "$STAGE" in
       job transfer "$t" dylan sepm 0 full "SEPM_FREEZE_POOL=1" "SEPM_DB=$OUT/transfer_${t}_autogen_pool.db"
     done
     ;;
-  sensitivity)  # Fig. 10: one alignment hyperparameter at a time (defaults are e1 sepm)
+  sensitivity)  # Fig. S3: one alignment hyperparameter at a time (defaults are e1 sepm)
     for t in $TASKS; do
       for kv in goal_divergence_threshold:0.25 goal_divergence_threshold:0.45 \
                 plan_divergence_threshold:0.30 plan_divergence_threshold:0.50 \
@@ -94,7 +94,7 @@ case "$STAGE" in
                 state_confidence_threshold:0.60 state_confidence_threshold:0.80; do
         job sensitivity "$t" autogen sepm 0 full "SEPM_CONFIG_OVERRIDES={\"${kv%%:*}\":${kv##*:}}"
       done; done ;;
-  teamsize)  # Table 11. NOTE: only DyLAN exposes a team size (node_num) in G-Memory; see runbook.
+  teamsize)  # Table S17. NOTE: only DyLAN exposes a team size (node_num) in G-Memory; see docs/BENCHMARKS.md.
     for t in $TASKS; do for n in 2 3 5; do for m in no-memory gmemory sepm; do
       job teamsize "$t" dylan "$m" 0 full "SEPM_AGENT_COUNT=$n"; done; done; done ;;
   mab-db)   # MultiAgentBench database (Docker Postgres; tasks run one at a time)

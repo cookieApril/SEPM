@@ -1,4 +1,4 @@
-"""Hybrid BM25/VectorSearch retrieval with query-adaptive weights (Eq. 3).
+"""Hybrid BM25/VectorSearch retrieval with query-adaptive weights (Eq. S1).
 
 Retrieval answers which SOP is most likely to help the current task by combining
 lexical BM25 relevance with vector semantic relevance. Only active SOPs whose
@@ -18,14 +18,14 @@ from .models import RetrievalResult, SOPVersion
 
 
 class AdaptiveWeightRouter:
-    """Softmax router over BM25 and vector logits driven by query cues (Appendix B.1, Table 3)."""
+    """Softmax router over BM25 and vector logits driven by query cues (Supp. B.1, Table S1)."""
 
     LABELS = ("bm25", "vector")
-    # (cues, modified logit, increment); Chinese cues mirror the English ones.
+    # (cues, modified logit, increment)
     ROUTING_CUES: tuple[tuple[tuple[str, ...], str, float], ...] = (
-        (("code", "debug", "implement", "coding", "代码", "调试"), "vector", 1.0),
-        (("latest", "current", "real-time", "实时", "最新"), "bm25", 0.8),
-        (("routine", "repeat", "standard", "日常", "重复", "标准"), "bm25", 0.6),
+        (("code", "debug", "implement", "coding"), "vector", 1.0),
+        (("latest", "current", "real-time"), "bm25", 0.8),
+        (("routine", "repeat", "standard"), "bm25", 0.6),
     )
 
     def __init__(self, config: MemoryConfig | None = None) -> None:
@@ -103,7 +103,7 @@ class SOPRetriever:
 
     @staticmethod
     def _tokens(text: str) -> list[str]:
-        return re.findall(r"[\w一-鿿]+", text.lower())
+        return re.findall(r"\w+", text.lower())
 
     @staticmethod
     def _document(sop: SOPVersion) -> str:

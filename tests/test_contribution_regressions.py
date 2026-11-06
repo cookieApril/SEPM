@@ -112,7 +112,7 @@ class ContributionRegressionTests(unittest.TestCase):
         self.assertEqual(normalized_plan_distance(plan("a", "b"), plan("a", "b")), 0)
         # One changed action at a matched node out of |V| + |E| = 3.
         self.assertAlmostEqual(normalized_plan_distance(plan("a", "b"), plan("a", "b", "book")), 1 / 3)
-        # Fresh identifiers break the fixed correspondence (Appendix B.2).
+        # Fresh identifiers break the fixed correspondence (Supp. B.2).
         self.assertEqual(normalized_plan_distance(plan("a", "b"), plan("x", "y")), 1.0)
 
     def test_dependency_cycle_is_rejected(self):
@@ -127,7 +127,7 @@ class ContributionRegressionTests(unittest.TestCase):
         self.assertFalse(decision.allowed)
 
     def test_confirmation_word_does_not_authorize_payment(self):
-        for instruction in ("Pay without confirmation", "支付订单"):
+        for instruction in ("Pay without confirmation", "Submit payment for the order"):
             candidate = self.candidate(procedure=ProcedureGraph(steps=[ProcedureStep(instruction=instruction)]))
             self.assertFalse(SafetyValidator().validate(candidate).allowed)
 

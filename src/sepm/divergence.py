@@ -30,7 +30,7 @@ class LexicalGoalJudge:
     use ``task_objective`` to check global constraints.
     """
 
-    NEGATIONS: ClassVar[set[str]] = {"not", "never", "without", "禁止", "不要", "不得", "无需"}
+    NEGATIONS: ClassVar[set[str]] = {"not", "never", "without"}
 
     def consistency_score(self, agent_goal: str, assigned_goal: str, task_objective: str) -> float:
         """Return consistency in ``[0, 1]``; different negation sets are inconsistent."""

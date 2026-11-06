@@ -2,9 +2,9 @@
 
 Reads whatever exists; missing conditions are shown as "–" rather than filled in.
 
-* ImplicitMemBench (E4/E5): ``benchmark-results/implicitmem/<model>/*.jsonl``
-* MultiAgentBench (E3):     ``benchmark-results/multiagentbench/<scenario>/<method>/results.jsonl``
-* Linux runs (E1, E6, E8-E10, E12, E13): ``--linux benchmark-results/linux`` (adapter JSONs)
+* ImplicitMemBench (Table 3a, S12): ``benchmark-results/implicitmem/<model>/*.jsonl``
+* MultiAgentBench (Table S11): ``benchmark-results/multiagentbench/<scenario>/<method>/results.jsonl``
+* Linux runs (Table 1, Figs. 5-8, S3, Tables S13-S17): ``--linux benchmark-results/linux`` (adapter JSONs)
 """
 
 from __future__ import annotations
@@ -72,7 +72,7 @@ def imb_scores(rows: list[dict[str, Any]]) -> dict[str, Any]:
 def report_implicitmem(root: Path, model: str = "gpt-5-mini") -> tuple[str, dict[str, Any]]:
     base = root / model
     data: dict[str, Any] = {}
-    out = [f"### ImplicitMemBench ({model}; Table 7 / Fig. 5)\n"]
+    out = [f"### ImplicitMemBench ({model}; Table 3a / Fig. 4a)\n"]
     scores = {m: imb_scores(_jsonl(base / f"{m}__reset__original__int500.jsonl")) for m, _ in IMB_METHODS}
     host = scores["no-memory"]["overall"]
     rows = []
@@ -115,7 +115,7 @@ def report_implicitmem(root: Path, model: str = "gpt-5-mini") -> tuple[str, dict
                 pos += after and not before
         rows.append([f"Accumulate, {order}", *(_fmt(s[k]) for k in ("proc", "cond", "prim", "overall")),
                      _fmt(sum(foreign) / len(foreign)) if foreign else "–", str(neg) if acc else "–", str(pos) if acc else "–"])
-    out.append("\n#### Pool reset vs accumulate (Table 8)\n")
+    out.append("\n#### Pool reset vs accumulate (Table S12)\n")
     out.append(_table(["Pool", "Proc.", "Cond.", "Prim.", "Overall", "Foreign/item", "Neg.", "Pos."], rows))
     return "\n".join(out), data
 
@@ -141,7 +141,7 @@ def report_mab(root: Path) -> tuple[str, dict[str, Any]]:
                                             "cs": sum(cs) / len(cs) if cs else None, "n": len(results)}
             row += [_fmt(data[f"{scenario}/{method}"]["ts"]), _fmt(data[f"{scenario}/{method}"]["cs"]), str(len(results))]
         rows.append(row)
-    return "### MultiAgentBench (Table 6 / Fig. 1)\n\n" + _table(header, rows), data
+    return "### MultiAgentBench (Table S11 / Fig. 4c)\n\n" + _table(header, rows), data
 
 
 # ---------------------------------------------------------------------------
@@ -193,7 +193,7 @@ def report_linux(root: Path) -> tuple[str, dict[str, Any]]:
                 row.append(f"{sum(values) / len(values):.2f} (seeds {sorted(seeds)})" if values else "–")
                 data[f"e1/{task}/{mas}/{method}"] = values
             rows.append(row)
-    out.append("### E1 task score (%, Table 1; ALFWorld/OfficeBench)\n\n" + _table(["Host", "Memory", "ALFWorld", "OfficeBench"], rows))
+    out.append("### Task score (%, Table 1; ALFWorld/OfficeBench)\n\n" + _table(["Host", "Memory", "ALFWorld", "OfficeBench"], rows))
 
     # Significance vs no added memory (needs the same seeds for both methods).
     rows = []
@@ -215,9 +215,9 @@ def report_linux(root: Path) -> tuple[str, dict[str, Any]]:
             delta = 100 * sum(diffs) / (len(cases) * len(seeds)) if cases else 0.0
             rows.append([mas, task, str(seeds), f"{delta:+.2f}", f"{wins}/{ties}/{losses}", f"{sign_flip_test(diffs):.2g}"])
     if rows:
-        out.append("\n### SEPM vs no added memory (Table 4)\n\n" + _table(["Host", "Benchmark", "Seeds", "Δ (pts)", "W/T/L", "p"], rows))
+        out.append("\n### SEPM vs no added memory (Table S9a)\n\n" + _table(["Host", "Benchmark", "Seeds", "Δ (pts)", "W/T/L", "p"], rows))
 
-    # Learning curves (Fig. 6) and cost (Tables 13, 14) from seed-0 AutoGen runs.
+    # Learning curves (Fig. 6) and cost (Table S16) from seed-0 AutoGen runs.
     rows, cost_rows = [], []
     for task in ("alfworld", "officebench"):
         for method, label in E1_METHODS:
@@ -236,9 +236,9 @@ def report_linux(root: Path) -> tuple[str, dict[str, Any]]:
                               f"{sum(seconds) / len(seconds):.0f}" if seconds else "–"])
     if rows:
         out.append("\n### Learning curve by segment, AutoGen seed 0 (Fig. 6)\n\n" + _table(["Benchmark", "Memory", "B1", "B2", "B3", "B4", "B5"], rows))
-        out.append("\n### Cost, AutoGen seed 0 (Table 13)\n\n" + _table(["Benchmark", "Memory", "Tokens (M)", "Calls/task", "s/task"], cost_rows))
+        out.append("\n### Cost, AutoGen seed 0 (Table S16a)\n\n" + _table(["Benchmark", "Memory", "Tokens (M)", "Calls/task", "s/task"], cost_rows))
 
-    # Pool statistics and realignment (Tables 9, 10).
+    # Pool statistics and realignment (Table S13).
     rows = []
     for task in ("alfworld", "officebench"):
         run = grouped.get((task, "autogen", "sepm"), {}).get(0)
@@ -258,12 +258,12 @@ def report_linux(root: Path) -> tuple[str, dict[str, Any]]:
                      f"{100 * sum(c.get('done', False) for c in others) / max(1, len(others)):.2f}%",
                      json.dumps(run.get("metadata", {}).get("pool_statistics"))])
     if rows:
-        out.append("\n### Realignment and pool statistics, AutoGen seed 0 (Tables 9, 10)\n\n" + _table(
+        out.append("\n### Realignment and pool statistics, AutoGen seed 0 (Table S13)\n\n" + _table(
             ["Benchmark", "Goal/task", "Plan/task", "State/task", "Tasks w/ realign.", "Succ. w/", "Succ. w/o", "Pool"], rows))
 
-    for group, title in (("ablation", "Component ablation (Fig. 7, Table 12)"), ("sensitivity", "Hyperparameter sensitivity (Fig. 10)"),
-                         ("teamsize", "Team size (Table 11)"), ("loo-test", "Leave-one-type-out, frozen (Fig. 9a)"),
-                         ("transfer", "Frozen AutoGen pool under DyLAN (Fig. 9b)")):
+    for group, title in (("ablation", "Component ablation (Figs. 7-8)"), ("sensitivity", "Hyperparameter sensitivity (Fig. S3)"),
+                         ("teamsize", "Team size (Table S17)"), ("loo-test", "Leave-one-type-out, frozen (Fig. 5a)"),
+                         ("transfer", "Frozen AutoGen pool under DyLAN (Fig. 5b)")):
         runs = _load_runs(root, group)
         if runs:
             rows = [[name, _fmt(run["metrics"].get("primary_score", 0) * 100), str(len(run.get("cases", [])))] for name, run in runs.items()]
