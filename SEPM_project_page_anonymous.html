@@ -126,6 +126,19 @@
   .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
   .fstep { border-radius: 12px; padding: 8px 10px; font-size: 8.7pt; line-height: 1.4; }
   .fstep span { display: block; font-weight: 700; font-size: 9.4pt; margin-bottom: 3px; }
+  .tnum { font-size: 8.5pt; color: var(--muted); margin-bottom: 4px; line-height: 1.45; }
+  .tnum b { color: var(--ink); }
+  .up { color: #1fa882; font-size: 6.6pt; margin-left: 2px; }
+  .dn { color: #e0533a; font-size: 6.6pt; margin-left: 2px; }
+  table.t1 td { padding: 3.5px 5px; white-space: nowrap; }
+  table.t1 td.avg { font-weight: 700; }
+  tr.sep td { border-top: 1.5px solid #c9d3e6; }
+  table.dense { font-size: 8.4pt; }
+  table.dense td, table.dense th { padding: 2.6px 6px; white-space: nowrap; }
+  table.dense code { font-size: 7.6pt; background: none; padding: 0; }
+  tr.band td { background: var(--blue-soft); color: var(--blue); font-weight: 700; font-size: 7.8pt; }
+  tr.band code { color: var(--blue); }
+  tr.gap td { padding: 1px; border-bottom: 1.5px solid #c9d3e6; }
   .side { display: grid; gap: 14px; align-items: center; }
   .box { border-radius: 12px; padding: 10px 13px; font-size: 9pt; }
 
@@ -188,9 +201,9 @@
   </figure>
 
   <div class="comp">
-    <div class="card c1"><h4>Shared blackboard</h4>Retrieves up to <i>K</i> = 5 applicable procedures and plans a task graph from them. A step is dispatched only when all its prerequisites are verified by external evidence (environment, tool observation, or verified artifact), never by agent inference alone.<div class="files">models.py · storage.py · retrieval.py</div></div>
-    <div class="card c2"><h4>Divergence-aware alignment</h4>Compares each agent's local view with its reference subgraph. <b>Goal:</b> text dissimilarity + LLM judge. <b>Plan:</b> action mismatches and edges in only one plan. <b>State:</b> conflicting evidence, resolved by an authority hierarchy. Corrections propagate to dependent steps.<div class="files">divergence.py · alignment.py · evidence.py</div></div>
-    <div class="card c3"><h4>Graph-grounded evolution</h4>Keeps only verified steps and edges whose source established a condition checked before the target ran. Revisions are committed through evidence gates as new versions; lessons such as "found ≠ cleaned" become conditional warnings.<div class="files">episode.py · service.py · safety.py</div></div>
+    <div class="card c1"><h4>Shared blackboard</h4>Retrieves up to <i>K</i> = 5 applicable procedures and plans a task graph from them. A step is dispatched only when all its prerequisites are verified by external evidence, never by agent inference alone.<div class="files">models.py · storage.py · retrieval.py</div></div>
+    <div class="card c2"><h4>Divergence-aware alignment</h4>Compares each agent's local view with its reference subgraph. <b>Goal:</b> text dissimilarity + LLM judge. <b>Plan:</b> action and edge mismatches. <b>State:</b> conflicting evidence. Corrections propagate to dependent steps.<div class="files">divergence.py · alignment.py · evidence.py</div></div>
+    <div class="card c3"><h4>Graph-grounded evolution</h4>Keeps only verified steps and edges whose source established a condition checked before the target ran. Revisions pass evidence gates; lessons become conditional warnings.<div class="files">episode.py · service.py · safety.py</div></div>
   </div>
 
   <div class="eq">
@@ -198,67 +211,42 @@
     <div><b>Evidence-gated evolution</b><div class="math">Accept(<i>S′</i>) = <i>G</i><sub>safety</sub> ∧ <i>G</i><sub>state</sub> ∧ <i>G</i><sub>dep</sub> ∧ <i>G</i><sub>qual</sub> ∧ [ <i>ū</i>(<i>S′</i>) ≥ 0 ]</div>No unsafe action, consistent with verified state, ≥ 65% evidence-supported edges, a qualified trial, non-negative net benefit.</div>
   </div>
 
-  <div>
-    <h3>One task through SEPM</h3>
-    <div class="flow">
-      <div class="fstep" style="background:var(--blue-soft)"><span style="color:var(--blue)">① Retrieve and plan</span>Compatible procedures are retrieved and merged into one task graph on the blackboard.</div>
-      <div class="fstep" style="background:var(--violet-soft)"><span style="color:var(--violet)">② Execute</span>Agents run ready steps and append (step, observation, action, result, error) records.</div>
-      <div class="fstep" style="background:var(--coral-soft)"><span style="color:var(--coral)">③ Realign</span>Goal, plan, or state divergence realigns the affected agents and updates the graph.</div>
-      <div class="fstep" style="background:var(--mint-soft)"><span style="color:var(--mint)">④ Evolve</span>Supported steps and edges form new procedures or gated revisions; warnings are attached.</div>
-    </div>
-    <p style="margin-top:6px;font-size:9pt">Commits are atomic (compare-and-swap on the head version), and no operation deletes a procedure or a version, so every revision can be audited and rolled back.</p>
+  <figure class="framed">
+    <div class="frame"><img src="docs/images/case-study.png"></div>
+    <figcaption><span class="fignum">Figure 3.</span> <b>Case study: cleaning and storage.</b> Plan divergence (B stores an apple) and state divergence (C requests a cup that is found but not cleaned) trigger realignment, and the executed procedure is revised from v1.0 to v1.1.</figcaption>
+  </figure>
+
+  <div class="flow" style="grid-template-columns:repeat(3,1fr)">
+    <div class="fstep" style="background:var(--violet-soft)"><span style="color:var(--violet)">① Plan divergence</span>B puts an apple in the fridge, an action outside its subgraph; B is realigned to the dishes.</div>
+    <div class="fstep" style="background:var(--coral-soft)"><span style="color:var(--coral)">② State divergence</span>C requests a cup that A has found but not cleaned; C's storage step waits for A's verified cleaning.</div>
+    <div class="fstep" style="background:var(--mint-soft)"><span style="color:var(--mint)">③ Revision v1.0 → v1.1</span>A handoff edge from A and B to C is added, and "found ≠ cleaned" becomes a conditional warning.</div>
   </div>
 </div>
 
-<!-- Page 3: case study -->
+<!-- Page 3: main results -->
 <div class="sheet">
-  <h2><span class="dot" style="background:var(--coral)">3</span>Case study: cleaning and storage</h2>
-  <p>Three agents must wash the dirty cups and dishes and put them in the cabinet. The figure follows one task from retrieval to the revised procedure.</p>
-  <figure class="framed">
-    <!-- The wide figure is shown in two parts so its text stays readable. -->
-    <div class="frame">
-      <div class="crop" style="width:100%;aspect-ratio:1484/550"><img src="docs/images/case-study.png" style="width:164.08%"></div>
-    </div>
-    <div class="sub" style="margin-top:4px">(a) Planning and execution: the trajectory on the blackboard and the detected divergences</div>
-  </figure>
-  <figure class="framed">
-    <div class="frame">
-      <div class="crop" style="width:100%;aspect-ratio:943/550"><img src="docs/images/case-study.png" style="width:258.22%;margin-left:-158.22%"></div>
-    </div>
-    <div class="sub" style="margin-top:4px">(b) Procedure evolution: the stored procedure before and after the update</div>
-    <figcaption><span class="fignum">Figure 3.</span> <b>Cleaning-and-storage example.</b> Plan divergence (B stores an apple) and state divergence (C requests a cup that is found but not cleaned) trigger realignment, and the executed procedure is revised from v1.0 to v1.1.</figcaption>
-  </figure>
-  <div class="comp">
-    <div class="card c1"><h4>Plan divergence</h4>B puts an apple in the fridge, an action outside its subgraph. The step is flagged and B is realigned to the dishes.</div>
-    <div class="card c2"><h4>State divergence</h4>C requests a cup that A has found but not yet cleaned. C's storage step waits until A's cleaning is verified.</div>
-    <div class="card c3"><h4>Revision v1.0 → v1.1</h4>A handoff edge from A and B to C is added, and "found ≠ cleaned" becomes a conditional warning.</div>
-  </div>
-</div>
-
-<!-- Page 4: main results -->
-<div class="sheet">
-  <h2><span class="dot" style="background:var(--mint)">4</span>Key results</h2>
+  <h2><span class="dot" style="background:var(--mint)">3</span>Key results</h2>
   <p>Every memory starts empty and is built online over the same task sequence with the same retrieval count and context budget; planning, execution, memory, and the judge use <code>gpt-5-mini</code>. All numbers are those reported in the paper.</p>
 
   <div>
-    <table>
+    <div class="tnum"><span class="fignum">Table 1.</span> <b>Task performance under two host systems.</b> ALFWorld and OfficeBench are averaged over three runs and WebArena uses one run. <sup>†</sup> Single-agent memory adapted to the team. Arrows give changes from the same host without added memory.</div>
+    <table class="t1">
       <thead>
         <tr><th rowspan="2" style="text-align:left">Memory</th><th colspan="4" class="grp">AutoGen</th><th colspan="4" class="grp">DyLAN</th></tr>
-        <tr><th class="n">ALFWorld</th><th class="n">WebArena</th><th class="n">OfficeB.</th><th class="n">Avg.</th><th class="n">ALFWorld</th><th class="n">WebArena</th><th class="n">OfficeB.</th><th class="n">Avg.</th></tr>
+        <tr><th class="n">ALFWorld</th><th class="n">WebArena</th><th class="n">OfficeBench</th><th class="n">Avg.</th><th class="n">ALFWorld</th><th class="n">WebArena</th><th class="n">OfficeBench</th><th class="n">Avg.</th></tr>
       </thead>
       <tbody>
-        <tr class="base"><td>No added memory</td><td class="n">59.45</td><td class="n">12.44</td><td class="n">41.33</td><td class="n">37.74</td><td class="n">53.98</td><td class="n">14.90</td><td class="n">33.56</td><td class="n">34.15</td></tr>
-        <tr><td>Generative Agents</td><td class="n">85.32</td><td class="n">15.27</td><td class="n">38.67</td><td class="n">46.42</td><td class="n">65.17</td><td class="n">15.27</td><td class="n">32.89</td><td class="n">37.78</td></tr>
-        <tr><td>MetaGPT</td><td class="n">77.86</td><td class="n">25.99</td><td class="n">45.11</td><td class="n">49.65</td><td class="n">49.50</td><td class="n">22.41</td><td class="n">35.22</td><td class="n">35.71</td></tr>
-        <tr><td>G-Memory</td><td class="n">83.08</td><td class="n">30.30</td><td class="n">49.67</td><td class="n">54.35</td><td class="n">62.19</td><td class="n">25.49</td><td class="n">42.44</td><td class="n">43.37</td></tr>
-        <tr><td>LEGOMem</td><td class="n">84.08</td><td class="n">31.65</td><td class="n">51.33</td><td class="n">55.69</td><td class="n">63.68</td><td class="n">26.35</td><td class="n">43.78</td><td class="n">44.60</td></tr>
-        <tr><td>MATM</td><td class="n">81.34</td><td class="n">29.31</td><td class="n">48.44</td><td class="n">53.03</td><td class="n">61.44</td><td class="n">24.75</td><td class="n">41.22</td><td class="n">42.47</td></tr>
-        <tr><td>AWM<sup>†</sup></td><td class="n">80.10</td><td class="n">26.48</td><td class="n">46.44</td><td class="n">51.01</td><td class="n">60.70</td><td class="n">23.40</td><td class="n">38.89</td><td class="n">41.00</td></tr>
-        <tr><td>Memp<sup>†</sup></td><td class="n">82.09</td><td class="n">27.34</td><td class="n">47.22</td><td class="n">52.22</td><td class="n">62.44</td><td class="n">24.14</td><td class="n">39.56</td><td class="n">42.05</td></tr>
-        <tr class="ours"><td>SEPM (ours)</td><td class="n">89.05</td><td class="n">38.30</td><td class="n">54.44</td><td class="n">60.60</td><td class="n">68.41</td><td class="n">29.80</td><td class="n">47.11</td><td class="n">48.44</td></tr>
+        <tr class="base"><td>No added memory</td><td class="n">59.45</td><td class="n">12.44</td><td class="n">41.33</td><td class="n avg">37.74</td><td class="n">53.98</td><td class="n">14.90</td><td class="n">33.56</td><td class="n avg">34.15</td></tr>
+        <tr><td>Generative</td><td class="n">85.32<span class="up">↑25.87</span></td><td class="n">15.27<span class="up">↑2.83</span></td><td class="n">38.67<span class="dn">↓2.66</span></td><td class="n avg">46.42</td><td class="n">65.17<span class="up">↑11.19</span></td><td class="n">15.27<span class="up">↑0.37</span></td><td class="n">32.89<span class="dn">↓0.67</span></td><td class="n avg">37.78</td></tr>
+        <tr><td>MetaGPT</td><td class="n">77.86<span class="up">↑18.41</span></td><td class="n">25.99<span class="up">↑13.55</span></td><td class="n">45.11<span class="up">↑3.78</span></td><td class="n avg">49.65</td><td class="n">49.50<span class="dn">↓4.48</span></td><td class="n">22.41<span class="up">↑7.51</span></td><td class="n">35.22<span class="up">↑1.66</span></td><td class="n avg">35.71</td></tr>
+        <tr><td>G-Memory</td><td class="n">83.08<span class="up">↑23.63</span></td><td class="n">30.30<span class="up">↑17.86</span></td><td class="n">49.67<span class="up">↑8.34</span></td><td class="n avg">54.35</td><td class="n">62.19<span class="up">↑8.21</span></td><td class="n">25.49<span class="up">↑10.59</span></td><td class="n">42.44<span class="up">↑8.88</span></td><td class="n avg">43.37</td></tr>
+        <tr><td>LEGOMem</td><td class="n">84.08<span class="up">↑24.63</span></td><td class="n">31.65<span class="up">↑19.21</span></td><td class="n">51.33<span class="up">↑10.00</span></td><td class="n avg">55.69</td><td class="n">63.68<span class="up">↑9.70</span></td><td class="n">26.35<span class="up">↑11.45</span></td><td class="n">43.78<span class="up">↑10.22</span></td><td class="n avg">44.60</td></tr>
+        <tr><td>MATM</td><td class="n">81.34<span class="up">↑21.89</span></td><td class="n">29.31<span class="up">↑16.87</span></td><td class="n">48.44<span class="up">↑7.11</span></td><td class="n avg">53.03</td><td class="n">61.44<span class="up">↑7.46</span></td><td class="n">24.75<span class="up">↑9.85</span></td><td class="n">41.22<span class="up">↑7.66</span></td><td class="n avg">42.47</td></tr>
+        <tr class="sep"><td>AWM<sup>†</sup></td><td class="n">80.10<span class="up">↑20.65</span></td><td class="n">26.48<span class="up">↑14.04</span></td><td class="n">46.44<span class="up">↑5.11</span></td><td class="n avg">51.01</td><td class="n">60.70<span class="up">↑6.72</span></td><td class="n">23.40<span class="up">↑8.50</span></td><td class="n">38.89<span class="up">↑5.33</span></td><td class="n avg">41.00</td></tr>
+        <tr><td>Memp<sup>†</sup></td><td class="n">82.09<span class="up">↑22.64</span></td><td class="n">27.34<span class="up">↑14.90</span></td><td class="n">47.22<span class="up">↑5.89</span></td><td class="n avg">52.22</td><td class="n">62.44<span class="up">↑8.46</span></td><td class="n">24.14<span class="up">↑9.24</span></td><td class="n">39.56<span class="up">↑6.00</span></td><td class="n avg">42.05</td></tr>
+        <tr class="ours"><td>SEPM (ours)</td><td class="n"><b>89.05</b><span class="up">↑29.60</span></td><td class="n"><b>38.30</b><span class="up">↑25.86</span></td><td class="n"><b>54.44</b><span class="up">↑13.11</span></td><td class="n avg"><b>60.60</b></td><td class="n"><b>68.41</b><span class="up">↑14.43</span></td><td class="n"><b>29.80</b><span class="up">↑14.90</span></td><td class="n"><b>47.11</b><span class="up">↑13.55</span></td><td class="n avg"><b>48.44</b></td></tr>
       </tbody>
     </table>
-    <div class="tcap">Task performance across hosts. ALFWorld and OfficeBench: mean of three shuffled task orders; WebArena: one run. <sup>†</sup> Single-agent memory adapted to the team with role-specific allocation.</div>
   </div>
 
   <ul class="bullets">
@@ -272,24 +260,103 @@
       <div class="panel" style="flex-grow:1.332"><img src="docs/images/model-gain.png"><div class="sub">(b) Gain across execution models</div></div>
       <div class="panel" style="flex-grow:1.413"><img src="docs/images/multiagentbench.png"><div class="sub">(c) MultiAgentBench</div></div>
     </div>
-    <figcaption><span class="fignum">Figure 4.</span> <b>SEPM across benchmarks and models, under AutoGen.</b> (a) ImplicitMemBench: <span class="hl">47.61 → 59.53</span> with <code>gpt-5-mini</code>, 82% of the oracle's gain; dashed and dotted lines mark the oracle and a single LLM call. (b) Gain over no added memory stays positive in all 18 model–benchmark pairs (3.33–29.85 points). (c) Task Score (TS) and Coordination Score (CS) on MultiAgentBench.</figcaption>
+    <figcaption><span class="fignum">Figure 4.</span> <b>SEPM across benchmarks and models, under AutoGen.</b> (a) ImplicitMemBench scores; dashed and dotted lines mark the oracle and a single LLM call. (b) Gain over no added memory with different execution and memory models: positive in all 18 model–benchmark pairs (3.33–29.85 points). (c) Task Score (TS) and Coordination Score (CS) on MultiAgentBench.</figcaption>
   </figure>
 
-  <div class="side" style="grid-template-columns:1.2fr 1fr">
+  <div class="side" style="grid-template-columns:1.3fr 1fr">
     <div>
+      <div class="tnum"><span class="fignum">Table 2.</span> <b>Embodied cooperation with CoELA as host.</b> TR: transport rate (%, three seeds); Steps: average steps per task (five seeds).</div>
       <table>
-        <thead><tr><th style="text-align:left">CoELA host</th><th class="n">TDW-MAT TR ↑</th><th class="n">C-WAH steps ↓</th></tr></thead>
+        <thead>
+          <tr><th rowspan="2" style="text-align:left">Memory</th><th colspan="3" class="grp">TDW-MAT (TR ↑)</th><th class="grp">C-WAH</th></tr>
+          <tr><th class="n">Food</th><th class="n">Stuff</th><th class="n">Avg.</th><th class="n">Steps ↓</th></tr>
+        </thead>
         <tbody>
-          <tr class="base"><td>No added memory</td><td class="n">63.33</td><td class="n">92.4</td></tr>
-          <tr><td>G-Memory</td><td class="n">67.08</td><td class="n">87.1</td></tr>
-          <tr><td>AWM<sup>†</sup></td><td class="n">65.42</td><td class="n">88.5</td></tr>
-          <tr><td>LEGOMem</td><td class="n">67.92</td><td class="n">85.6</td></tr>
-          <tr class="ours"><td>SEPM (ours)</td><td class="n">73.75</td><td class="n">79.8</td></tr>
+        <tr class="base"><td>No added memory</td><td class="n">68.33</td><td class="n">58.33</td><td class="n">63.33</td><td class="n">92.4</td></tr>
+        <tr><td>G-Memory</td><td class="n">72.50</td><td class="n">61.67</td><td class="n">67.08</td><td class="n">87.1</td></tr>
+        <tr><td>AWM<sup>†</sup></td><td class="n">70.83</td><td class="n">60.00</td><td class="n">65.42</td><td class="n">88.5</td></tr>
+        <tr><td>LEGOMem</td><td class="n">73.33</td><td class="n">62.50</td><td class="n">67.92</td><td class="n">85.6</td></tr>
+        <tr class="ours"><td>SEPM (ours)</td><td class="n"><b>79.17</b></td><td class="n"><b>68.33</b></td><td class="n"><b>73.75</b></td><td class="n"><b>79.8</b></td></tr>
         </tbody>
       </table>
-      <div class="tcap">Embodied cooperation with CoELA. TR: transport rate (%, three seeds); steps: five seeds.</div>
     </div>
-    <div class="box" style="background:var(--mint-soft)"><b style="color:var(--mint)">Physical handoffs.</b> In embodied cooperation, prerequisites are objects passed between agents. SEPM raises the transport rate by <b>10.42</b> points and saves <b>12.6</b> steps per task over the host without memory.</div>
+    <div style="display:grid;gap:10px">
+      <div class="box" style="background:var(--blue-soft)"><b style="color:var(--blue)">Graph versus text.</b> Replacing graph edges with textual prerequisites costs <b>8.1–16.9</b> points (Fig. 8).</div>
+      <div class="box" style="background:var(--mint-soft)"><b style="color:var(--mint)">Physical handoffs.</b> In embodied cooperation, prerequisites are objects passed between agents; SEPM has the highest transport rate and the fewest steps.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Page 4: detailed tables -->
+<div class="sheet">
+  <h2><span class="dot" style="background:var(--violet)">4</span>Detailed results</h2>
+  <div>
+    <div class="tnum"><span class="fignum">Table 3.</span> <b>(a) ImplicitMemBench</b> (single run). Proc./Cond.: first-attempt accuracy; Prim.: priming influence score. Δ is relative to AutoGen without added memory; "reported" rows are from the ImplicitMemBench paper. <b>(b) SEPM with different execution and memory models</b> on ALFWorld (AW), WebArena (WA), and OfficeBench (OB) (single run, seed 0).</div>
+    <div class="sub" style="text-align:left;margin:0 0 3px">(a) ImplicitMemBench</div>
+    <table class="dense">
+      <thead><tr><th style="text-align:left">Method</th><th class="n">Proc.</th><th class="n">Cond.</th><th class="n">Prim.</th><th class="n">Overall</th><th class="n">Δ</th><th class="n">Tok./item</th><th class="n">Calls/item</th></tr></thead>
+      <tbody>
+        <tr class="band"><td colspan="8">Backbone <code>gpt-5-mini</code></td></tr>
+        <tr class="base"><td>Single LLM (no MAS)</td><td class="n">61</td><td class="n">47</td><td class="n">41.27</td><td class="n">49.76</td><td class="n">+2.15</td><td class="n">2.1k</td><td class="n">8</td></tr>
+        <tr class="base"><td>AutoGen, no added memory</td><td class="n">58</td><td class="n">45</td><td class="n">39.83</td><td class="n">47.61</td><td class="n">–</td><td class="n">9.6k</td><td class="n">31</td></tr>
+        <tr><td style="padding-left:16px">+ Generative</td><td class="n">60</td><td class="n">49</td><td class="n">42.15</td><td class="n">50.38</td><td class="n">+2.77</td><td class="n">12.4k</td><td class="n">38</td></tr>
+        <tr><td style="padding-left:16px">+ MetaGPT</td><td class="n">59</td><td class="n">46</td><td class="n">40.62</td><td class="n">48.54</td><td class="n">+0.93</td><td class="n">10.8k</td><td class="n">34</td></tr>
+        <tr><td style="padding-left:16px">+ G-Memory</td><td class="n">61</td><td class="n">52</td><td class="n">41.08</td><td class="n">51.36</td><td class="n">+3.75</td><td class="n">13.1k</td><td class="n">39</td></tr>
+        <tr><td style="padding-left:16px">+ AWM<sup>†</sup></td><td class="n">63</td><td class="n">48</td><td class="n">39.93</td><td class="n">50.31</td><td class="n">+2.70</td><td class="n">11.2k</td><td class="n">35</td></tr>
+        <tr><td style="padding-left:16px">+ Mem0 (automatic)</td><td class="n">60</td><td class="n">51</td><td class="n">38.77</td><td class="n">49.92</td><td class="n">+2.31</td><td class="n">11.7k</td><td class="n">37</td></tr>
+        <tr class="ours"><td style="padding-left:16px">+ SEPM (ours)</td><td class="n"><b>71</b></td><td class="n"><b>64</b></td><td class="n"><b>43.58</b></td><td class="n"><b>59.53</b></td><td class="n">+11.92</td><td class="n">12.6k</td><td class="n">41</td></tr>
+        <tr class="base"><td style="padding-left:16px">Mem0 + Key Info (oracle)</td><td class="n">74</td><td class="n">79</td><td class="n">33.40</td><td class="n">62.13</td><td class="n">+14.52</td><td class="n">10.1k</td><td class="n">32</td></tr>
+        <tr class="band"><td colspan="8">Backbone <code>Qwen2.5-7B</code></td></tr>
+        <tr class="base"><td>Backbone (reported)</td><td class="n">50.67</td><td class="n">35.67</td><td class="n">44.12</td><td class="n">43.49</td><td class="n">–</td><td class="n">–</td><td class="n">–</td></tr>
+        <tr class="base"><td>MEM1 (reported)</td><td class="n">27.00</td><td class="n">63.00</td><td class="n">34.15</td><td class="n">41.38</td><td class="n">–</td><td class="n">–</td><td class="n">–</td></tr>
+        <tr class="base"><td>Mem0 + Key Info (reported)</td><td class="n">62.00</td><td class="n">76.00</td><td class="n">30.00</td><td class="n">56.00</td><td class="n">–</td><td class="n">–</td><td class="n">–</td></tr>
+        <tr class="base"><td>Single LLM (no MAS)</td><td class="n">50</td><td class="n">36</td><td class="n">43.72</td><td class="n">43.24</td><td class="n">+2.12</td><td class="n">2.3k</td><td class="n">8</td></tr>
+        <tr class="base"><td>AutoGen, no added memory</td><td class="n">47</td><td class="n">34</td><td class="n">42.37</td><td class="n">41.12</td><td class="n">–</td><td class="n">10.4k</td><td class="n">33</td></tr>
+        <tr><td style="padding-left:16px">+ Generative</td><td class="n">48</td><td class="n">37</td><td class="n">42.80</td><td class="n">42.60</td><td class="n">+1.48</td><td class="n">13.2k</td><td class="n">40</td></tr>
+        <tr><td style="padding-left:16px">+ MetaGPT</td><td class="n">47</td><td class="n">35</td><td class="n">41.95</td><td class="n">41.32</td><td class="n">+0.20</td><td class="n">11.6k</td><td class="n">36</td></tr>
+        <tr><td style="padding-left:16px">+ G-Memory</td><td class="n">49</td><td class="n">40</td><td class="n">41.27</td><td class="n">43.42</td><td class="n">+2.30</td><td class="n">14.0k</td><td class="n">41</td></tr>
+        <tr><td style="padding-left:16px">+ AWM<sup>†</sup></td><td class="n">51</td><td class="n">36</td><td class="n">40.88</td><td class="n">42.63</td><td class="n">+1.51</td><td class="n">12.1k</td><td class="n">37</td></tr>
+        <tr><td style="padding-left:16px">+ Mem0 (automatic)</td><td class="n">46</td><td class="n">41</td><td class="n">39.63</td><td class="n">42.21</td><td class="n">+1.09</td><td class="n">12.5k</td><td class="n">39</td></tr>
+        <tr class="ours"><td style="padding-left:16px">+ SEPM (ours)</td><td class="n"><b>57</b></td><td class="n"><b>52</b></td><td class="n"><b>43.95</b></td><td class="n"><b>50.98</b></td><td class="n">+9.86</td><td class="n">13.5k</td><td class="n">43</td></tr>
+        <tr class="base"><td style="padding-left:16px">Mem0 + Key Info (oracle)</td><td class="n">61</td><td class="n">74</td><td class="n">31.27</td><td class="n">55.42</td><td class="n">+14.30</td><td class="n">10.9k</td><td class="n">34</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div>
+    <div class="sub" style="text-align:left;margin:0 0 3px">(b) Execution and memory model</div>
+    <div class="side" style="grid-template-columns:1fr 1fr;align-items:start;gap:14px">
+      <table class="dense">
+        <thead><tr><th style="text-align:left">Model</th><th class="n">AW</th><th class="n">WA</th><th class="n">OB</th></tr></thead>
+        <tbody>
+        <tr><td><code>qwen3.5-0.8b</code></td><td class="n">58.21</td><td class="n">14.53</td><td class="n">45.67</td></tr>
+        <tr><td><code>qwen3.5-2b</code></td><td class="n">57.46</td><td class="n">14.78</td><td class="n">45.67</td></tr>
+        <tr><td><code>qwen3.5-9b</code></td><td class="n">67.16</td><td class="n">16.01</td><td class="n">49.67</td></tr>
+        <tr><td><code>qwen3.5-27b</code></td><td class="n">81.34</td><td class="n">30.42</td><td class="n">55.67</td></tr>
+        <tr><td><code>gemma-4-12b-it</code></td><td class="n">72.39</td><td class="n">22.54</td><td class="n">53.00</td></tr>
+        <tr><td><code>gemma-4-31b-it</code></td><td class="n">77.61</td><td class="n">28.69</td><td class="n">54.33</td></tr>
+        </tbody>
+      </table>
+      <table class="dense">
+        <thead><tr><th style="text-align:left">Model</th><th class="n">AW</th><th class="n">WA</th><th class="n">OB</th></tr></thead>
+        <tbody>
+        <tr><td><code>deepseek-v4-flash-0731</code></td><td class="n"><b>93.28</b></td><td class="n">38.05</td><td class="n">64.33</td></tr>
+        <tr><td><code>qwen3.8-max</code></td><td class="n">89.55</td><td class="n">39.41</td><td class="n">63.67</td></tr>
+        <tr><td><code>glm-5.2</code></td><td class="n">85.82</td><td class="n">37.93</td><td class="n">60.67</td></tr>
+        <tr><td><code>kimi-k3</code></td><td class="n">90.30</td><td class="n">42.36</td><td class="n">65.33</td></tr>
+        <tr class="gap"><td colspan="4"></td></tr>
+        <tr class="ours"><td><code>gpt-5-mini (main)</code></td><td class="n">89.55</td><td class="n">38.30</td><td class="n">54.67</td></tr>
+        <tr><td><code>gpt-5.6-terra</code></td><td class="n">91.79</td><td class="n"><b>43.23</b></td><td class="n"><b>67.67</b></td></tr>
+        <tr><td><code>claude-opus-5</code></td><td class="n">92.54</td><td class="n">42.49</td><td class="n">65.33</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="flow" style="grid-template-columns:repeat(3,1fr)">
+    <div class="fstep" style="background:var(--violet-soft)"><span style="color:var(--violet)">Implicit memory</span>With <code>gpt-5-mini</code>, SEPM lifts the AutoGen team from <b>47.61</b> to <b>59.53</b>; no baseline gains more than 3.75 points.</div>
+    <div class="fstep" style="background:var(--blue-soft)"><span style="color:var(--blue)">Closer to the oracle</span>SEPM reaches 82% of the gain of the oracle that stores the critical information manually.</div>
+    <div class="fstep" style="background:var(--mint-soft)"><span style="color:var(--mint)">Across 13 models</span>From <code>qwen3.5-0.8b</code> to <code>claude-opus-5</code>, the same configuration runs unchanged on ALFWorld, WebArena, and OfficeBench.</div>
   </div>
 </div>
 
