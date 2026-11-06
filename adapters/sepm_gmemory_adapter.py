@@ -289,7 +289,7 @@ def _validate_official_data(gmemory_root: Path, task: str) -> None:
 
 
 def _pool_statistics(memory: Any) -> dict[str, Any]:
-    """Procedure-pool statistics (paper Table 9) read from the SEPM store."""
+    """Procedure-pool statistics (Supp. Table S13a) read from the SEPM store."""
     from sepm.models import CandidateStatus
 
     store = memory.service.store

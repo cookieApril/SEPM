@@ -1,6 +1,6 @@
 """Benchmark-specific rules that let the generic SEPM episode read a host's actions.
 
-A domain supplies the verified context facts used for retrieval (Eq. 3), an
+A domain supplies the verified context facts used for retrieval (Eq. S1), an
 action matcher for blackboard alignment, and the world-state facts that
 environment observations establish or that an agent's actions presuppose.
 """

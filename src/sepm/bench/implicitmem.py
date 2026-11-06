@@ -1,6 +1,6 @@
-"""ImplicitMemBench under an AutoGen-style team with pluggable memories (E4/E5).
+"""ImplicitMemBench under an AutoGen-style team with pluggable memories (Table 3a, Fig. S2, Table S12).
 
-Protocol (paper Appendix C.3):
+Protocol (Supp. C.3):
 * 300 items: 100 procedural memory (Proc), 100 classical conditioning (Cond), 100 priming (Prim);
 * each item's learning/priming and interference turns form one exposure episode recorded
   into the memory; the team then answers the probe and only its first user-facing reply is
@@ -275,7 +275,7 @@ def run_item(item: dict[str, Any], *, method: str, factory: MemoryFactory, clien
 
 
 # ---------------------------------------------------------------------------
-# Interference-length variants (Appendix C.3)
+# Interference-length variants (Supp. C.3, D.4)
 
 NEUTRAL_PROMPT = """Write {n} short, neutral, everyday question-and-answer exchanges between a user and an
 assistant (general knowledge, cooking, travel, weather, simple math). They must NOT reuse any name,
@@ -376,8 +376,9 @@ def main(argv: list[str] | None = None) -> int:
 
     random.seed(args.seed)
     client = LLMClient(env_file=str(PROJECT_ROOT / ".env"))
-    from openai import OpenAI
     import os
+
+    from openai import OpenAI
 
     judge_client = OpenAI(base_url=os.environ["OPENAI_BASE_URL"], api_key=os.environ["OPENAI_API_KEY"], timeout=180, max_retries=6)
     evaluation = load_official_evaluation()

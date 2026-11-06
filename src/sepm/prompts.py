@@ -64,7 +64,7 @@ Numbered trajectory:
 {trajectory}
 """
 
-# Conditional warnings (Appendix B.5): lessons from a failed execution of a procedure.
+# Conditional warnings (Supp. B.5): lessons from a failed execution of a procedure.
 WARNING_EXTRACTION_PROMPT = """The team followed the procedure below and the episode FAILED.
 Identify at most {max_warnings} conditional lessons that would have prevented this failure.
 Return exactly one JSON object {{"warnings": [{{"text": str, "trigger_condition": str,

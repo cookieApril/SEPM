@@ -704,7 +704,7 @@ class SEPMService:
     ) -> list[RetrievalResult]:
         """Rank unpromoted create candidates that recorded trials could still promote.
 
-        Candidates stay outside the active pool (Appendix B.5); this only selects
+        Candidates stay outside the active pool (Supp. B.5); this only selects
         which one a host may run as a reproduction trial. Candidates that fail a
         candidate-level gate (unverified state, low causal confidence) are skipped
         because no trial can promote them.

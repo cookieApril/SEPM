@@ -1,6 +1,6 @@
-"""MultiAgentBench (MARBLE) coding/research with pluggable memories (E3).
+"""MultiAgentBench (MARBLE) coding/research with pluggable memories (Table S11).
 
-Protocol (paper Appendix C.3, MultiAgentBench paragraph):
+Protocol (Supp. C.3, MultiAgentBench paragraph):
 * 100 tasks per scenario; task definitions, agent profiles, environment rules and the
   communication graph come from the official MARBLE configs (graph coordination);
 * at most three iterations per task; ``gpt-5-mini`` executes, ``claude-opus-5`` evaluates;
@@ -159,13 +159,12 @@ def install_marble(embedder: CachedEmbedder) -> dict[str, Any]:
     # MARBLE reads evaluator/evaluator_prompts.json and logs/ relative to marble/.
     os.chdir(MARBLE_ROOT / "marble")
     (MARBLE_ROOT / "marble" / "logs").mkdir(exist_ok=True)
-    import marble.agent.base_agent as base_agent
-    import marble.environments.coding_utils.coder as coder
-    import marble.environments.coding_utils.reviewer as reviewer
-    import marble.evaluator.evaluator as evaluator
     import marble.llms.model_prompting  # noqa: F401 - the package re-exports the function under this name
+    from marble.agent import base_agent
     from marble.configs.config import Config
     from marble.engine.engine import Engine
+    from marble.environments.coding_utils import coder, reviewer
+    from marble.evaluator import evaluator
     from marble.memory.base_memory import BaseMemory
 
     prompting = sys.modules["marble.llms.model_prompting"]

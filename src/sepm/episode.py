@@ -11,7 +11,7 @@ corrections for its next model call. ``finish`` closes the episode:
 * an unassisted success is distilled into a candidate whose steps and edges
   must cite verified trajectory steps (Eq. 8);
 * a failure while following an active SOP attaches evidence-backed
-  conditional warnings to it (Appendix B.5, B.6).
+  conditional warnings to it (Supp. B.5, B.6).
 """
 
 from __future__ import annotations
@@ -250,7 +250,7 @@ class ProceduralEpisode:
         return notices
 
     def _observed_at(self) -> datetime:
-        """Strictly increasing observation times, so the latest same-source report wins (Appendix B.3)."""
+        """Strictly increasing observation times, so the latest same-source report wins (Supp. B.3)."""
         now = utc_now()
         if self._last_observed is not None and now <= self._last_observed:
             now = self._last_observed + timedelta(microseconds=1)
@@ -319,7 +319,7 @@ class ProceduralEpisode:
     def _record_trial(self, candidate: SOPVersion, *, success: bool, reward: float) -> None:
         baseline = self.baseline_reward()
         if baseline is None:
-            # Without an unassisted baseline the trial cannot measure net benefit (Eq. 13).
+            # Without an unassisted baseline the trial cannot measure net benefit (Eq. S5).
             self._bump("sop_trials_deferred")
             return
         view = derive_alignment(

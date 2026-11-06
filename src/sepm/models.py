@@ -375,7 +375,7 @@ class SOPCandidate(StrictModel):
         return self
 
     def claimed_utility(self, cost_weight: float = 1.0) -> float:
-        """Precheck estimate u_claim = b_claim - lambda * c_claim (Eq. 12)."""
+        """Precheck estimate u_claim = b_claim - lambda * c_claim."""
         return self.claimed_benefit - cost_weight * self.claimed_cost
 
 
@@ -404,7 +404,7 @@ class ReproductionTrial(StrictModel):
     created_at: datetime = Field(default_factory=utc_now)
 
     def net_benefit(self, cost_weight: float = 1.0) -> float:
-        """Trial utility u_t = r_candidate - r_baseline - lambda * c_t (Eq. 13)."""
+        """Trial utility u_t = r_candidate - r_baseline - lambda * c_t (Eq. S5)."""
         return self.candidate_reward - self.baseline_reward - cost_weight * self.cost
 
 

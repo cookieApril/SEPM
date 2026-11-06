@@ -64,7 +64,7 @@ class OfficeBenchEnv:
             import apps  # noqa: F401 - OfficeBench app registry
             from evaluation import evaluate_output
             from utils.env import OfficeAgentEnv
-            from utils.policies import LLMPolicy, PROMPT_DICT
+            from utils.policies import PROMPT_DICT, LLMPolicy
         self._env_cls, self._policy_cls, self._prompts = OfficeAgentEnv, LLMPolicy, PROMPT_DICT
         self._evaluate = evaluate_output
         self.docker_name, self.container_name = docker_name, container_name

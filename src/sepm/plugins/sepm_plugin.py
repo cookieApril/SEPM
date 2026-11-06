@@ -202,7 +202,7 @@ class SEPMPlugin:
         return dict(self.counters)
 
     def pool_statistics(self) -> dict[str, Any]:
-        """Procedure-pool statistics of Table 9 read from the store."""
+        """Procedure-pool statistics of Supp. Table S13a read from the store."""
         from ..models import CandidateStatus
 
         store = self.service.store

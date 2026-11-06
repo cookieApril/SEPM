@@ -24,9 +24,9 @@ from .models import (
 class SafetyValidator:
     """Interpretable deterministic rules applied before LLM or learned validation."""
 
-    CONFIRMATION_WORDS = ("confirm", "approval", "authorize", "确认", "批准", "授权")
-    BACKUP_WORDS = ("backup", "snapshot", "备份", "快照")
-    IRREVERSIBLE_MARKERS = ("pay", "payment", "delete", "drop", "transfer", "付款", "支付", "删除", "转账")
+    CONFIRMATION_WORDS = ("confirm", "approval", "authorize")
+    BACKUP_WORDS = ("backup", "snapshot")
+    IRREVERSIBLE_MARKERS = ("pay", "payment", "delete", "drop", "transfer")
 
     def __init__(self, config: MemoryConfig | None = None) -> None:
         self.config = config or MemoryConfig()
@@ -71,7 +71,7 @@ class SafetyValidator:
             text = step.instruction.lower()
             if self._is_irreversible(step) and not step.requires_confirmation:
                 violations.append(f"irreversible step {step.step_id} lacks confirmation")
-            if self._contains_any(text, ("migration", "迁移")) and not any(
+            if self._contains_any(text, ("migration",)) and not any(
                 self._contains_any(item.instruction.lower(), self.BACKUP_WORDS)
                 for item in graph.steps
             ):
