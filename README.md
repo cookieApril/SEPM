@@ -276,7 +276,7 @@ corrections = memory.record("agent-a", action, observation)  # blackboard + alig
 memory.end_task(success=True, reward=1.0)                   # outcome, trials, extraction
 ```
 
-For lower-level control, [`SEPMService`](src/sepm/service.py) is the Python facade and [`AgentMemoryAdapter`](src/sepm/adapter.py) exposes agent-start, agent-step, and procedure-outcome hooks. The storage layout is described in [`docs/STORAGE_SCHEMA.md`](docs/STORAGE_SCHEMA.md).
+For lower-level control, [`SEPMService`](src/sepm/service.py) is the Python facade and [`AgentMemoryAdapter`](src/sepm/adapter.py) exposes agent-start, agent-step, and procedure-outcome hooks.
 
 ### 5. Configure model access
 
@@ -288,7 +288,36 @@ cp .env.example .env      # set OPENAI_API_KEY and OPENAI_BASE_URL (any OpenAI-c
 
 ## 🧪 Running the Benchmarks
 
-The upstream benchmarks are installed under `external/` (see [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md)).
+The upstream benchmarks are installed under `external/`. ALFWorld, OfficeBench, and the MultiAgentBench database scenario need Linux with Docker; the other benchmarks also run on Windows (Git Bash).
+
+<details>
+<summary><b>Benchmark setup</b></summary>
+
+```bash
+pip install -e ".[dev,eval]" networkx tqdm attrs scikit-learn finch-clust
+mkdir -p external && cd external
+git clone https://github.com/bingreeky/GMemory.git
+git clone https://github.com/zlwang-cs/OfficeBench.git
+git clone --depth 1 https://github.com/ulab-uiuc/MARBLE.git
+git clone https://github.com/chonghanqin/ImplicitMemBench.git
+cd ..
+python scripts/patch_gmemory_py311.py external/GMemory   # PEP 701 f-strings -> Python 3.11 syntax
+python scripts/patch_marble.py external/MARBLE           # fixes a syntax error in MARBLE's evaluator
+pip install -r external/GMemory/requirements.txt
+pip install -r external/OfficeBench/requirements.txt docker google-generativeai pytz fire
+pip install litellm beartype "ruamel.yaml" arxiv semanticscholar beautifulsoup4 PyPDF2 colorlog \
+            levenshtein names requests psycopg2-binary colorama keybert mem0ai
+
+# Linux only: ALFWorld game files and the OfficeBench image
+export ALFWORLD_DATA=$HOME/.cache/alfworld && alfworld-download
+ln -s $ALFWORLD_DATA/json_2.1.1 external/GMemory/data/alfworld/json_2.1.1
+ln -s $ALFWORLD_DATA/logic      external/GMemory/data/alfworld/logic
+(cd external/OfficeBench && docker build -t officebench -f docker/Dockerfile .)
+```
+
+Every job writes one result file and is skipped when that file already exists, so a stage can be re-run after an interruption. `run_linux_suite.sh` reads `JOBS` (default 8), `SEEDS` (default `0`), `TASKS`, and `METHODS` from the environment.
+
+</details>
 
 | Benchmark | Platform | Command |
 | --- | --- | --- |
@@ -306,7 +335,7 @@ bash scripts/run_paper_experiments.sh all               # preflight → smoke �
 sepm-eval --help && sepm-ablation --help                # filters for individual cells and stages
 ```
 
-**Protocol.** Each condition starts from an empty procedure pool in its own SQLite database (override with `TEAM_MEMORY_DB`). ALFWorld and OfficeBench use base seeds 0, 1, 2 (seeds 1 and 2 shuffle the task order); all other analyses use seed 0. All hyperparameters were fixed before evaluation. Harness-level choices are listed in [`docs/IMPLEMENTATION_NOTES.md`](docs/IMPLEMENTATION_NOTES.md).
+**Protocol.** Each condition starts from an empty procedure pool in its own SQLite database (override with `TEAM_MEMORY_DB`). ALFWorld and OfficeBench use base seeds 0, 1, 2 (seeds 1 and 2 shuffle the task order); all other analyses use seed 0. All hyperparameters were fixed before evaluation.
 
 <details>
 <summary><b>Default hyperparameters</b></summary>
@@ -347,7 +376,7 @@ SEPM/
 ├── manifests/                # selected case IDs
 ├── examples/end_to_end.py    # runnable procedure lifecycle
 ├── tests/                    # unit and integration-contract tests
-├── docs/                     # benchmarks guide, implementation notes, storage schema, figures
+├── docs/images/              # figures
 ├── evaluation_matrix.json    # experiment matrix
 ├── environment.yml           # full Conda environment
 └── pyproject.toml

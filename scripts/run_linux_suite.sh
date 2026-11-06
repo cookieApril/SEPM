@@ -94,7 +94,7 @@ case "$STAGE" in
                 state_confidence_threshold:0.60 state_confidence_threshold:0.80; do
         job sensitivity "$t" autogen sepm 0 full "SEPM_CONFIG_OVERRIDES={\"${kv%%:*}\":${kv##*:}}"
       done; done ;;
-  teamsize)  # Table S17. NOTE: only DyLAN exposes a team size (node_num) in G-Memory; see docs/BENCHMARKS.md.
+  teamsize)  # Table S17. NOTE: only DyLAN exposes a team size (node_num) in G-Memory.
     for t in $TASKS; do for n in 2 3 5; do for m in no-memory gmemory sepm; do
       job teamsize "$t" dylan "$m" 0 full "SEPM_AGENT_COUNT=$n"; done; done; done ;;
   mab-db)   # MultiAgentBench database (Docker Postgres; tasks run one at a time)
