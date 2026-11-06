@@ -238,7 +238,7 @@ Python 3.10 or newer. The core package depends only on Pydantic.
 
 ```bash
 git clone https://github.com/cookieApril/SEPM.git && cd SEPM
-python -m venv .venv && source .venv/bin/activate     # Windows: .venv\Scripts\activate
+python3 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"                               # add ",eval" for the benchmark harnesses
 ```
 
@@ -288,7 +288,7 @@ cp .env.example .env      # set OPENAI_API_KEY and OPENAI_BASE_URL (any OpenAI-c
 
 ## 🧪 Running the Benchmarks
 
-The upstream benchmarks are installed under `external/`. ALFWorld, OfficeBench, and the MultiAgentBench database scenario need Linux with Docker; the other benchmarks also run on Windows (Git Bash).
+All commands below assume a Linux shell. The upstream benchmarks are installed under `external/`; ALFWorld, OfficeBench, and the MultiAgentBench database scenario also need Docker.
 
 <details>
 <summary><b>Benchmark setup</b></summary>
@@ -308,7 +308,7 @@ pip install -r external/OfficeBench/requirements.txt docker google-generativeai 
 pip install litellm beartype "ruamel.yaml" arxiv semanticscholar beautifulsoup4 PyPDF2 colorlog \
             levenshtein names requests psycopg2-binary colorama keybert mem0ai
 
-# Linux only: ALFWorld game files and the OfficeBench image
+# ALFWorld game files and the OfficeBench image
 export ALFWORLD_DATA=$HOME/.cache/alfworld && alfworld-download
 ln -s $ALFWORLD_DATA/json_2.1.1 external/GMemory/data/alfworld/json_2.1.1
 ln -s $ALFWORLD_DATA/logic      external/GMemory/data/alfworld/logic
@@ -321,11 +321,11 @@ Every job writes one result file and is skipped when that file already exists, s
 
 | Benchmark | Platform | Command |
 | --- | --- | --- |
-| ImplicitMemBench | any OS | `bash scripts/run_local_suite.sh {main\|interference\|accumulate}` |
-| MultiAgentBench coding / research | any OS | `bash scripts/run_local_suite.sh mab` |
+| ImplicitMemBench | Linux | `bash scripts/run_local_suite.sh {main\|interference\|accumulate}` |
+| MultiAgentBench coding / research | Linux | `bash scripts/run_local_suite.sh mab` |
 | ALFWorld, OfficeBench | Linux + Docker | `bash scripts/run_linux_suite.sh {smoke\|e1\|ablation\|loo\|transfer\|sensitivity\|teamsize}` |
 | MultiAgentBench database | Linux + Docker | `bash scripts/run_linux_suite.sh mab-db` |
-| Report | any OS | `python -m sepm.bench.report` → `benchmark-results/REPORT.md` |
+| Report | Linux | `python -m sepm.bench.report` → `benchmark-results/REPORT.md` |
 
 The matrix-driven runner reads [`evaluation_matrix.json`](evaluation_matrix.json):
 
