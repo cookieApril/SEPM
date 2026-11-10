@@ -3,268 +3,327 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SEPM Project Page</title>
+<title>SEPM: Self-Evolving Procedural Memory Grounded in Task Graphs for Multi-Agent Collaboration</title>
 <style>
   :root {
-    --font: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font: Inter, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --serif: "Georgia", "Cambria", "Times New Roman", serif;
     --mono: Consolas, "DejaVu Sans Mono", Menlo, monospace;
-    --ink: #24304a;
-    --muted: #5d6880;
-    --line: #e3e8f2;
-    --bg: #ffffff;
-    --blue: #3d7bf0;   --blue-soft: #e7f0ff;
-    --mint: #1fa882;   --mint-soft: #defaf0;
-    --coral: #f0734f;  --coral-soft: #ffe9e1;
-    --violet: #7d6cf0; --violet-soft: #efecff;
-    --sun: #e2a400;    --sun-soft: #fff5d6;
-    --code-bg: #f6f8fd;
+    --ink: #1f2a44;
+    --ink2: #3a4766;
+    --muted: #64708a;
+    --line: #e2e8f3;
+    --paper: #ffffff;
+    --tint: #f6f9fe;
+    --blue: #2f6bd8;   --blue-soft: #eaf2ff;   --blue-mid: #cfe0fd;
+    --teal: #0f9c84;   --teal-soft: #e3f7f2;
+    --violet: #6d5fe0; --violet-soft: #f0eeff;
+    --coral: #e86a46;  --coral-soft: #fff0ea;
+    --amber: #c98a00;  --amber-soft: #fff6dc;
   }
   @page { size: A4; margin: 12mm; }
   * { box-sizing: border-box; }
   html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font: 10pt/1.5 var(--font); }
-  h1, h2, h3, h4 { font-family: var(--font); color: var(--ink); }
+  body { margin: 0; background: #eef2f8; color: var(--ink); font: 9.6pt/1.5 var(--font); }
+  @media print { body { background: #fff; } }
   code, pre { font-family: var(--mono); }
-  code { font-size: 8.6pt; background: var(--code-bg); padding: 1px 4px; border-radius: 4px; }
+  code { font-size: 8.3pt; background: #eef3fb; color: #27407a; padding: 0 4px; border-radius: 4px; }
   b, strong { font-weight: 700; }
-  i { font-style: italic; }
+  sup { line-height: 0; }
 
-  /* One A4 sheet per page; blocks are spread over the full height. */
+  /* ---------- One A4 sheet per page ---------- */
   .sheet { width: 186mm; height: 272mm; margin: 0 auto; display: flex; flex-direction: column;
-           justify-content: space-between; break-after: page; overflow: hidden; }
+           justify-content: space-between; break-after: page; overflow: hidden; background: var(--paper); position: relative; }
   .sheet:last-child { break-after: auto; }
-  .sheet > * { margin-top: 0; margin-bottom: 0; }
-  @media screen { .sheet { margin: 10mm auto; box-shadow: 0 2px 14px rgba(36,48,74,.12); padding: 0; } }
+  .sheet > * { margin: 0; flex-shrink: 0; }
+  @media screen { .sheet { margin: 10mm auto; padding: 0; box-shadow: 0 0 0 9mm #fff, 0 6px 30px 9mm rgba(31,42,68,.10); } }
 
-  /* Hero */
-  .hero { position: relative; overflow: hidden; border-radius: 18px; padding: 16px 24px 15px;
-          background: linear-gradient(120deg, #eaf3ff 0%, #f3efff 48%, #e6fbf3 100%); text-align: center; }
-  .hero::before, .hero::after { content: ""; position: absolute; border-radius: 50%; }
-  .hero::before { width: 170px; height: 170px; right: -50px; top: -60px; background: #ffe7a3; opacity: .55; }
-  .hero::after  { width: 140px; height: 140px; left: -45px; bottom: -70px; background: #c5f1e1; opacity: .7; }
+  /* Running head */
+  .runhead { display: flex; justify-content: space-between; align-items: center; font-size: 7.6pt; color: #8a94ab;
+             letter-spacing: .04em; padding-bottom: 5px; border-bottom: 1px solid var(--line); }
+  .runhead b { color: var(--blue); font-weight: 700; letter-spacing: .06em; }
+
+  /* ---------- Hero ---------- */
+  .hero { position: relative; overflow: hidden; border-radius: 16px; padding: 17px 26px 15px; text-align: center;
+          background: linear-gradient(135deg, #edf4ff 0%, #f5f2ff 52%, #e9f9f3 100%); border: 1px solid #e3eaf8; }
+  .hero::before, .hero::after { content: ""; position: absolute; border-radius: 50%; filter: blur(2px); }
+  .hero::before { width: 190px; height: 190px; right: -60px; top: -80px; background: radial-gradient(#fff0c2, rgba(255,240,194,0)); }
+  .hero::after  { width: 200px; height: 200px; left: -70px; bottom: -110px; background: radial-gradient(#cdf3e4, rgba(205,243,228,0)); }
   .hero > * { position: relative; z-index: 1; }
-  .venue { display: inline-block; font-size: 8.2pt; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
-           color: var(--violet); background: #fff; border-radius: 99px; padding: 3px 12px; margin-bottom: 8px; }
-  .hero h1 { font-size: 18.5pt; line-height: 1.25; margin: 2px 0 6px; font-weight: 800; }
+  .venue { display: inline-block; font-size: 7.6pt; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+           color: var(--violet); background: #fff; border: 1px solid #e4e0fb; border-radius: 99px; padding: 3px 12px; }
+  .hero h1 { text-wrap: balance; font-size: 18.5pt; line-height: 1.24; margin: 10px 0 6px; font-weight: 800; letter-spacing: -.01em; }
   .hero h1 .acr { color: var(--blue); }
-  .authors { font-size: 10.5pt; margin: 4px 0 2px; }
-  .buttons { margin-top: 11px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-  .btn { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 9pt; color: #fff;
-         padding: 5px 14px; border-radius: 99px; }
-  .btn.b1 { background: var(--coral); } .btn.b2 { background: var(--blue); } .btn.b3 { background: var(--mint); } .btn.b4 { background: var(--violet); }
-  .tagline { margin: 10px auto 0; max-width: 150mm; font-size: 11pt; color: #33415f; }
+  .authors { font-size: 10.5pt; color: var(--ink2); }
+  .affil { font-size: 8.4pt; color: var(--muted); margin-top: 1px; }
+  .buttons { margin-top: 11px; display: flex; gap: 7px; justify-content: center; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 8.6pt; color: var(--ink);
+         background: #fff; border: 1px solid #dfe6f4; padding: 4px 12px 4px 10px; border-radius: 99px; }
+  .btn svg { width: 12px; height: 12px; flex: none; }
+  .tagline { margin: 11px auto 0; max-width: 170mm; font-family: var(--serif); font-style: italic; font-size: 11.2pt; color: #2d3a5a; }
+  .tagline b { font-style: normal; font-family: var(--font); font-size: 10.4pt; color: var(--blue); }
 
-  /* Stat cards */
+  /* ---------- Stat cards ---------- */
   .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
-  .stat { border-radius: 14px; padding: 10px 10px 9px; text-align: center; }
-  .stat .num { font-size: 17pt; font-weight: 800; line-height: 1.15; }
-  .stat .lbl { font-size: 8.2pt; color: var(--muted); margin-top: 3px; line-height: 1.35; }
-  .s1 { background: var(--blue-soft); }   .s1 .num { color: var(--blue); }
-  .s2 { background: var(--mint-soft); }   .s2 .num { color: var(--mint); }
-  .s3 { background: var(--violet-soft); } .s3 .num { color: var(--violet); }
-  .s4 { background: var(--coral-soft); }  .s4 .num { color: var(--coral); }
+  .stat { border-radius: 12px; padding: 10px 8px 9px; text-align: center; border: 1px solid transparent; }
+  .stat .num { font-size: 16.5pt; font-weight: 800; line-height: 1.15; letter-spacing: -.01em; }
+  .stat .num small { font-size: 10pt; font-weight: 700; }
+  .stat .lbl { font-size: 7.9pt; color: var(--muted); margin-top: 3px; line-height: 1.35; }
+  .s1 { background: var(--blue-soft);   border-color: #d9e6fd; } .s1 .num { color: var(--blue); }
+  .s2 { background: var(--teal-soft);   border-color: #cdefe6; } .s2 .num { color: var(--teal); }
+  .s3 { background: var(--violet-soft); border-color: #e2defc; } .s3 .num { color: var(--violet); }
+  .s4 { background: var(--coral-soft);  border-color: #fbdccf; } .s4 .num { color: var(--coral); }
 
-  /* Text blocks */
-  h2 { font-size: 14pt; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 9px; }
-  h2 .dot { width: 26px; height: 26px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center;
-            font-size: 10pt; font-weight: 700; color: #fff; flex: none; }
-  h3 { font-size: 11pt; font-weight: 700; margin: 0 0 4px; }
+  /* ---------- Headings and text ---------- */
+  .sec { display: flex; align-items: center; gap: 10px; }
+  .sec .no { flex: none; width: 24px; height: 24px; border-radius: 7px; display: inline-flex; align-items: center; justify-content: center;
+             font-size: 9.6pt; font-weight: 800; color: #fff; }
+  .sec h2 { font-size: 13.5pt; font-weight: 800; margin: 0; letter-spacing: -.005em; white-space: nowrap; }
+  .sec .rule { flex: 1; height: 1px; background: linear-gradient(90deg, var(--line), rgba(226,232,243,0)); }
+  .sec .tag { font-size: 7.6pt; color: var(--muted); letter-spacing: .05em; text-transform: uppercase; }
+  h3 { font-size: 10.4pt; font-weight: 700; margin: 0 0 5px; }
   p { margin: 0; text-align: justify; hyphens: auto; }
-  .tldr { border-left: 4px solid var(--blue); background: var(--blue-soft); border-radius: 0 12px 12px 0; padding: 9px 13px; }
+  .lead { color: var(--ink2); }
+  .abstract { background: var(--tint); border: 1px solid var(--line); border-left: 4px solid var(--blue); border-radius: 4px 12px 12px 4px; padding: 10px 14px; }
+  .abstract .k { font-size: 7.8pt; font-weight: 800; letter-spacing: .1em; color: var(--blue); text-transform: uppercase; margin-right: 6px; }
 
-  /* Figures */
-  figure { margin: 0; text-align: center; }
-  figure img { max-width: 100%; display: block; margin: 0 auto; }
-  figure.framed .frame { border: 1px solid var(--line); border-radius: 10px; padding: 6px; background: #fff; }
-  figcaption { font-size: 8.5pt; color: var(--muted); margin-top: 5px; text-align: left; line-height: 1.45; }
+  /* ---------- Figures ---------- */
+  figure { margin: 0; }
+  figure img { display: block; max-width: 100%; margin: 0 auto; }
+  .frame { border: 1px solid var(--line); border-radius: 10px; padding: 7px; background: #fff; }
+  figcaption { font-size: 8.2pt; color: var(--muted); margin-top: 6px; text-align: justify; line-height: 1.45; }
   figcaption b { color: var(--ink); }
-  .fignum { color: var(--blue); font-weight: 700; }
-  .supp .fignum { color: var(--violet); }
-  /* Panels in a row share one height: each panel grows in proportion to its aspect ratio. */
+  .fn { color: var(--blue); font-weight: 800; margin-right: 2px; }
+  .supp .fn { color: var(--violet); }
+  /* Panels in a row share one height: flex-grow = aspect ratio (w/h). */
   .row { display: flex; gap: 12px; align-items: flex-end; }
-  .row > .panel { flex-basis: 0; min-width: 0; text-align: center; }
+  .row > .panel { flex-basis: 0; min-width: 0; }
   .row > .panel img { width: 100%; display: block; }
-  .sub { font-size: 8.3pt; color: var(--ink); margin-top: 3px; text-align: center; }
-  .crop { overflow: hidden; margin: 0 auto; }
-  .crop img { display: block; max-width: none; }
+  .sub { font-size: 8pt; color: var(--ink2); margin-top: 3px; text-align: center; }
 
-  .questions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .q { border-radius: 12px; padding: 9px 12px; font-size: 9.2pt; }
-  .q h4 { margin: 0 0 3px; font-size: 9.8pt; }
-  .q1 { background: var(--violet-soft); } .q1 h4 { color: var(--violet); }
-  .q2 { background: var(--mint-soft); }   .q2 h4 { color: var(--mint); }
+  /* ---------- Cards and boxes ---------- */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .card { border-radius: 11px; padding: 9px 12px 10px; font-size: 8.6pt; line-height: 1.47; border: 1px solid var(--line); background: #fcfdff; position: relative; }
+  .card h4 { margin: 0 0 4px; font-size: 9.6pt; font-weight: 750; }
+  .card .files { margin-top: 6px; font-size: 7.4pt; color: #8a94ab; font-family: var(--mono); }
+  .card.top { border-top: 3px solid; }
+  .c-blue  { border-top-color: var(--blue); }   .c-blue h4 { color: var(--blue); }
+  .c-coral { border-top-color: var(--coral); }  .c-coral h4 { color: var(--coral); }
+  .c-teal  { border-top-color: var(--teal); }   .c-teal h4 { color: var(--teal); }
+  .c-violet{ border-top-color: var(--violet); } .c-violet h4 { color: var(--violet); }
+  .q { border-radius: 11px; padding: 9px 13px; font-size: 8.8pt; }
+  .q h4 { margin: 0 0 3px; font-size: 9.6pt; }
   .q p { text-align: left; }
+  .q1 { background: var(--violet-soft); } .q1 h4 { color: var(--violet); }
+  .q2 { background: var(--teal-soft); }   .q2 h4 { color: var(--teal); }
+  .q .ans { margin-top: 4px; font-size: 8.3pt; color: var(--ink2); }
+  .q .ans b { color: var(--ink); }
 
-  .comp { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
-  .card { border-radius: 12px; padding: 9px 12px; font-size: 8.8pt; line-height: 1.45; border: 1px solid var(--line); border-top: 4px solid; background: #fbfcff; }
-  .card h4 { margin: 0 0 4px; font-size: 10pt; }
-  .card .files { margin-top: 6px; font-size: 7.8pt; color: var(--muted); font-family: var(--mono); }
-  .c1 { border-top-color: var(--blue); }   .c1 h4 { color: var(--blue); }
-  .c2 { border-top-color: var(--coral); }  .c2 h4 { color: var(--coral); }
-  .c3 { border-top-color: var(--mint); }   .c3 h4 { color: var(--mint); }
+  .contrib { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; counter-reset: c; }
+  .contrib > div { font-size: 8.5pt; line-height: 1.45; padding-left: 26px; position: relative; color: var(--ink2); }
+  .contrib > div::before { counter-increment: c; content: counter(c); position: absolute; left: 0; top: 1px; width: 18px; height: 18px; border-radius: 50%;
+                           background: var(--blue-soft); color: var(--blue); font-weight: 800; font-size: 8pt; text-align: center; line-height: 18px; }
+  .contrib b { color: var(--ink); }
 
-  .eq { display: flex; gap: 10px; }
-  .eq > div { flex: 1 1 0; background: var(--code-bg); border-radius: 10px; padding: 8px 12px; font-size: 8.9pt; }
-  .math { font-size: 10.2pt; white-space: nowrap; text-align: center; margin: 4px 0; }
+  .eq { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .eq > div { background: var(--tint); border: 1px solid var(--line); border-radius: 11px; padding: 8px 12px; font-size: 8.5pt; color: var(--ink2); }
+  .eq b { color: var(--ink); }
+  .math { font-family: var(--serif); font-size: 10.6pt; white-space: nowrap; text-align: center; margin: 5px 0 4px; color: var(--ink); }
+  .math i { font-style: italic; }
 
-  /* Tables */
-  table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 8.6pt; }
-  th, td { padding: 3px 6px; border-bottom: 1px solid var(--line); }
-  thead th { background: #f1f5fd; color: #34446a; font-weight: 700; }
-  thead tr:first-child th:first-child { border-top-left-radius: 9px; }
-  thead tr:first-child th:last-child { border-top-right-radius: 9px; }
-  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
-  tr.ours td { background: linear-gradient(90deg, #e9f9f2, #eef3ff); font-weight: 700; color: #16325f; }
-  tr.base td { color: var(--muted); }
-  .grp { border-left: 2px solid #fff; }
-  .tcap { font-size: 8.3pt; color: var(--muted); margin-top: 3px; }
-  .bullets { margin: 0; padding-left: 18px; }
-  .bullets li { margin: 3px 0; }
+  .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid var(--line); border-radius: 11px; overflow: hidden; }
+  .fstep { padding: 8px 11px 9px; font-size: 8.4pt; line-height: 1.42; position: relative; color: var(--ink2); }
+  .fstep + .fstep { border-left: 1px dashed #d5ddec; }
+  .fstep span { display: block; font-weight: 750; font-size: 9pt; margin-bottom: 2px; }
+
+  .box { border-radius: 11px; padding: 10px 13px; font-size: 8.7pt; line-height: 1.5; }
+  .box h4 { margin: 0 0 4px; font-size: 9.6pt; }
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .kpi { border: 1px solid var(--line); border-radius: 11px; padding: 8px 12px 9px; background: #fcfdff; font-size: 8.3pt; line-height: 1.42; color: var(--ink2); }
+  .kpi .t { font-size: 7.6pt; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+  .kpi .v { font-size: 14pt; font-weight: 800; line-height: 1.2; margin: 1px 0 2px; color: var(--ink); letter-spacing: -.01em; }
+  .kpi .v small { font-size: 8.4pt; font-weight: 600; color: var(--muted); }
+
   .hl { font-weight: 700; color: var(--blue); }
-  .hl2 { font-weight: 700; color: var(--mint); }
+  .hl2 { font-weight: 700; color: var(--teal); }
   .hl3 { font-weight: 700; color: var(--coral); }
-  .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-  .fstep { border-radius: 12px; padding: 8px 10px; font-size: 8.7pt; line-height: 1.4; }
-  .fstep span { display: block; font-weight: 700; font-size: 9.4pt; margin-bottom: 3px; }
-  .side { display: grid; gap: 14px; align-items: center; }
-  .box { border-radius: 12px; padding: 10px 13px; font-size: 9pt; }
+  .bullets { margin: 0; padding-left: 16px; }
+  .bullets li { margin: 2px 0; }
+  .bullets li::marker { color: var(--blue); }
 
-  /* Code */
-  pre { background: #1f2740; color: #e9edf7; border-radius: 12px; padding: 10px 13px; font-size: 8.5pt; line-height: 1.55;
+  /* ---------- Tables ---------- */
+  table { width: 100%; border-collapse: collapse; font-size: 8.4pt; font-variant-numeric: tabular-nums; }
+  th, td { padding: 3.2px 6px; }
+  thead th { color: #34446a; font-weight: 700; border-bottom: 1px solid #c9d4e8; }
+  thead tr.g th { border-bottom: 1px solid #c9d4e8; font-size: 8.6pt; }
+  thead tr.g th.gc { color: var(--blue); }
+  table.booktabs { border-top: 1.4px solid #34446a; border-bottom: 1.4px solid #34446a; }
+  tbody tr:nth-child(even) td { background: #f8fafe; }
+  td.n, th.n { text-align: right; }
+  td.sep, th.sep { border-left: 1px solid var(--line); }
+  tr.mid td { border-top: 1px solid #dde4f1; }
+  tr.ours td { background: linear-gradient(90deg, #e6f7f1, #e9f1ff) !important; font-weight: 800; color: #12305f; border-top: 1px solid #c9d4e8; }
+  tr.delta td { background: #fff !important; color: var(--teal); font-weight: 700; font-size: 7.8pt; padding-top: 1px; }
+  tr.base td { color: var(--muted); }
+  .u { text-decoration: underline; text-decoration-color: #9fb3d9; text-underline-offset: 2px; }
+  .tcap { font-size: 8pt; color: var(--muted); margin-top: 4px; }
+  .tcap .fn { color: var(--blue); }
+
+  /* ---------- Code ---------- */
+  pre { background: #f5f8fd; color: #23304d; border: 1px solid var(--line); border-radius: 10px; padding: 9px 13px; font-size: 8.2pt; line-height: 1.6;
         margin: 5px 0 0; white-space: pre-wrap; }
-  pre .c { color: #8fa0c4; } pre .k { color: #ffb38a; } pre .s { color: #9be3c4; } pre .p { color: #b9a9ff; }
-  .step { display: flex; gap: 10px; align-items: flex-start; }
-  .step .badge { flex: none; width: 22px; height: 22px; border-radius: 50%; color: #fff; font-size: 9pt; font-weight: 700; line-height: 22px; text-align: center; margin-top: 1px; }
+  pre .c { color: #8a94ab; } pre .k { color: #b0447a; } pre .s { color: #0f8a6f; } pre .p { color: #6d5fe0; }
+  .step { display: flex; gap: 11px; align-items: flex-start; }
+  .step .badge { flex: none; width: 22px; height: 22px; border-radius: 50%; color: #fff; font-size: 9pt; font-weight: 800; line-height: 22px; text-align: center; margin-top: 1px; }
   .step > div { flex: 1; min-width: 0; }
   .step h4 { margin: 2px 0 0; font-size: 10pt; }
-  .step p { font-size: 9pt; margin-top: 2px; }
-  .tree { background: var(--code-bg); color: var(--ink); white-space: pre; font-size: 8pt; }
-  .tree .c { color: #7a86a0; }
+  .step p { font-size: 8.8pt; margin-top: 2px; }
+  .tree { white-space: pre; font-size: 7.9pt; line-height: 1.55; }
+  .hyp td { padding: 3.6px 6px; }
 
-  footer { padding-top: 7px; border-top: 1px solid var(--line); font-size: 8.2pt; color: var(--muted); text-align: center; }
+  footer { padding-top: 6px; border-top: 1px solid var(--line); font-size: 7.8pt; color: #8a94ab; display: flex; justify-content: space-between; }
 </style>
 </head>
 <body>
 
-<!-- Page 1: overview and motivation -->
+<!-- ===================== Page 1: overview ===================== -->
 <div class="sheet">
   <div class="hero">
-    <span class="venue">CVPR 2027 Submission · Supplementary Material</span>
+    <span class="venue">CVPR 2027 Submission &nbsp;·&nbsp; Supplementary Project Page</span>
     <h1><span class="acr">SEPM</span>: Self-Evolving Procedural Memory Grounded in Task Graphs for Multi-Agent Collaboration</h1>
-    <div class="authors">Anonymous CVPR submission</div>
-    <div class="buttons"><span class="btn b1">📄 Main paper</span><span class="btn b2">💻 Code in supplementary</span><span class="btn b3">🧪 7 benchmarks</span><span class="btn b4">🤝 AutoGen · DyLAN · CoELA</span></div>
+    <div class="authors">Anonymous Authors</div>
+    <div class="affil">Under double-blind review</div>
+    <div class="buttons">
+      <span class="btn"><svg viewBox="0 0 16 16" fill="none" stroke="#e86a46" stroke-width="1.6"><path d="M4 1.5h5.5L12.5 4.5v10h-8.5z"/><path d="M9.5 1.5v3h3M6 8h4.5M6 10.5h4.5"/></svg>Main paper</span>
+      <span class="btn"><svg viewBox="0 0 16 16" fill="none" stroke="#2f6bd8" stroke-width="1.6"><path d="M5.5 4 1.8 8l3.7 4M10.5 4l3.7 4-3.7 4"/></svg>Code in supplementary</span>
+      <span class="btn"><svg viewBox="0 0 16 16" fill="none" stroke="#0f9c84" stroke-width="1.6"><rect x="2" y="9" width="3" height="5"/><rect x="6.5" y="5" width="3" height="9"/><rect x="11" y="2" width="3" height="12"/></svg>7 benchmarks</span>
+      <span class="btn"><svg viewBox="0 0 16 16" fill="none" stroke="#6d5fe0" stroke-width="1.6"><circle cx="4" cy="4.5" r="2"/><circle cx="12" cy="4.5" r="2"/><circle cx="8" cy="12" r="2"/><path d="M5.5 6 7 10.4M10.5 6 9 10.4M6 4.5h4"/></svg>AutoGen · DyLAN · CoELA</span>
+    </div>
     <div class="tagline">Team memory that records not only <b>what</b> to do, but also <b>what must already be true</b> before each step.</div>
   </div>
 
   <div class="stats">
     <div class="stat s1"><div class="num">6 / 6</div><div class="lbl">main settings ranked first<br>against 7 memory baselines</div></div>
-    <div class="stat s2"><div class="num">+22.86</div><div class="lbl">three-benchmark mean, AutoGen<br>(37.74 → 60.60)</div></div>
-    <div class="stat s3"><div class="num">59.53</div><div class="lbl">ImplicitMemBench overall<br>(host without memory: 47.61)</div></div>
-    <div class="stat s4"><div class="num">−8.1 to −16.9</div><div class="lbl">points when graphs become<br>textual prerequisites</div></div>
+    <div class="stat s2"><div class="num">+22.86</div><div class="lbl">three-benchmark mean under<br>AutoGen (37.74 → 60.60)</div></div>
+    <div class="stat s3"><div class="num">47.61 <small>→</small> 59.53</div><div class="lbl">ImplicitMemBench overall<br>82% of the oracle's gain</div></div>
+    <div class="stat s4"><div class="num">−8.13 <small>to</small> −16.91</div><div class="lbl">points when task graphs are<br>replaced by textual prerequisites</div></div>
   </div>
 
-  <div class="tldr"><b>TL;DR.</b> In a team, whether an agent can take its next step depends on what its teammates have completed. SEPM stores team procedures as <b>task dependency graphs</b>, with executable steps as nodes and cross-agent prerequisites as edges. The same graph coordinates execution on a shared blackboard and decides what the team retains after the task.</div>
+  <div class="abstract"><p><span class="k">Abstract</span>In a team, whether an agent can take its next step hinges on what its teammates have completed. Existing memories store procedures without these <b>cross-agent prerequisites</b>, so experience can neither be checked during execution nor separated from incidental co-occurrence. <b>SEPM</b> uses <b>task dependency graphs</b> as one representation for both coordination and memory: executable steps are nodes and prerequisites are edges. During execution, a step runs only after its prerequisites are verified, and goal, plan, and state divergence is corrected on a shared blackboard; afterwards, verified steps and edges are distilled into versioned procedures under evidence gates.</p></div>
 
-  <h2><span class="dot" style="background:var(--violet)">1</span>Why team memory needs a task graph</h2>
-  <p>Existing team memories share memory units, allocate them by role, or pool trajectories, treating a procedure as a self-contained recipe. In collaboration, a step is often valid only after a teammate has produced an artifact, changed a shared state, or completed a handoff. These <b>cross-agent prerequisites</b> are what existing memories leave out.</p>
+  <div class="sec"><span class="no" style="background:var(--violet)">1</span><h2>Why team memory needs a task graph</h2><span class="rule"></span></div>
 
   <figure>
-    <img src="docs/images/motivation.png" style="width:86%">
-    <figcaption><span class="fignum">Figure 1.</span> <b>Why team memory needs a shared task graph.</b> Without memory, the team stores a dirty cup in every episode. Textual memory records "after cleaning", but no agent can check it. SEPM stores the prerequisite as a dependency edge, so C stores a cup only after A's cleaning is verified.</figcaption>
+    <div class="frame"><img src="docs/images/motivation.png" style="width:71%"></div>
+    <figcaption><span class="fn">Figure 1.</span> <b>Three robots wash the dirty cups and dishes and store them in a cabinet.</b> Without memory, the team stores a dirty cup in every episode. Textual memory records "after cleaning", but no agent can check it. SEPM stores the prerequisite as a dependency edge, so C stores a cup only after A's cleaning is verified.</figcaption>
   </figure>
 
-  <div class="questions">
-    <div class="q q1"><h4>Q1 · How should stored experience act on execution?</h4><p>Text affects behavior only if each agent interprets it correctly, and no single agent can confirm a prerequisite that spans several agents. Prerequisites must be stored in a form that <b>execution can check</b>.</p></div>
-    <div class="q q2"><h4>Q2 · What should a team retain?</h4><p>The order of interleaved steps does not reveal which steps enabled later ones. Memory evolution is a <b>credit-assignment problem</b>: keep only the steps and edges the evidence supports.</p></div>
+  <div class="grid2">
+    <div class="q q1"><h4>Q1 · How should experience act on execution?</h4><p>Text changes behavior only if each agent interprets it correctly, and no single agent can confirm a prerequisite that spans several agents.</p><p class="ans"><b>SEPM:</b> store prerequisites as graph edges that the executor <b>checks</b> before dispatching a step.</p></div>
+    <div class="q q2"><h4>Q2 · What should a team retain?</h4><p>The order of interleaved steps does not reveal which steps enabled later ones, so memory evolution is a credit-assignment problem.</p><p class="ans"><b>SEPM:</b> keep only the steps and edges that <b>verification records support</b>, not temporal precedence.</p></div>
   </div>
+
 </div>
 
-<!-- Page 2: method and case study -->
+<!-- ===================== Page 2: method ===================== -->
 <div class="sheet">
-  <h2><span class="dot" style="background:var(--blue)">2</span>Method</h2>
-  <figure class="framed">
+  <div class="runhead"><span><b>SEPM</b> · Self-Evolving Procedural Memory</span><span>Method</span></div>
+  <div class="sec"><span class="no" style="background:var(--blue)">2</span><h2>Method: one graph for coordination and memory</h2><span class="rule"></span></div>
+  <p class="lead">A retrieved procedure is instantiated as a shared task graph. The same graph constrains which steps may run, anchors the alignment of every agent, and decides what the team retains after the task.</p>
+
+  <figure>
     <div class="frame"><img src="docs/images/framework.png"></div>
-    <figcaption><span class="fignum">Figure 2.</span> <b>Overview of SEPM.</b> Retrieved procedures become task graphs on a shared blackboard, which supports goal, plan, and state alignment during execution and drives procedure evolution afterwards.</figcaption>
+    <figcaption><span class="fn">Figure 2.</span> <b>Overview of SEPM.</b> Retrieved procedures become task graphs on a shared blackboard, which supports goal, plan, and state alignment during execution and drives procedure evolution afterwards.</figcaption>
   </figure>
 
-  <div class="comp">
-    <div class="card c1"><h4>Shared blackboard</h4>Retrieves up to <i>K</i> = 5 applicable procedures and plans a task graph from them. A step is dispatched only when all its prerequisites are verified by external evidence (environment, tool observation, or verified artifact), never by agent inference alone.<div class="files">models.py · storage.py · retrieval.py</div></div>
-    <div class="card c2"><h4>Divergence-aware alignment</h4>Compares each agent's local view with its reference subgraph. <b>Goal:</b> text dissimilarity + LLM judge. <b>Plan:</b> action mismatches and edges in only one plan. <b>State:</b> conflicting evidence, resolved by an authority hierarchy. Corrections propagate to dependent steps.<div class="files">divergence.py · alignment.py · evidence.py</div></div>
-    <div class="card c3"><h4>Graph-grounded evolution</h4>Keeps only verified steps and edges whose source established a condition checked before the target ran. Revisions are committed through evidence gates as new versions; lessons such as "found ≠ cleaned" become conditional warnings.<div class="files">episode.py · service.py · safety.py</div></div>
+  <div class="grid3">
+    <div class="card top c-blue"><h4>① Shared blackboard</h4>Retrieves up to <i>K</i> = 5 applicable procedures and plans one task graph from them. A step is dispatched only when all its prerequisites are verified by <b>external evidence</b> (environment state, tool observation, or verified artifact), never by agent inference alone.<div class="files">models.py · storage.py · retrieval.py</div></div>
+    <div class="card top c-coral"><h4>② Divergence-aware alignment</h4>Compares each agent's local view with its reference subgraph. <b>Goal:</b> text dissimilarity + LLM judge. <b>Plan:</b> action mismatches and edges present in only one plan. <b>State:</b> conflicting evidence, resolved by an authority hierarchy. Corrections propagate to dependent steps.<div class="files">divergence.py · alignment.py · evidence.py</div></div>
+    <div class="card top c-teal"><h4>③ Graph-grounded evolution</h4>Keeps only verified steps and edges whose source established a condition <b>checked before</b> the target ran. Revisions are committed through evidence gates as new versions; lessons such as "found ≠ cleaned" become conditional warnings.<div class="files">episode.py · service.py · safety.py</div></div>
   </div>
 
   <div class="eq">
-    <div><b>Prerequisite-constrained execution</b><div class="math">ready(<i>w</i>) = ⋀<sub>(<i>u</i>,<i>w</i>)∈<i>E</i></sub> 𝟙[ Σ ⊨ <i>u</i> ]</div>A step runs only after every prerequisite is confirmed by the verified state.</div>
-    <div><b>Evidence-gated evolution</b><div class="math">Accept(<i>S′</i>) = <i>G</i><sub>safety</sub> ∧ <i>G</i><sub>state</sub> ∧ <i>G</i><sub>dep</sub> ∧ <i>G</i><sub>qual</sub> ∧ [ <i>ū</i>(<i>S′</i>) ≥ 0 ]</div>No unsafe action, consistent with verified state, ≥ 65% evidence-supported edges, a qualified trial, non-negative net benefit.</div>
+    <div><b>Prerequisite-constrained execution</b><div class="math">ready(<i>w</i>) = ⋀<sub>(<i>u</i>,<i>w</i>)∈<i>E</i></sub> 𝟙[ Σ ⊨ <i>u</i> ]</div>A step becomes ready only after the outcome of every prerequisite is confirmed by the verified state Σ.</div>
+    <div><b>Evidence-gated evolution</b><div class="math">Accept(<i>S′</i>) = <i>G</i><sub>safety</sub> ∧ <i>G</i><sub>state</sub> ∧ <i>G</i><sub>dep</sub> ∧ <i>G</i><sub>qual</sub> ∧ [ <i>ū</i>(<i>S′</i>) ≥ 0 ]</div>No unsafe action, consistent with the verified state, ≥ 65% evidence-supported edges, a qualified trial, and non-negative net benefit.</div>
   </div>
 
   <div>
     <h3>One task through SEPM</h3>
     <div class="flow">
-      <div class="fstep" style="background:var(--blue-soft)"><span style="color:var(--blue)">① Retrieve and plan</span>Compatible procedures are retrieved and merged into one task graph on the blackboard.</div>
-      <div class="fstep" style="background:var(--violet-soft)"><span style="color:var(--violet)">② Execute</span>Agents run ready steps and append (step, observation, action, result, error) records.</div>
-      <div class="fstep" style="background:var(--coral-soft)"><span style="color:var(--coral)">③ Realign</span>Goal, plan, or state divergence realigns the affected agents and updates the graph.</div>
-      <div class="fstep" style="background:var(--mint-soft)"><span style="color:var(--mint)">④ Evolve</span>Supported steps and edges form new procedures or gated revisions; warnings are attached.</div>
+      <div class="fstep" style="background:var(--blue-soft)"><span style="color:var(--blue)">Retrieve &amp; plan</span>Compatible procedures are retrieved and bound into one task graph on the blackboard.</div>
+      <div class="fstep" style="background:var(--violet-soft)"><span style="color:var(--violet)">Execute</span>Agents run ready steps and append (step, observation, action, result, error) records.</div>
+      <div class="fstep" style="background:var(--coral-soft)"><span style="color:var(--coral)">Realign</span>Goal, plan, or state divergence realigns the affected agents and their descendants.</div>
+      <div class="fstep" style="background:var(--teal-soft)"><span style="color:var(--teal)">Evolve</span>Supported steps and edges form new procedures or gated revisions; warnings are attached.</div>
     </div>
-    <p style="margin-top:6px;font-size:9pt">Commits are atomic (compare-and-swap on the head version), and no operation deletes a procedure or a version, so every revision can be audited and rolled back.</p>
+    <p style="margin-top:7px;font-size:8.6pt;color:var(--muted)">Commits are atomic (compare-and-swap on the head version), and no operation deletes a procedure or a version, so every revision can be audited and rolled back.</p>
   </div>
 </div>
 
-<!-- Page 3: case study -->
+<!-- ===================== Page 3: case study + main results ===================== -->
 <div class="sheet">
-  <h2><span class="dot" style="background:var(--coral)">3</span>Case study: cleaning and storage</h2>
-  <p>Three agents must wash the dirty cups and dishes and put them in the cabinet. The figure follows one task from retrieval to the revised procedure.</p>
-  <figure class="framed">
-    <!-- The wide figure is shown in two parts so its text stays readable. -->
-    <div class="frame">
-      <div class="crop" style="width:100%;aspect-ratio:1484/550"><img src="docs/images/case-study.png" style="width:164.08%"></div>
-    </div>
-    <div class="sub" style="margin-top:4px">(a) Planning and execution: the trajectory on the blackboard and the detected divergences</div>
-  </figure>
-  <figure class="framed">
-    <div class="frame">
-      <div class="crop" style="width:100%;aspect-ratio:943/550"><img src="docs/images/case-study.png" style="width:258.22%;margin-left:-158.22%"></div>
-    </div>
-    <div class="sub" style="margin-top:4px">(b) Procedure evolution: the stored procedure before and after the update</div>
-    <figcaption><span class="fignum">Figure 3.</span> <b>Cleaning-and-storage example.</b> Plan divergence (B stores an apple) and state divergence (C requests a cup that is found but not cleaned) trigger realignment, and the executed procedure is revised from v1.0 to v1.1.</figcaption>
-  </figure>
-  <div class="comp">
-    <div class="card c1"><h4>Plan divergence</h4>B puts an apple in the fridge, an action outside its subgraph. The step is flagged and B is realigned to the dishes.</div>
-    <div class="card c2"><h4>State divergence</h4>C requests a cup that A has found but not yet cleaned. C's storage step waits until A's cleaning is verified.</div>
-    <div class="card c3"><h4>Revision v1.0 → v1.1</h4>A handoff edge from A and B to C is added, and "found ≠ cleaned" becomes a conditional warning.</div>
-  </div>
-</div>
+  <div class="runhead"><span><b>SEPM</b> · Self-Evolving Procedural Memory</span><span>Case study · Main results</span></div>
+  <div class="sec"><span class="no" style="background:var(--coral)">3</span><h2>Case study: cleaning and storage</h2><span class="rule"></span></div>
 
-<!-- Page 4: main results -->
-<div class="sheet">
-  <h2><span class="dot" style="background:var(--mint)">4</span>Key results</h2>
-  <p>Every memory starts empty and is built online over the same task sequence with the same retrieval count and context budget; planning, execution, memory, and the judge use <code>gpt-5-mini</code>. All numbers are those reported in the paper.</p>
+  <figure>
+    <div class="frame"><img src="docs/images/case-study.png"></div>
+    <figcaption><span class="fn">Figure 3.</span> <b>One task from retrieval to the revised procedure.</b> Left: planning and execution, with the trajectory on the blackboard and the detected divergences. Right: the stored procedure before and after the update. Plan divergence (B stores an apple) and state divergence (C requests a cup that is found but not cleaned) trigger realignment, and the procedure is revised from v1.0 to v1.1.</figcaption>
+  </figure>
+
+  <div class="sec"><span class="no" style="background:var(--teal)">4</span><h2>Main results</h2><span class="rule"></span><span class="tag">7 baselines · 2 hosts · 3 benchmarks</span></div>
 
   <div>
-    <table>
+    <table class="booktabs">
       <thead>
-        <tr><th rowspan="2" style="text-align:left">Memory</th><th colspan="4" class="grp">AutoGen</th><th colspan="4" class="grp">DyLAN</th></tr>
-        <tr><th class="n">ALFWorld</th><th class="n">WebArena</th><th class="n">OfficeB.</th><th class="n">Avg.</th><th class="n">ALFWorld</th><th class="n">WebArena</th><th class="n">OfficeB.</th><th class="n">Avg.</th></tr>
+        <tr class="g"><th></th><th colspan="4" class="gc sep">AutoGen</th><th colspan="4" class="gc sep">DyLAN</th></tr>
+        <tr><th style="text-align:left">Memory</th><th class="n sep">ALFWorld</th><th class="n">WebArena</th><th class="n">OfficeB.</th><th class="n">Avg.</th><th class="n sep">ALFWorld</th><th class="n">WebArena</th><th class="n">OfficeB.</th><th class="n">Avg.</th></tr>
       </thead>
       <tbody>
-        <tr class="base"><td>No added memory</td><td class="n">59.45</td><td class="n">12.44</td><td class="n">41.33</td><td class="n">37.74</td><td class="n">53.98</td><td class="n">14.90</td><td class="n">33.56</td><td class="n">34.15</td></tr>
-        <tr><td>Generative Agents</td><td class="n">85.32</td><td class="n">15.27</td><td class="n">38.67</td><td class="n">46.42</td><td class="n">65.17</td><td class="n">15.27</td><td class="n">32.89</td><td class="n">37.78</td></tr>
-        <tr><td>MetaGPT</td><td class="n">77.86</td><td class="n">25.99</td><td class="n">45.11</td><td class="n">49.65</td><td class="n">49.50</td><td class="n">22.41</td><td class="n">35.22</td><td class="n">35.71</td></tr>
-        <tr><td>G-Memory</td><td class="n">83.08</td><td class="n">30.30</td><td class="n">49.67</td><td class="n">54.35</td><td class="n">62.19</td><td class="n">25.49</td><td class="n">42.44</td><td class="n">43.37</td></tr>
-        <tr><td>LEGOMem</td><td class="n">84.08</td><td class="n">31.65</td><td class="n">51.33</td><td class="n">55.69</td><td class="n">63.68</td><td class="n">26.35</td><td class="n">43.78</td><td class="n">44.60</td></tr>
-        <tr><td>MATM</td><td class="n">81.34</td><td class="n">29.31</td><td class="n">48.44</td><td class="n">53.03</td><td class="n">61.44</td><td class="n">24.75</td><td class="n">41.22</td><td class="n">42.47</td></tr>
-        <tr><td>AWM<sup>†</sup></td><td class="n">80.10</td><td class="n">26.48</td><td class="n">46.44</td><td class="n">51.01</td><td class="n">60.70</td><td class="n">23.40</td><td class="n">38.89</td><td class="n">41.00</td></tr>
-        <tr><td>Memp<sup>†</sup></td><td class="n">82.09</td><td class="n">27.34</td><td class="n">47.22</td><td class="n">52.22</td><td class="n">62.44</td><td class="n">24.14</td><td class="n">39.56</td><td class="n">42.05</td></tr>
-        <tr class="ours"><td>SEPM (ours)</td><td class="n">89.05</td><td class="n">38.30</td><td class="n">54.44</td><td class="n">60.60</td><td class="n">68.41</td><td class="n">29.80</td><td class="n">47.11</td><td class="n">48.44</td></tr>
+        <tr class="base"><td>No added memory</td><td class="n sep">59.45</td><td class="n">12.44</td><td class="n">41.33</td><td class="n">37.74</td><td class="n sep">53.98</td><td class="n">14.90</td><td class="n">33.56</td><td class="n">34.15</td></tr>
+        <tr><td>Generative Agents</td><td class="n sep"><span class="u">85.32</span></td><td class="n">15.27</td><td class="n">38.67</td><td class="n">46.42</td><td class="n sep"><span class="u">65.17</span></td><td class="n">15.27</td><td class="n">32.89</td><td class="n">37.78</td></tr>
+        <tr><td>MetaGPT</td><td class="n sep">77.86</td><td class="n">25.99</td><td class="n">45.11</td><td class="n">49.65</td><td class="n sep">49.50</td><td class="n">22.41</td><td class="n">35.22</td><td class="n">35.71</td></tr>
+        <tr><td>G-Memory</td><td class="n sep">83.08</td><td class="n">30.30</td><td class="n">49.67</td><td class="n">54.35</td><td class="n sep">62.19</td><td class="n">25.49</td><td class="n">42.44</td><td class="n">43.37</td></tr>
+        <tr><td>LEGOMem</td><td class="n sep">84.08</td><td class="n"><span class="u">31.65</span></td><td class="n"><span class="u">51.33</span></td><td class="n"><span class="u">55.69</span></td><td class="n sep">63.68</td><td class="n"><span class="u">26.35</span></td><td class="n"><span class="u">43.78</span></td><td class="n"><span class="u">44.60</span></td></tr>
+        <tr><td>MATM</td><td class="n sep">81.34</td><td class="n">29.31</td><td class="n">48.44</td><td class="n">53.03</td><td class="n sep">61.44</td><td class="n">24.75</td><td class="n">41.22</td><td class="n">42.47</td></tr>
+        <tr class="mid"><td>AWM<sup>†</sup></td><td class="n sep">80.10</td><td class="n">26.48</td><td class="n">46.44</td><td class="n">51.01</td><td class="n sep">60.70</td><td class="n">23.40</td><td class="n">38.89</td><td class="n">41.00</td></tr>
+        <tr><td>Memp<sup>†</sup></td><td class="n sep">82.09</td><td class="n">27.34</td><td class="n">47.22</td><td class="n">52.22</td><td class="n sep">62.44</td><td class="n">24.14</td><td class="n">39.56</td><td class="n">42.05</td></tr>
+        <tr class="ours"><td>SEPM (ours)</td><td class="n sep">89.05</td><td class="n">38.30</td><td class="n">54.44</td><td class="n">60.60</td><td class="n sep">68.41</td><td class="n">29.80</td><td class="n">47.11</td><td class="n">48.44</td></tr>
+        <tr class="delta"><td>vs. strongest baseline</td><td class="n sep">+3.73</td><td class="n">+6.65</td><td class="n">+3.11</td><td class="n">+4.91</td><td class="n sep">+3.23</td><td class="n">+3.45</td><td class="n">+3.33</td><td class="n">+3.84</td></tr>
       </tbody>
     </table>
-    <div class="tcap">Task performance across hosts. ALFWorld and OfficeBench: mean of three shuffled task orders; WebArena: one run. <sup>†</sup> Single-agent memory adapted to the team with role-specific allocation.</div>
+    <div class="tcap"><span class="fn">Table 1.</span> Task performance (%) under two hosts. Every memory starts empty and is built online over the same task sequence with the same retrieval count and context budget; all modules use <code>gpt-5-mini</code>. ALFWorld and OfficeBench: mean of three shuffled task orders; WebArena: one run. SEPM is best in every column; second best <span class="u">underlined</span>. <sup>†</sup> Single-agent memory adapted to the team with role-specific allocation.</div>
   </div>
 
-  <ul class="bullets">
-    <li>SEPM exceeds the strongest baseline by <span class="hl">3.73 / 6.65 / 3.11</span> points under AutoGen and <span class="hl">3.23 / 3.45 / 3.33</span> under DyLAN; all six gains over no added memory are significant (<i>p</i> &lt; 10<sup>−4</sup>).</li>
-    <li><b>Coordination or memory?</b> Inside SEPM's own blackboard and alignment, baseline memories add only 0.51–2.30 points, whereas SEPM's memory adds <span class="hl2">4.86</span>.</li>
-  </ul>
+  <div class="grid2">
+    <div class="box" style="background:var(--blue-soft)"><h4 style="color:var(--blue)">Significant in every setting</h4>All six gains over no added memory are significant (<i>p</i> &lt; 10<sup>−4</sup>), and the margin over the strongest baseline in four (<i>p</i> &lt; 0.05). The strongest baseline changes with the environment, yet SEPM leads in all of them.</div>
+    <div class="box" style="background:var(--teal-soft)"><h4 style="color:var(--teal)">Coordination or memory?</h4>Inside SEPM's own blackboard and alignment, baseline memories add only <b>0.51–2.30</b> points, whereas SEPM's memory adds <span class="hl2">4.86</span>: what the team stores matters beyond how it coordinates.</div>
+  </div>
+  <div class="row" style="align-items:center;gap:14px">
+    <div style="flex:1.25 1 0;min-width:0">
+      <table class="booktabs">
+        <thead>
+          <tr class="g"><th></th><th colspan="3" class="gc sep">TDW-MAT (TR ↑)</th><th class="gc sep">C-WAH</th></tr>
+          <tr><th style="text-align:left">CoELA host</th><th class="n sep">Food</th><th class="n">Stuff</th><th class="n">Avg.</th><th class="n sep">Steps ↓</th></tr>
+        </thead>
+        <tbody>
+          <tr class="base"><td>No added memory</td><td class="n sep">68.33</td><td class="n">58.33</td><td class="n">63.33</td><td class="n sep">92.4</td></tr>
+          <tr><td>G-Memory</td><td class="n sep">72.50</td><td class="n">61.67</td><td class="n">67.08</td><td class="n sep">87.1</td></tr>
+          <tr><td>AWM<sup>†</sup></td><td class="n sep">70.83</td><td class="n">60.00</td><td class="n">65.42</td><td class="n sep">88.5</td></tr>
+          <tr><td>LEGOMem</td><td class="n sep"><span class="u">73.33</span></td><td class="n"><span class="u">62.50</span></td><td class="n"><span class="u">67.92</span></td><td class="n sep"><span class="u">85.6</span></td></tr>
+          <tr class="ours"><td>SEPM (ours)</td><td class="n sep">79.17</td><td class="n">68.33</td><td class="n">73.75</td><td class="n sep">79.8</td></tr>
+        </tbody>
+      </table>
+      <div class="tcap"><span class="fn">Table 2.</span> Embodied cooperation with CoELA. TR: transport rate (%, three seeds); Steps: average steps per task (five seeds).</div>
+    </div>
+    <div class="box" style="flex:1 1 0;background:var(--teal-soft)"><h4 style="color:var(--teal)">Physical handoffs</h4>In TDW-MAT and C-WAH, agents act from visual observations and prerequisites are objects passed between agents. SEPM raises the transport rate by <b>10.42</b> points and saves <b>12.6</b> steps per task over the host without memory, ahead of LEGOMem by 5.83 points and 5.8 steps.</div>
+  </div>
+</div>
+
+<!-- ===================== Page 4: beyond the main setting ===================== -->
+<div class="sheet">
+  <div class="runhead"><span><b>SEPM</b> · Self-Evolving Procedural Memory</span><span>Generality · Evolution and transfer</span></div>
+  <div class="sec"><span class="no" style="background:var(--teal)">5</span><h2>Across benchmarks, models, and embodiment</h2><span class="rule"></span></div>
+  <p class="lead">Beyond the main table, we test whether stored experience actually changes later behavior (ImplicitMemBench), whether the gain survives a change of execution model, and whether coordination itself improves (MultiAgentBench).</p>
 
   <figure>
     <div class="row">
@@ -272,72 +331,109 @@
       <div class="panel" style="flex-grow:1.332"><img src="docs/images/model-gain.png"><div class="sub">(b) Gain across execution models</div></div>
       <div class="panel" style="flex-grow:1.413"><img src="docs/images/multiagentbench.png"><div class="sub">(c) MultiAgentBench</div></div>
     </div>
-    <figcaption><span class="fignum">Figure 4.</span> <b>SEPM across benchmarks and models, under AutoGen.</b> (a) ImplicitMemBench: <span class="hl">47.61 → 59.53</span> with <code>gpt-5-mini</code>, 82% of the oracle's gain; dashed and dotted lines mark the oracle and a single LLM call. (b) Gain over no added memory stays positive in all 18 model–benchmark pairs (3.33–29.85 points). (c) Task Score (TS) and Coordination Score (CS) on MultiAgentBench.</figcaption>
+    <figcaption><span class="fn">Figure 4.</span> <b>SEPM across benchmarks and models, under AutoGen.</b> (a) ImplicitMemBench; dashed and dotted lines mark the oracle and a single LLM call. (b) Gain over no added memory with different execution and memory models. (c) Task Score (TS) and Coordination Score (CS) on MultiAgentBench.</figcaption>
   </figure>
 
-  <div class="side" style="grid-template-columns:1.2fr 1fr">
-    <div>
-      <table>
-        <thead><tr><th style="text-align:left">CoELA host</th><th class="n">TDW-MAT TR ↑</th><th class="n">C-WAH steps ↓</th></tr></thead>
-        <tbody>
-          <tr class="base"><td>No added memory</td><td class="n">63.33</td><td class="n">92.4</td></tr>
-          <tr><td>G-Memory</td><td class="n">67.08</td><td class="n">87.1</td></tr>
-          <tr><td>AWM<sup>†</sup></td><td class="n">65.42</td><td class="n">88.5</td></tr>
-          <tr><td>LEGOMem</td><td class="n">67.92</td><td class="n">85.6</td></tr>
-          <tr class="ours"><td>SEPM (ours)</td><td class="n">73.75</td><td class="n">79.8</td></tr>
-        </tbody>
-      </table>
-      <div class="tcap">Embodied cooperation with CoELA. TR: transport rate (%, three seeds); steps: five seeds.</div>
-    </div>
-    <div class="box" style="background:var(--mint-soft)"><b style="color:var(--mint)">Physical handoffs.</b> In embodied cooperation, prerequisites are objects passed between agents. SEPM raises the transport rate by <b>10.42</b> points and saves <b>12.6</b> steps per task over the host without memory.</div>
+  <div class="kpis">
+    <div class="kpi"><div class="t" style="color:var(--violet)">Implicit memory</div><div class="v">47.61 → 59.53</div>Highest non-oracle score with <code>gpt-5-mini</code> (82% of the oracle's gain); no baseline gains more than 3.75. With Qwen2.5-7B: 41.12 → 50.98.</div>
+    <div class="kpi"><div class="t" style="color:var(--blue)">Execution models</div><div class="v">18 / 18 <small>pairs positive</small></div>Gain of 3.33–29.85 points; even <code>gpt-5.6-terra</code>, the strongest without memory, gains 12.69 / 14.54 / 11.00.</div>
+    <div class="kpi"><div class="t" style="color:var(--teal)">Coordination quality</div><div class="v">+2.57–6.45 <small>CS</small></div>Over the strongest alternative, LLMA-Mem, on MultiAgentBench coding, research, and database, with +2.44–3.17 TS.</div>
+  </div>
+
+
+  <div class="sec"><span class="no" style="background:var(--amber)">6</span><h2>Memory evolution and transfer</h2><span class="rule"></span></div>
+  <p class="lead">Because only evidence-supported structure is retained, the pool keeps improving along the task sequence and carries over to unseen task types, other hosts, and other models without any update.</p>
+
+  <div class="row" style="align-items:flex-start">
+    <figure class="panel" style="flex-grow:1.058"><div class="frame"><img src="docs/images/transfer.png"></div>
+      <figcaption><span class="fn">Figure 5.</span> <b>Transfer of frozen SEPM pools</b> (one run). (a) ALFWorld leave-one-type-out; hollow markers show online SEPM. (b) Transfer across hosts and models.</figcaption></figure>
+    <figure class="panel" style="flex-grow:1.9"><div class="frame"><img src="docs/images/learning-curve.png"></div>
+      <figcaption><span class="fn">Figure 6.</span> <b>Task score along the task sequence</b> under AutoGen, in five equal segments. Without memory, scores stay flat; SEPM gains <span class="hl2">12.11 / 11.31 / 8.89</span> points from B1 to B5, versus 9.40 / 6.95 / 5.56 for G-Memory.</figcaption></figure>
+  </div>
+
+  <div class="grid2">
+    <div class="box" style="background:var(--amber-soft)"><h4 style="color:var(--amber)">Transfer to unseen task types and hosts</h4>A pool frozen before the held-out ALFWorld type reaches <b>82.09%</b> (G-Memory 77.61%, AWM 72.39%; online SEPM 89.55%). An AutoGen pool recovers <b>80.0 / 86.8 / 85.7%</b> of DyLAN's online gain without any update.</div>
+    <div class="box" style="background:var(--violet-soft)"><h4 style="color:var(--violet)">From strong to weak models</h4>A pool built with <code>gpt-5.6-terra</code> lifts <code>qwen3.5-9b</code> by <b>5.97 / 2.71 / 2.33</b> points above its own online pool: the retained structure carries what a stronger model discovers to a weaker one.</div>
   </div>
 </div>
 
-<!-- Page 5: analysis -->
+<!-- ===================== Page 5: ablation ===================== -->
 <div class="sheet">
-  <h2><span class="dot" style="background:var(--sun)">5</span>Analysis</h2>
-  <div class="row" style="align-items:flex-start">
-    <figure class="panel" style="flex-grow:1.058"><img src="docs/images/transfer.png">
-      <figcaption><span class="fignum">Figure 5.</span> <b>Transfer of frozen SEPM pools</b> (one run). (a) ALFWorld leave-one-type-out: 82.09% on the held-out type (G-Memory 77.61%); hollow markers show online SEPM. (b) Across hosts and models: an AutoGen pool recovers 80–87% of DyLAN's online gain.</figcaption></figure>
-    <figure class="panel" style="flex-grow:1.9"><img src="docs/images/learning-curve.png">
-      <figcaption><span class="fignum">Figure 6.</span> <b>Task score along the task sequence</b> under AutoGen, split into five equal segments. From B1 to B5, SEPM gains <span class="hl2">12.11 / 11.31 / 8.89</span> points versus 9.40 / 6.95 / 5.56 for G-Memory.</figcaption></figure>
+  <div class="runhead"><span><b>SEPM</b> · Self-Evolving Procedural Memory</span><span>Ablation and analysis</span></div>
+  <div class="sec"><span class="no" style="background:var(--coral)">7</span><h2>Where do the gains come from?</h2><span class="rule"></span></div>
+
+  <div class="row" style="align-items:center;gap:14px">
+    <figure style="flex:1.5 1 0;min-width:0"><div class="frame"><img src="docs/images/graph-vs-text.png"></div>
+      <figcaption><span class="fn">Figure 7.</span> <b>Ablation under AutoGen.</b> Bars add the blackboard, memory, and alignment in turn; <i>Full w/o explicit graph</i> states prerequisites as text in both execution and memory.</figcaption></figure>
+    <div style="flex:1 1 0;display:grid;gap:10px">
+      <div class="box" style="background:var(--coral-soft)"><h4 style="color:var(--coral)">Checkable prerequisites matter</h4>Replacing graph edges with text costs <span class="hl3">16.91 / 8.13 / 12.22</span> points on ALFWorld / WebArena / OfficeBench; <b>14.92 / 5.91 / 9.34</b> of them come from executing without the graph.</div>
+      <div class="box" style="background:var(--blue-soft)"><h4 style="color:var(--blue)">Evidence-selected edges</h4>Storing every observed precedence costs 2.55–3.73 points and lowers edge precision on ALFWorld from <b>0.86</b> to <b>0.45</b>.</div>
+    </div>
   </div>
 
   <figure>
-    <div class="row">
-      <div class="panel" style="flex-grow:2.289"><img src="docs/images/component-gains.png"><div class="sub">(a) Conditional gain of each component</div></div>
-      <div class="panel" style="flex-grow:0.856"><img src="docs/images/component-interaction.png"><div class="sub">(b) Interaction <i>I</i></div></div>
-      <div class="panel" style="flex-grow:1.142"><img src="docs/images/token-cost.png"><div class="sub">(c) ALFWorld success vs. tokens</div></div>
+    <div class="frame">
+      <div class="row">
+        <div class="panel" style="flex-grow:2.289"><img src="docs/images/component-gains.png"><div class="sub">(a) Conditional gain of each component</div></div>
+        <div class="panel" style="flex-grow:0.856"><img src="docs/images/component-interaction.png"><div class="sub">(b) Interaction <i>I</i></div></div>
+        <div class="panel" style="flex-grow:1.142"><img src="docs/images/token-cost.png"><div class="sub">(c) ALFWorld success vs. tokens</div></div>
+      </div>
     </div>
-    <figcaption><span class="fignum">Figure 7.</span> <b>Component interaction and cost under AutoGen.</b> <i>I</i> = <i>s</i><sub>BMA</sub> − <i>s</i><sub>BM</sub> − <i>s</i><sub>BA</sub> + <i>s</i><sub>B</sub>, where subscripts denote the blackboard (B), memory (M), and alignment (A). SEPM uses fewer tokens than Generative Agents, G-Memory, and LEGOMem on all three main benchmarks.</figcaption>
+    <figcaption><span class="fn">Figure 8.</span> <b>Component interaction and cost under AutoGen.</b> <i>I</i> = <i>s</i><sub>BMA</sub> − <i>s</i><sub>BM</sub> − <i>s</i><sub>BA</sub> + <i>s</i><sub>B</sub>, where subscripts denote the blackboard (B), memory (M), and alignment (A). Memory and alignment are complementary on OfficeBench (<i>I</i> = +3.22) and partly overlap on ALFWorld and WebArena. SEPM uses fewer tokens than Generative Agents, G-Memory, and LEGOMem on all three main benchmarks.</figcaption>
   </figure>
 
-  <div class="side" style="grid-template-columns:2fr 1fr">
-    <figure><img src="docs/images/graph-vs-text.png">
-      <figcaption><span class="fignum">Figure 8.</span> <b>Ablation under AutoGen.</b> Bars add the blackboard, memory, and alignment in turn; Full w/o explicit graph states prerequisites as text in both execution and memory.</figcaption></figure>
-    <div class="box" style="background:var(--coral-soft)"><b style="color:var(--coral)">Checkable prerequisites matter.</b> Replacing graph edges with text costs <span class="hl3">16.91 / 8.13 / 12.22</span> points on ALFWorld / WebArena / OfficeBench; 14.92 / 5.91 / 9.34 of them come from executing without the graph. Committed revisions raise success on later tasks by 5–8 points net of the sequence trend.</div>
+  <div class="kpis">
+    <div class="kpi"><div class="t" style="color:var(--teal)">Selective retention</div><div class="v">80–82% <small>rejected</small></div>Most candidate revisions are rejected (133/164, 737/904, 283/354), most often by the dependency gate.</div>
+    <div class="kpi"><div class="t" style="color:var(--coral)">Without the dependency gate</div><div class="v">≈ 2× <small>revisions admitted</small></div>Scores drop by 2.98 / 2.09 / 2.34 points: co-occurring steps must not enter memory.</div>
+    <div class="kpi"><div class="t" style="color:var(--violet)">Learning from failures</div><div class="v">50% → 76%</div>A premature step exposing a missing prerequisite is recorded in 82% of cases; success on later tasks of that type rises.</div>
   </div>
-</div>
 
-<!-- Page 6: supplementary figures -->
-<div class="sheet supp">
-  <h2><span class="dot" style="background:var(--violet)">6</span>Supplementary results</h2>
   <div class="row" style="align-items:flex-start">
-    <figure class="panel" style="flex-grow:1.557"><img src="docs/images/overall-performance.png">
-      <figcaption><span class="fignum">Figure S1.</span> <b>Mean task score</b> over the three main benchmarks for each host. Dashed lines mark the host without added memory.</figcaption></figure>
-    <figure class="panel" style="flex-grow:1.579"><img src="docs/images/implicit-interference.png">
-      <figcaption><span class="fignum">Figure S2.</span> <b>Procedural memory FTA versus interference length</b> (<code>gpt-5-mini</code>, one run). About 500 tokens corresponds to the original items.</figcaption></figure>
+    <figure class="panel supp" style="flex-grow:1.557"><img src="docs/images/overall-performance.png">
+      <figcaption><span class="fn">Figure S1.</span> <b>Mean task score</b> over the three main benchmarks for each host. Dashed lines mark the host without added memory.</figcaption></figure>
+    <figure class="panel supp" style="flex-grow:1.579"><img src="docs/images/implicit-interference.png">
+      <figcaption><span class="fn">Figure S2.</span> <b>Procedural memory FTA versus interference length</b> (<code>gpt-5-mini</code>, one run). About 500 tokens corresponds to the original items.</figcaption></figure>
   </div>
-  <figure><img src="docs/images/alignment-sensitivity.png">
-    <figcaption><span class="fignum">Figure S3.</span> <b>Sensitivity to alignment hyperparameters</b> under AutoGen (one run), varying one parameter at a time. Vertical lines mark the defaults.</figcaption></figure>
-  <figure><img src="docs/images/ablation-seeds.png">
-    <figcaption><span class="fignum">Figure S4.</span> <b>Three-run mean minus the seed-0 run</b> for each ablation configuration and the interaction <i>I</i> (pts). WebArena uses one run and is omitted.</figcaption></figure>
 </div>
 
-<!-- Page 7: code -->
+<!-- ===================== Page 6: supplementary ===================== -->
+<div class="sheet supp">
+  <div class="runhead"><span><b>SEPM</b> · Self-Evolving Procedural Memory</span><span>Supplementary results</span></div>
+  <div class="sec"><span class="no" style="background:var(--violet)">8</span><h2>Supplementary results</h2><span class="rule"></span></div>
+  <p class="lead">Full ImplicitMemBench breakdown, sensitivity to the alignment hyperparameters, and run-to-run variation of the ablation. All thresholds were fixed before evaluation and shared across benchmarks.</p>
+
+  <div>
+    <table class="booktabs">
+      <thead>
+        <tr><th style="text-align:left"><code>gpt-5-mini</code></th><th class="n sep">Proc.</th><th class="n">Cond.</th><th class="n">Prim.</th><th class="n">Overall</th><th class="n">Δ</th><th class="n sep">Tok./item</th><th class="n">Calls/item</th></tr>
+      </thead>
+      <tbody>
+        <tr class="base"><td>Single LLM (no MAS)</td><td class="n sep">61</td><td class="n">47</td><td class="n">41.27</td><td class="n">49.76</td><td class="n">+2.15</td><td class="n sep">2.1k</td><td class="n">8</td></tr>
+        <tr class="base"><td>AutoGen, no added memory</td><td class="n sep">58</td><td class="n">45</td><td class="n">39.83</td><td class="n">47.61</td><td class="n">–</td><td class="n sep">9.6k</td><td class="n">31</td></tr>
+        <tr><td>&nbsp;&nbsp;+ Generative Agents</td><td class="n sep">60</td><td class="n">49</td><td class="n"><span class="u">42.15</span></td><td class="n">50.38</td><td class="n">+2.77</td><td class="n sep">12.4k</td><td class="n">38</td></tr>
+        <tr><td>&nbsp;&nbsp;+ MetaGPT</td><td class="n sep">59</td><td class="n">46</td><td class="n">40.62</td><td class="n">48.54</td><td class="n">+0.93</td><td class="n sep">10.8k</td><td class="n">34</td></tr>
+        <tr><td>&nbsp;&nbsp;+ G-Memory</td><td class="n sep">61</td><td class="n"><span class="u">52</span></td><td class="n">41.08</td><td class="n"><span class="u">51.36</span></td><td class="n">+3.75</td><td class="n sep">13.1k</td><td class="n">39</td></tr>
+        <tr><td>&nbsp;&nbsp;+ AWM<sup>†</sup></td><td class="n sep"><span class="u">63</span></td><td class="n">48</td><td class="n">39.93</td><td class="n">50.31</td><td class="n">+2.70</td><td class="n sep">11.2k</td><td class="n">35</td></tr>
+        <tr><td>&nbsp;&nbsp;+ Mem0 (automatic)</td><td class="n sep">60</td><td class="n">51</td><td class="n">38.77</td><td class="n">49.92</td><td class="n">+2.31</td><td class="n sep">11.7k</td><td class="n">37</td></tr>
+        <tr class="ours"><td>&nbsp;&nbsp;+ SEPM (ours)</td><td class="n sep">71</td><td class="n">64</td><td class="n">43.58</td><td class="n">59.53</td><td class="n">+11.92</td><td class="n sep">12.6k</td><td class="n">41</td></tr>
+        <tr class="base"><td>&nbsp;&nbsp;Mem0 + Key Info (oracle)</td><td class="n sep">74</td><td class="n">79</td><td class="n">33.40</td><td class="n">62.13</td><td class="n">+14.52</td><td class="n sep">10.1k</td><td class="n">32</td></tr>
+      </tbody>
+    </table>
+    <div class="tcap"><span class="fn">Table S1.</span> ImplicitMemBench with <code>gpt-5-mini</code> (single run). Proc./Cond.: first-attempt accuracy; Prim.: priming influence score; Δ relative to AutoGen without added memory. Second-best non-oracle score <span class="u">underlined</span>.</div>
+  </div>
+
+  <figure><div class="frame"><img src="docs/images/alignment-sensitivity.png"></div>
+    <figcaption><span class="fn">Figure S3.</span> <b>Sensitivity to alignment hyperparameters</b> under AutoGen (one run), varying one parameter at a time. Vertical lines mark the defaults.</figcaption></figure>
+
+  <figure><div class="frame"><img src="docs/images/ablation-seeds.png"></div>
+    <figcaption><span class="fn">Figure S4.</span> <b>Three-run mean minus the seed-0 run</b> for each ablation configuration and the interaction <i>I</i> (pts). WebArena uses one run and is omitted.</figcaption></figure>
+</div>
+
+<!-- ===================== Page 7: code ===================== -->
 <div class="sheet">
-  <h2><span class="dot" style="background:var(--blue)">7</span>Code: installation and usage</h2>
-  <p>The core library depends only on Pydantic and runs without an API key. All commands assume a Linux shell with Python ≥ 3.10.</p>
+  <div class="runhead"><span><b>SEPM</b> · Self-Evolving Procedural Memory</span><span>Code</span></div>
+  <div class="sec"><span class="no" style="background:var(--blue)">9</span><h2>Code: installation and usage</h2><span class="rule"></span></div>
+  <p class="lead">The core library depends only on Pydantic and runs without an API key. All commands assume a Linux shell with Python ≥ 3.10. The code is provided in the supplementary material and will be publicly released.</p>
 
   <div class="step"><span class="badge" style="background:var(--blue)">1</span><div><h4>Install</h4>
 <pre>cd SEPM                                             <span class="c"># unpacked supplementary archive</span>
@@ -351,7 +447,7 @@ sepm --db sepm_demo.db retrieve <span class="s">"verified catalog results"</span
 pytest -q &amp;&amp; ruff check src adapters tests          <span class="c"># unit and integration-contract tests</span>
 sepm-benchmark                                      <span class="c"># deterministic mechanism checks, no LLM</span></pre></div></div>
 
-  <div class="step"><span class="badge" style="background:var(--mint)">3</span><div><h4>Plug SEPM into an agent host</h4>
+  <div class="step"><span class="badge" style="background:var(--teal)">3</span><div><h4>Plug SEPM into an agent host</h4>
   <p>SEPM and the included baselines (official G-Memory, Generative Agents, and MetaGPT memory classes; Mem0) implement one plug-in contract, so a host swaps memories without other changes.</p>
 <pre><span class="k">from</span> sepm.llm_client <span class="k">import</span> LLMClient, UsageMeter
 <span class="k">from</span> sepm.plugins.sepm_plugin <span class="k">import</span> SEPMPlugin
@@ -359,11 +455,11 @@ sepm-benchmark                                      <span class="c"># determinis
 memory = SEPMPlugin(database_path=<span class="s">"pool.db"</span>, task_family=<span class="s">"my_tasks"</span>,
                     client=LLMClient(), meter=UsageMeter())
 memory.begin_task(<span class="s">"task-1"</span>, goal)
-prompt_block = memory.context(<span class="s">"agent-a"</span>, goal)                  <span class="c"># procedures + warnings for the prompt</span>
+prompt_block = memory.context(<span class="s">"agent-a"</span>, goal)                  <span class="c"># procedures + warnings</span>
 corrections  = memory.record(<span class="s">"agent-a"</span>, action, observation)    <span class="c"># blackboard + alignment</span>
 memory.end_task(success=<span class="p">True</span>, reward=<span class="p">1.0</span>)                       <span class="c"># outcome, trials, extraction</span></pre></div></div>
 
-  <div class="side" style="grid-template-columns:1fr 1fr;align-items:start">
+  <div class="grid2" style="gap:16px;align-items:start">
     <div>
       <h3>Repository layout</h3>
 <pre class="tree">SEPM/
@@ -381,7 +477,7 @@ memory.end_task(success=<span class="p">True</span>, reward=<span class="p">1.0<
     </div>
     <div>
       <h3>Default hyperparameters</h3>
-      <table>
+      <table class="booktabs hyp">
         <tbody>
           <tr><td>Retrieved procedures <i>K</i></td><td class="n">5</td></tr>
           <tr><td>BM25 <i>k</i><sub>1</sub>, <i>b</i></td><td class="n">1.5, 0.75</td></tr>
@@ -398,7 +494,7 @@ memory.end_task(success=<span class="p">True</span>, reward=<span class="p">1.0<
     </div>
   </div>
 
-  <footer>Anonymous CVPR 2027 submission · Code released under the MIT License</footer>
+  <footer><span>Anonymous CVPR 2027 submission</span><span>Code released under the MIT License</span></footer>
 </div>
 
 </body>
