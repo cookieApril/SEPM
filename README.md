@@ -185,7 +185,7 @@ All numbers in this section are reported in the paper. Every memory starts empty
 
 <table>
   <tr>
-    <td width="62%" valign="middle"><img src="docs/images/graph-vs-text.png" width="100%" alt="Component ablation"></td>
+    <td width="40%" valign="middle"><img src="docs/images/graph-vs-text.png" width="100%" alt="Component ablation"></td>
     <td width="38%" valign="middle">
 
 **Full w/o explicit graph** states each step's prerequisites as text instead of edges, in both execution and memory, and loses **16.91 / 8.13 / 12.22** points on ALFWorld / WebArena / OfficeBench.
@@ -202,7 +202,7 @@ Storing every observed precedence instead of evidence-supported edges costs **2.
 
 <table>
   <tr>
-    <td width="62%" valign="middle"><img src="docs/images/learning-curve.png" width="100%" alt="Learning curve along the task sequence"></td>
+    <td width="40%" valign="middle"><img src="docs/images/learning-curve.png" width="100%" alt="Learning curve along the task sequence"></td>
     <td width="38%" valign="middle">
 
 **Along the task sequence (`B1`–`B5`).** Grouping the evaluation stream into five sequential quintiles, the host without memory stays flat, whereas SEPM improves steadily as its procedure pool grows—gaining **+12.11 / +11.31 / +8.89** points on ALFWorld / WebArena / OfficeBench (vs. +9.40 / +6.95 / +5.56 for G-Memory).
@@ -230,7 +230,7 @@ Storing every observed precedence instead of evidence-supported edges costs **2.
 
 <table>
   <tr>
-    <td width="56%" valign="middle"><img src="docs/images/multiagentbench.png" width="100%" alt="MultiAgentBench Task Score and Coordination Score"></td>
+    <td width="35%" valign="middle"><img src="docs/images/multiagentbench.png" width="100%" alt="MultiAgentBench Task Score and Coordination Score"></td>
     <td width="44%" valign="middle">
 
 **MultiAgentBench.** Evaluated across Coding, Research, and Database collaboration domains, SEPM achieves the highest Task Score (**TS: 69.1 / 78.4 / 77.0**) and Coordination Score (**CS: 60.6 / 88.9 / 91.9**) in every scenario.
@@ -243,7 +243,7 @@ It outperforms LLMA-Mem by **2.44–3.17 TS** and **2.57–6.45 CS**, showing th
 
 <table>
   <tr>
-    <td width="44%" valign="middle" align="center"><img src="docs/images/implicitmembench.png" width="100%" alt="ImplicitMemBench scores across Procedural, Conditional, and Priming dimensions"></td>
+    <td width="30%" valign="middle" align="center"><img src="docs/images/implicitmembench.png" width="100%" alt="ImplicitMemBench scores across Procedural, Conditional, and Priming dimensions"></td>
     <td width="56%" valign="middle">
 
 **ImplicitMemBench.** Tests whether prior experience implicitly shapes later behavior across Procedural (`Proc.`), Conditional (`Cond.`), and Priming (`Prim.`) dimensions.
